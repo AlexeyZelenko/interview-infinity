@@ -4,7 +4,6 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
-  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -20,16 +19,6 @@ export default {
           800: '#075985',
           900: '#0c4a6e',
         },
-        // Light mode colors
-        light: {
-          bg: '#ffffff',
-          card: '#f3f4f6',
-          text: '#1f2937',
-          'text-secondary': '#4b5563',
-          border: '#e5e7eb',
-          hover: '#f9fafb'
-        },
-        // Dark mode colors
         dark: {
           bg: '#111827',
           card: '#1f2937',

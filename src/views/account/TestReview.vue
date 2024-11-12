@@ -1,20 +1,34 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useTestStore } from '../../stores/tests';
+import { doc, getDoc, getDocs, collection } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { db } from '../../firebase/config';
 import TestOverview from '../../components/test-review/TestOverview.vue';
 import TimeDistribution from '../../components/test-review/TimeDistribution.vue';
 import QuestionReview from '../../components/test-review/QuestionReview.vue';
+import VideoReview from '../../components/test-review/VideoReview.vue';
+
+const auth = getAuth();
 
 const route = useRoute();
 const router = useRouter();
-const testStore = useTestStore();
 const loading = ref(true);
 const error = ref('');
 
-interface TestAttemptDetails {
+interface Question {
+  id: number;
+  text: string;
+  options: string[];
+  correctAnswer: number;
+  explanation?: string;
+}
+
+interface TestAttempt {
   id: string;
   testId: string;
+  title: string;
+  description: string;
   startedAt: string;
   completedAt: string;
   score: number;
@@ -26,48 +40,84 @@ interface TestAttemptDetails {
     timeSpent: number;
   }[];
   totalTimeSpent: number;
+  questions: Question[];
+  answerTimes: number[];
+  videoUrl?: string;
 }
 
-const testAttempt = ref<TestAttemptDetails>({
-  id: '1',
-  testId: 'vue-test',
-  startedAt: '2024-02-20T10:00:00Z',
-  completedAt: '2024-02-20T10:25:30Z',
-  score: 85,
-  totalQuestions: 10,
-  answers: [
-    { questionId: 1, selectedAnswer: 0, isCorrect: true, timeSpent: 45 },
-    { questionId: 2, selectedAnswer: 1, isCorrect: false, timeSpent: 65 },
-    { questionId: 3, selectedAnswer: 0, isCorrect: true, timeSpent: 30 },
-    { questionId: 4, selectedAnswer: 2, isCorrect: false, timeSpent: 55 },
-    { questionId: 5, selectedAnswer: 0, isCorrect: true, timeSpent: 40 }
-  ],
-  totalTimeSpent: 235
-});
+const testAttempt = ref<TestAttempt | null>(null);
 
-const test = ref(testStore.tests.find(t => t.id === testAttempt.value.testId));
+async function getAllDocumentIds() {
+  const collectionRef = collection(db, "tests");
+  const querySnapshot = await getDocs(collectionRef);
 
-const getQuestionById = (id: number) => {
-  return test.value?.questions.find(q => q.id === id);
+  return querySnapshot.docs.map(doc => doc.id);
+}
+
+const loadTestData = async () => {
+  try {
+    const attemptId = route.params.id as string;
+    if (!attemptId) {
+      throw new Error('Test attempt ID not found');
+    }
+
+    // Load test attempt
+    const attemptDoc = await getDoc(doc(db, 'testAttempts', attemptId));
+    if (!attemptDoc.exists()) {
+      throw new Error('Test attempt not found');
+    }
+
+    const attemptData = attemptDoc.data();
+
+    getAllDocumentIds();
+    // Load test details and questions
+    try {
+      const testDoc = await getDoc(doc(db, 'tests', attemptData.testId));
+
+      if (!testDoc.exists()) {
+        console.warn('Test not found');
+      } else {
+        const testData = testDoc.data();
+
+        // Combine attempt data with test details and questions
+        testAttempt.value = {
+          id: attemptDoc.id,
+          testId: attemptData.testId,
+          title: testData.title,
+          description: testData.description,
+          startedAt: attemptData.startedAt,
+          completedAt: attemptData.completedAt,
+          score: attemptData.score,
+          totalQuestions: attemptData.totalQuestions,
+          answers: attemptData.answers,
+          totalTimeSpent: attemptData.totalTimeSpent,
+          questions: testData.questions,
+          answerTimes: attemptData.answerTimes,
+          videoUrl: attemptData.videoUrl,
+        };
+      }
+    } catch (error) {
+      console.error('Error retrieving test document:', error);
+    }
+  } catch (err: any) {
+    error.value = err.message;
+    console.error('Error loading test data:', err);
+  } finally {
+    loading.value = false;
+  }
 };
 
 const navigateToResults = () => {
-  router.push({ name: 'DeveloperTestResults' });
+  router.push('/developer/test-results');
 };
 
-onMounted(async () => {
-  try {
-    // In a real app, we would fetch the test attempt details here
-    loading.value = false;
-  } catch (err: any) {
-    error.value = err.message;
-    loading.value = false;
-  }
+onMounted(() => {
+  loadTestData();
 });
 </script>
 
 <template>
-  <div class="max-w-4xl">
+  <div class="max-w-4xl mx-auto">
     <div class="flex justify-between items-center mb-6">
       <h2 class="text-2xl font-bold">Test Review</h2>
       <button
@@ -87,20 +137,34 @@ onMounted(async () => {
       {{ error }}
     </div>
 
-    <template v-else>
+    <template v-else-if="testAttempt">
       <!-- Test Overview -->
       <TestOverview
-          v-if="test"
-          :test="test"
-          :attempt="testAttempt"
+          :test="{
+            title: testAttempt.title,
+            description: testAttempt.description
+        }"
+          :attempt="{
+            startedAt: testAttempt.startedAt,
+            completedAt: testAttempt.completedAt,
+            score: testAttempt.score,
+            totalQuestions: testAttempt.totalQuestions,
+            totalTimeSpent: testAttempt.totalTimeSpent,
+            answers: testAttempt.answers,
+            videoUrl: testAttempt.videoUrl
+        }"
           class="mb-6"
       />
 
       <!-- Time Distribution -->
       <TimeDistribution
           :answers="testAttempt.answers"
-          :total-time-spent="testAttempt.totalTimeSpent"
           class="mb-6"
+      />
+
+      <VideoReview
+          v-if="testAttempt.videoUrl"
+          :videoUrl="testAttempt.videoUrl"
       />
 
       <!-- Questions Review -->
@@ -108,7 +172,7 @@ onMounted(async () => {
         <QuestionReview
             v-for="(answer, index) in testAttempt.answers"
             :key="index"
-            :question="getQuestionById(answer.questionId)!"
+            :question="testAttempt.questions[index]"
             :answer="answer"
             :index="index"
         />

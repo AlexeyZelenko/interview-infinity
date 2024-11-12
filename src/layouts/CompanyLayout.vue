@@ -1,20 +1,19 @@
-<!-- This is the layout for Company accounts -->
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useAuthStore } from '../stores/auth';
 import { useRoute } from 'vue-router';
 
-const authStore = useAuthStore();
 const route = useRoute();
 const isMobileMenuOpen = ref(false);
 
 const menuItems = [
-  { name: 'Job Listings', path: '/company/jobs', icon: 'briefcase' },
-  { name: 'Saved Developers', path: '/company/saved-developers', icon: 'users' },
-  { name: 'Company Tests', path: '/company/tests', icon: 'academic-cap' },
-  { name: 'Create Test', path: '/company/create-test', icon: 'plus-circle' },
   { name: 'Company Profile', path: '/company/profile', icon: 'building' },
-  { name: 'Subscription', path: '/company/subscription', icon: 'credit-card' }
+  { name: 'Job Listings', path: '/company/jobs', icon: 'briefcase' },
+  { name: 'Company Tests', path: '/company/tests', icon: 'academic-cap' },
+  { name: 'Create Test Manually', path: '/company/create-test-manual', icon: 'pencil' },
+  { name: 'Create Test with AI', path: '/company/create-test-ai', icon: 'sparkles' },
+  { name: 'Subscription', path: '/company/subscription', icon: 'credit-card' },
+  { name: 'Saved Developers', path: '/company/saved-developers', icon: 'users' },
+  // { name: 'Create Test', path: '/company/create-test', icon: 'plus-circle' },
 ];
 
 const currentMenuItem = computed(() => {
@@ -123,7 +122,21 @@ const currentMenuItem = computed(() => {
                       stroke-linecap="round"
                       stroke-linejoin="round"
                       stroke-width="2"
-                      d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998a12.078 12.078 0 01.665-6.479L12 14z"
+                      d="M12 14l9-5-9-5-9 5 9 5z M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"
+                  />
+                  <path
+                      v-else-if="item.icon === 'sparkles'"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                  />
+                  <path
+                      v-else-if="item.icon === 'pencil'"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
                   />
                   <path
                       v-else-if="item.icon === 'plus-circle'"

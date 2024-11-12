@@ -1,12 +1,40 @@
 import { defineStore } from 'pinia';
 import { db } from '../firebase/config';
-import { collection, getDocs, doc, getDoc, addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { collection, getDocs, doc, getDoc, addDoc, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
+import { useAuthStore } from './auth';
+
+interface Company {
+    id: string;
+    name: string;
+    description: string;
+    industry: string;
+    size: string;
+    location: string;
+    website?: string;
+    founded?: string;
+    logo?: string;
+    socialLinks?: {
+        linkedin?: string;
+        twitter?: string;
+        github?: string;
+    };
+}
+
+interface JobTest {
+    id: string;
+    testId: string;
+    title: string;
+    description: string;
+    duration: number;
+    isRequired: boolean;
+}
 
 interface Job {
     id: string;
     title: string;
     company: string;
     companyId: string;
+    companyInfo?: Company;
     location: string;
     type: string;
     salary: {
@@ -24,6 +52,8 @@ interface Job {
     status: 'active' | 'draft' | 'closed';
     remote: boolean;
     experience?: string;
+    applicants: number;
+    tests?: JobTest[];
 }
 
 export const useJobsStore = defineStore('jobs', {
@@ -35,21 +65,110 @@ export const useJobsStore = defineStore('jobs', {
         totalApplicants: 0
     }),
 
-    getters: {
-        activeJobs: (state) => state.jobs.filter(job => job.status === 'active')
-    },
-
     actions: {
         async fetchAllJobs() {
             try {
                 this.loading = true;
                 this.error = null;
 
+                // Fetch jobs
                 const snapshot = await getDocs(collection(db, 'jobs'));
-                this.jobs = snapshot.docs.map(doc => ({
+                const jobsData = snapshot.docs.map(doc => ({
                     id: doc.id,
                     ...doc.data()
                 })) as Job[];
+
+                // Fetch tests for each job
+                for (const job of jobsData) {
+                    if (job.id) {
+                        const testsQuery = query(
+                            collection(db, 'jobTests'),
+                            where('jobId', '==', job.id)
+                        );
+                        const testsSnapshot = await getDocs(testsQuery);
+
+                        if (!testsSnapshot.empty) {
+                            const tests = await Promise.all(
+                                testsSnapshot.docs.map(async (testDoc) => {
+                                    const testData = testDoc.data();
+                                    if (testData.testId) {
+                                        const testDetails = await getDoc(doc(db, 'tests', testData.testId));
+                                        if (testDetails.exists()) {
+                                            return {
+                                                id: testDoc.id,
+                                                testId: testData.testId,
+                                                isRequired: testData.isRequired,
+                                                ...testDetails.data()
+                                            };
+                                        }
+                                    }
+                                    return null;
+                                })
+                            );
+                            job.tests = tests.filter((test): test is JobTest => test !== null);
+                        }
+                    }
+                }
+
+                this.jobs = jobsData;
+            } catch (error: any) {
+                this.error = error.message;
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async fetchCompanyJobs() {
+            const authStore = useAuthStore();
+            if (!authStore.user?.uid) return;
+
+            try {
+                this.loading = true;
+                this.error = null;
+
+                const q = query(
+                    collection(db, 'jobs'),
+                    where('companyId', '==', authStore.user.uid)
+                );
+
+                const snapshot = await getDocs(q);
+                this.companyJobs = snapshot.docs.map(doc => ({
+                    id: doc.id,
+                    ...doc.data()
+                })) as Job[];
+
+                // Fetch tests for each company job
+                for (const job of this.companyJobs) {
+                    if (job.id) {
+                        const testsQuery = query(
+                            collection(db, 'jobTests'),
+                            where('jobId', '==', job.id)
+                        );
+                        const testsSnapshot = await getDocs(testsQuery);
+
+                        if (!testsSnapshot.empty) {
+                            const tests = await Promise.all(
+                                testsSnapshot.docs.map(async (testDoc) => {
+                                    const testData = testDoc.data();
+                                    if (testData.testId) {
+                                        const testDetails = await getDoc(doc(db, 'tests', testData.testId));
+                                        if (testDetails.exists()) {
+                                            return {
+                                                id: testDoc.id,
+                                                testId: testData.testId,
+                                                isRequired: testData.isRequired,
+                                                ...testDetails.data()
+                                            };
+                                        }
+                                    }
+                                    return null;
+                                })
+                            );
+                            job.tests = tests.filter((test): test is JobTest => test !== null);
+                        }
+                    }
+                }
             } catch (error: any) {
                 this.error = error.message;
                 throw error;
@@ -64,10 +183,42 @@ export const useJobsStore = defineStore('jobs', {
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
-                    return {
+                    const jobData = {
                         id: docSnap.id,
                         ...docSnap.data()
                     } as Job;
+
+                    // Fetch tests for this job
+                    if (jobData.id) {
+                        const testsQuery = query(
+                            collection(db, 'jobTests'),
+                            where('jobId', '==', jobData.id)
+                        );
+                        const testsSnapshot = await getDocs(testsQuery);
+
+                        if (!testsSnapshot.empty) {
+                            const tests = await Promise.all(
+                                testsSnapshot.docs.map(async (testDoc) => {
+                                    const testData = testDoc.data();
+                                    if (testData.testId) {
+                                        const testDetails = await getDoc(doc(db, 'tests', testData.testId));
+                                        if (testDetails.exists()) {
+                                            return {
+                                                id: testDoc.id,
+                                                testId: testData.testId,
+                                                isRequired: testData.isRequired,
+                                                ...testDetails.data()
+                                            };
+                                        }
+                                    }
+                                    return null;
+                                })
+                            );
+                            jobData.tests = tests.filter((test): test is JobTest => test !== null);
+                        }
+                    }
+
+                    return jobData;
                 }
                 return null;
             } catch (error: any) {
@@ -81,20 +232,28 @@ export const useJobsStore = defineStore('jobs', {
                 this.loading = true;
                 this.error = null;
 
-                const docRef = await addDoc(collection(db, 'jobs'), {
-                    ...jobData,
-                    status: 'active',
-                    postedAt: new Date().toISOString()
-                });
+                const authStore = useAuthStore();
+                if (!authStore.user?.uid) throw new Error('User not authenticated');
 
-                const newJob = {
-                    id: docRef.id,
-                    ...jobData,
-                    status: 'active',
-                    postedAt: new Date().toISOString()
-                } as Job;
+                // Get company info
+                const companyDoc = await getDoc(doc(db, 'companies', authStore.user.uid));
+                const companyInfo = companyDoc.exists() ? companyDoc.data() as Company : null;
 
+                const job = {
+                    ...jobData,
+                    companyId: authStore.user.uid,
+                    company: companyInfo?.name || '',
+                    companyInfo: companyInfo || undefined,
+                    postedAt: new Date().toISOString(),
+                    status: 'active',
+                    applicants: 0
+                };
+
+                const docRef = await addDoc(collection(db, 'jobs'), job);
+                const newJob = { id: docRef.id, ...job } as Job;
                 this.jobs.push(newJob);
+                this.companyJobs.push(newJob);
+
                 return newJob;
             } catch (error: any) {
                 this.error = error.message;
@@ -118,6 +277,11 @@ export const useJobsStore = defineStore('jobs', {
                 if (index !== -1) {
                     this.jobs[index] = { ...this.jobs[index], ...jobData };
                 }
+
+                const companyIndex = this.companyJobs.findIndex(job => job.id === id);
+                if (companyIndex !== -1) {
+                    this.companyJobs[companyIndex] = { ...this.companyJobs[companyIndex], ...jobData };
+                }
             } catch (error: any) {
                 this.error = error.message;
                 throw error;
@@ -140,6 +304,11 @@ export const useJobsStore = defineStore('jobs', {
                 if (index !== -1) {
                     this.jobs[index].status = status;
                 }
+
+                const companyIndex = this.companyJobs.findIndex(job => job.id === id);
+                if (companyIndex !== -1) {
+                    this.companyJobs[companyIndex].status = status;
+                }
             } catch (error: any) {
                 this.error = error.message;
                 throw error;
@@ -155,11 +324,34 @@ export const useJobsStore = defineStore('jobs', {
 
                 await deleteDoc(doc(db, 'jobs', id));
                 this.jobs = this.jobs.filter(job => job.id !== id);
+                this.companyJobs = this.companyJobs.filter(job => job.id !== id);
             } catch (error: any) {
                 this.error = error.message;
                 throw error;
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async updateApplicantCount(jobId: string, count: number) {
+            try {
+                await updateDoc(doc(db, 'jobs', jobId), {
+                    applicants: count,
+                    updatedAt: new Date().toISOString()
+                });
+
+                const index = this.jobs.findIndex(job => job.id === jobId);
+                if (index !== -1) {
+                    this.jobs[index].applicants = count;
+                }
+
+                const companyIndex = this.companyJobs.findIndex(job => job.id === jobId);
+                if (companyIndex !== -1) {
+                    this.companyJobs[companyIndex].applicants = count;
+                }
+            } catch (error: any) {
+                this.error = error.message;
+                throw error;
             }
         }
     }

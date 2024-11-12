@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { defineProps, defineEmits } from 'vue';
 interface Preferences {
   jobTypes: string[];
   locations: string[];
@@ -159,7 +160,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
           <button
               v-for="type in jobTypes"
               :key="type"
-              @click="toggleJobType(type)"
+              @click.prevent="toggleJobType(type)"
               class="px-3 py-1 rounded-full text-sm transition-colors"
               :class="preferences?.jobTypes.includes(type)
               ? 'bg-primary-600 text-white'
@@ -175,7 +176,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
         <label class="block text-sm font-medium mb-2">Work Mode Preference</label>
         <select
             :value="preferences?.remotePreference"
-            @change="$emit('update:preferences', { ...preferences, remotePreference: ($event.target as HTMLSelectElement).value })"
+            @change.prevent="$emit('update:preferences', { ...preferences, remotePreference: ($event.target as HTMLSelectElement).value })"
             class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
         >
           <option v-for="mode in workModes" :key="mode.value" :value="mode.value">
@@ -189,7 +190,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
         <label class="block text-sm font-medium mb-2">Preferred Locations</label>
         <input
             :value="preferences?.locations.join(', ')"
-            @input="updateLocation"
+            @input.prevent="updateLocation"
             type="text"
             class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             placeholder="e.g., New York, London, Remote"
@@ -204,7 +205,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
           <div>
             <input
                 :value="preferences?.salaryExpectation?.min"
-                @input="updateSalary('min', +($event.target as HTMLInputElement).value)"
+                @input.prevent="updateSalary('min', +($event.target as HTMLInputElement).value)"
                 type="number"
                 min="0"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -214,7 +215,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
           <div>
             <input
                 :value="preferences?.salaryExpectation?.max"
-                @input="updateSalary('max', +($event.target as HTMLInputElement).value)"
+                @input.prevent="updateSalary('max', +($event.target as HTMLInputElement).value)"
                 type="number"
                 min="0"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -226,7 +227,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
           <div>
             <select
                 :value="preferences?.salaryExpectation?.currency"
-                @change="updateSalary('currency', ($event.target as HTMLSelectElement).value)"
+                @change.prevent="updateSalary('currency', ($event.target as HTMLSelectElement).value)"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             >
               <option v-for="currency in currencies" :key="currency" :value="currency">
@@ -237,7 +238,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
           <div>
             <select
                 :value="preferences?.salaryExpectation?.period"
-                @change="updateSalary('period', ($event.target as HTMLSelectElement).value)"
+                @change.prevent="updateSalary('period', ($event.target as HTMLSelectElement).value)"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             >
               <option v-for="period in periods" :key="period" :value="period">
@@ -255,7 +256,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
           <button
               v-for="industry in industries"
               :key="industry"
-              @click="toggleIndustry(industry)"
+              @click.prevent="toggleIndustry(industry)"
               class="px-3 py-1 rounded-full text-sm transition-colors"
               :class="preferences?.industries?.includes(industry)
               ? 'bg-primary-600 text-white'
@@ -273,7 +274,7 @@ const formatSalary = (salary?: { min: number; max: number; currency: string; per
           <button
               v-for="size in companySizes"
               :key="size"
-              @click="toggleCompanySize(size)"
+              @click.prevent="toggleCompanySize(size)"
               class="px-3 py-1 rounded-full text-sm transition-colors"
               :class="preferences?.companySize?.includes(size)
               ? 'bg-primary-600 text-white'

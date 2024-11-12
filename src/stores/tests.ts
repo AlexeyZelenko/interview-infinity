@@ -1,91 +1,29 @@
 import { defineStore } from 'pinia';
 import { db, storage } from '../firebase/config';
 import { collection, getDocs, doc, getDoc, addDoc, query, where, updateDoc, deleteDoc } from 'firebase/firestore';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { vueQuestions } from '../data/test-questions/vue-questions';
-import { nodeQuestions } from '../data/test-questions/node-questions';
-import { reactQuestions } from '../data/test-questions/react-questions';
-import { laravelQuestions } from '../data/test-questions/laravel-questions';
-import { javascriptQuestions } from '../data/test-questions/javascript-questions';
-
-interface TestSubmission {
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    difficulty: 'beginner' | 'intermediate' | 'advanced';
-    duration: number;
-    questionsFile: string;
-    submittedBy: string;
-    submittedAt: string;
-    status: 'pending' | 'approved' | 'rejected';
-    adminEmail: string;
-}
-
-interface Test {
-    id: string;
-    title: string;
-    description: string;
-    duration: number;
-    difficulty: string;
-    questions: Array<{
-        id: number;
-        text: string;
-        options: string[];
-        correctAnswer: number;
-        explanation?: string;
-    }>;
-    status: 'active' | 'archived';
-    createdAt: string;
-    createdBy: string;
-}
-
-interface TestAttempt {
-    id: string;
-    testId: string;
-    userId: string;
-    score: number;
-    totalQuestions: number;
-    startedAt: string;
-    completedAt: string;
-    answers: Array<{
-        questionId: number;
-        selectedAnswer: number;
-        isCorrect: boolean;
-        timeSpent: number;
-    }>;
-}
-
-interface TestDiscussion {
-    id: string;
-    testId: string;
-    title: string;
-    content: string;
-    author: {
-        id: string;
-        name: string;
-        avatar?: string;
-    };
-    createdAt: string;
-    type: 'discussion' | 'submission';
-    status?: 'pending' | 'approved' | 'rejected';
-    replies: Array<{
-        id: string;
-        content: string;
-        author: {
-            id: string;
-            name: string;
-            avatar?: string;
-        };
-        createdAt: string;
-    }>;
-}
+import { ref as storageRef, uploadBytes, getDownloadURL, getStorage, ref, deleteObject } from 'firebase/storage';
+// import { vueQuestions } from '../data/test-questions/vue-questions';
+// import { nodeQuestions } from '../data/test-questions/node-questions';
+// import { reactQuestions } from '../data/test-questions/react-questions';
+// import { laravelQuestions } from '../data/test-questions/laravel-questions';
+// import { javascriptQuestions } from '../data/test-questions/javascript-questions';
+import { useAuthStore } from './auth';
+import Swal from 'sweetalert2';
+import {
+    Test,
+    TestAttempt,
+    TestDiscussion,
+    TestSubmission,
+    TestAnswer,
+    TestAttemptDetails
+} from '../types/tests';
 
 export const useTestStore = defineStore('tests', {
     state: () => ({
         tests: [] as Test[],
         currentTest: null as Test | null,
         testHistory: [] as TestAttempt[],
+        testHistoryCompany: [] as TestAttempt[],
         discussions: [] as TestDiscussion[],
         loading: false,
         error: null as string | null,
@@ -106,7 +44,25 @@ export const useTestStore = defineStore('tests', {
 
         getTestDiscussions: (state) => (testId: string) => {
             return state.discussions.filter(discussion => discussion.testId === testId);
-        }
+        },
+
+        async getTestAttempt(id: string): Promise<TestAttemptDetails | null> {
+            try {
+                const docRef = doc(db, 'testAttempts', id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    return {
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    } as TestAttemptDetails;
+                }
+                return null;
+            } catch (error) {
+                console.error('Error fetching test attempt:', error);
+                return null;
+            }
+        },
     },
 
     actions: {
@@ -163,7 +119,7 @@ export const useTestStore = defineStore('tests', {
             }
         },
 
-        async submitTest(submission: Omit<TestSubmission, 'id' | 'status' | 'submittedAt'>) {
+        async submitTest(submission: Omit<TestSubmission, 'id' | 'status' | 'submittedAt' | string>) {
             this.loading = true;
             try {
                 // Upload questions file to storage
@@ -188,7 +144,7 @@ export const useTestStore = defineStore('tests', {
             }
         },
 
-        async approveTestSubmission(submissionId: string, questions: any[]) {
+        async approveTestSubmission(submissionId: string, submissionData: any) {
             this.loading = true;
             try {
                 const submissionRef = doc(db, 'testSubmissions', submissionId);
@@ -200,14 +156,15 @@ export const useTestStore = defineStore('tests', {
 
                 const submission = submissionDoc.data() as TestSubmission;
 
-                // Create new test
+                // Create new test with ID
                 const testData = {
+                    id: submissionData.id,
                     title: submission.title,
                     description: submission.description,
                     category: submission.category,
                     difficulty: submission.difficulty,
                     duration: submission.duration,
-                    questions,
+                    questions: submissionData.questions,
                     status: 'active',
                     createdAt: new Date().toISOString(),
                     createdBy: submission.submittedBy
@@ -272,10 +229,33 @@ export const useTestStore = defineStore('tests', {
             return Math.max(0, 7 - daysSinceLastAttempt);
         },
 
+        async fetchTestById(id: string) {
+            this.loading = true;
+            try {
+                const docRef = doc(db, 'tests', id);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    this.currentTest = {
+                        id: docSnap.id,
+                        ...docSnap.data()
+                    };
+                    return this.currentTest;
+                } else {
+                    throw new Error('Test not found');
+                }
+            } catch (error: any) {
+                this.error = error.message;
+                throw error; // Пробрасываем ошибку дальше, чтобы её можно было обработать на уровне вызова
+            } finally {
+                this.loading = false;
+            }
+        },
+
         async startTest(testId: string) {
             if (!this.canTakeTest(testId)) return false;
 
-            const test = this.tests.find(t => t.id === testId);
+            const test = this.tests.find(t => t.id === testId) || this.currentTest;
             if (!test) return false;
 
             // Randomize questions order
@@ -292,24 +272,63 @@ export const useTestStore = defineStore('tests', {
             return true;
         },
 
-        async loadTestHistory() {
-            this.loading = true;
-            try {
-                const snapshot = await getDocs(collection(db, 'testAttempts'));
-                this.testHistory = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                })) as TestAttempt[];
+        calculateScore(result: { answers: TestAnswer[] }): number {
+            if (!result || !result.answers) return 0;
 
-                // Calculate average score
+            const totalQuestions = result.answers.length;
+            const correctAnswers = result.answers.filter(answer => answer.isCorrect).length;
+
+            return totalQuestions > 0
+                ? Math.round((correctAnswers / totalQuestions) * 100)
+                : 0;
+        },
+
+        async loadTestHistory() {
+            const authStore = useAuthStore();
+            if (!authStore.user) {
+                console.warn('User is not authenticated');
+                return; // Выходим из функции, если пользователь не авторизован
+            }
+
+            this.loading = true;
+
+            try {
+                // Получаем данные из коллекции тестов
+                const snapshot = await getDocs(collection(db, 'testAttempts'));
+
+                // Преобразуем документы в массив объектов тестов
+                const allTestsHistory = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        ...data,
+                        score: this.calculateScore(data)
+                    } as TestAttempt;
+                });
+
+                // Фильтруем результаты тестов для текущего пользователя
+                this.testHistory = allTestsHistory.filter(attempt => attempt.userId === authStore.user?.uid);
+                this.testHistoryCompany = allTestsHistory;
+
+                // Рассчитываем средний результат, если есть тесты
                 if (this.testHistory.length > 0) {
-                    const totalScore = this.testHistory.reduce((sum, attempt) =>
-                        sum + (attempt.score / attempt.totalQuestions * 100), 0);
-                    this.averageScore = Math.round(totalScore / this.testHistory.length);
+                    const totalScorePercentage = this.testHistory.reduce((sum, attempt) => sum + (attempt.score ?? 0), 0);
+                    this.averageScore = Math.round(totalScorePercentage / this.testHistory.length);
+                } else {
+                    this.averageScore = 0;
                 }
+
+                if (this.testHistoryCompany.length > 0) {
+                    const totalScorePercentage = this.testHistoryCompany.reduce((sum, attempt) => sum + (attempt.score ?? 0), 0);
+                    this.averageScore = Math.round(totalScorePercentage / this.testHistoryCompany.length);
+                } else {
+                    this.averageScore = 0;
+                }
+
+                console.log('Average score:', this.averageScore);
             } catch (error: any) {
-                this.error = error.message;
-                throw error;
+                this.error = 'An error occurred while loading test history. Please try again later.';
+                console.error('Error fetching test attempts:', error);
             } finally {
                 this.loading = false;
             }
@@ -319,18 +338,31 @@ export const useTestStore = defineStore('tests', {
             score: number;
             totalQuestions: number;
             testId: string;
+            answers: TestAnswer[],
+            userId: string,
+            videoUrl: string | null,
+            jobId: string
         }) {
             if (!this.currentTest) return;
 
             this.loading = true;
             try {
+                const testScore = this.calculateScore(results);
+                console.log('Test score:', testScore)
+
                 const testAttempt = {
                     testId: results.testId,
-                    score: results.score,
+                    score: testScore,
                     totalQuestions: results.totalQuestions,
                     startedAt: new Date().toISOString(),
-                    completedAt: new Date().toISOString()
+                    completedAt: new Date().toISOString(),
+                    answers: results.answers,
+                    userId: results.userId,
+                    videoUrl: results.videoUrl,
+                    jobId: results.jobId
                 };
+
+                console.log('Saving test attempt:', testAttempt)
 
                 await addDoc(collection(db, 'testAttempts'), testAttempt);
                 this.testCompleted = true;
@@ -340,6 +372,114 @@ export const useTestStore = defineStore('tests', {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async deleteTest(testId: string) {
+            try {
+                // Reference to the Firestore document
+                const docRef = doc(db, 'testAttempts', testId);
+
+                // Fetch the document to check conditions
+                const docSnapshot = await getDoc(docRef);
+                if (docSnapshot.exists()) {
+                    const testData = docSnapshot.data();
+
+                    // Определение completedAt в зависимости от типа данных
+                    let completedAt;
+                    if (testData.completedAt instanceof Date) {
+                        completedAt = testData.completedAt;
+                    } else if (testData.completedAt?.toDate) {
+                        completedAt = testData.completedAt.toDate(); // Если это Firestore Timestamp
+                    } else if (typeof testData.completedAt === 'string') {
+                        completedAt = new Date(testData.completedAt); // Если это строка
+                    } else {
+                        throw new Error('Unknown completedAt format');
+                    }
+
+                    // Проверяем, прошло ли 7 дней с момента завершения теста
+                    const currentDate = new Date();
+                    const sevenDaysLater = new Date(completedAt);
+                    sevenDaysLater.setDate(sevenDaysLater.getDate() + 7);
+
+                    if (currentDate < sevenDaysLater) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Cannot Delete Test Yet',
+                            text: 'You can delete this test only 7 days after its completion. Please try again later.',
+                            confirmButtonText: 'OK'
+                        });
+                        return;
+                    }
+
+                    // Если прошло 7 дней, продолжаем с удалением
+                    const videoUrl = testData.videoUrl;
+
+                    // Если есть videoUrl, удаляем файл из Firebase Storage
+                    if (videoUrl) {
+                        const storage = getStorage();
+                        const videoRef = ref(storage, videoUrl);
+
+                        try {
+                            await deleteObject(videoRef);
+                            console.log('Video successfully deleted from Firebase Storage.');
+                        } catch (storageError) {
+                            console.error('Error deleting video from Firebase Storage:', storageError);
+                            throw storageError;
+                        }
+                    }
+
+                    // Удаляем документ из Firestore
+                    await deleteDoc(docRef);
+                    console.log('Test document successfully deleted.');
+
+                    // Показываем сообщение об успешном удалении пользователю
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Deleted!',
+                        text: 'The test and related data have been successfully deleted.',
+                        confirmButtonText: 'OK'
+                    });
+
+                } else {
+                    // Если документ не найден
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No document found with the specified test ID.',
+                        confirmButtonText: 'OK'
+                    });
+                    console.log('No document found with the specified testId.');
+                }
+            } catch (error: any) {
+                console.error('Error deleting test:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Deletion Failed',
+                    text: 'An error occurred while trying to delete the test. Please try again later.',
+                    confirmButtonText: 'OK'
+                });
+            }
+        },
+
+        async getTestAttemptUserFromJob(idUser: string, idJob: string) {
+            try {
+                const snapshot = await getDocs(collection(db, 'testAttempts'));
+                const allTestsHistory = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return {
+                        id: doc.id,
+                        ...data,
+                        score: this.calculateScore(data)
+                    } as TestAttempt;
+                });
+
+                const testHistory = allTestsHistory.filter(attempt => attempt.userId === idUser && attempt.jobId === idJob);
+                return testHistory;
+            } catch (error: any) {
+                this.error = 'An error occurred while loading test history. Please try again later.';
+                console.error('Error fetching test attempts:', error);
+            }
         }
+
     }
 });

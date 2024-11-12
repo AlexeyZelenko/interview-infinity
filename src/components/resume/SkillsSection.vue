@@ -37,7 +37,7 @@ const removeSkill = (skill: string) => {
             @keyup.enter="addSkill"
         />
         <button
-            @click="addSkill"
+            @click.prevent="addSkill"
             class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
         >
           Add
@@ -52,7 +52,7 @@ const removeSkill = (skill: string) => {
         >
           {{ skill }}
           <button
-              @click="removeSkill(skill)"
+              @click.stop="removeSkill(skill)"
               class="ml-2 text-gray-400 group-hover:text-red-400"
           >
             ×

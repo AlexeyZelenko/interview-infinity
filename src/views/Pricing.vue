@@ -15,12 +15,12 @@ const plans = [
     id: 'free',
     name: 'Free Trial',
     price: 0,
-    period: 'week',
+    period: 'month',
     features: [
       'Basic profile access',
       '3 job postings',
       'Limited test access',
-      '7-day trial'
+      '30-day trial'
     ],
     buttonText: 'Start Free Trial'
   },

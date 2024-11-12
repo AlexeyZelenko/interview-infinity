@@ -1,12 +1,24 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+
+interface Answer {
+  testId: number | string | null;
+  selectedAnswer: number | null;
+  isCorrect: boolean | null;
+  timeTaken: number;
+  correctAnswer: number;
+}
+
 const props = defineProps<{
-  answers: {
-    timeSpent: number;
-    isCorrect: boolean;
-  }[];
-  totalTimeSpent: number;
+  answers: {Answer}[];
 }>();
 
+// Calculate the total time spent
+const totalTimeSpent = computed(() =>
+    props.answers.reduce((acc, answer) => acc + answer.timeTaken, 0)
+);
+
+// Format time utility
 const formatTime = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -25,13 +37,14 @@ const formatTime = (seconds: number) => {
       >
         <div class="flex justify-between text-sm text-gray-400 mb-1">
           <span>Question {{ index + 1 }}</span>
-          <span>{{ formatTime(answer.timeSpent) }}</span>
+          <span>{{ answer.timeTaken }} seconds</span>
         </div>
+
         <div class="w-full bg-gray-700 rounded-full h-2">
           <div
               class="h-2 rounded-full transition-all duration-300"
               :class="answer.isCorrect ? 'bg-green-500' : 'bg-red-500'"
-              :style="{ width: `${(answer.timeSpent / totalTimeSpent) * 100}%` }"
+              :style="{ width: `${(answer.timeTaken / totalTimeSpent) * 100}%` }"
           ></div>
         </div>
       </div>

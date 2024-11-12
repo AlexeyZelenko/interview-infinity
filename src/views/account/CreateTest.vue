@@ -11,32 +11,62 @@ const loading = ref(false);
 const error = ref('');
 const success = ref(false);
 
-const testTitle = ref('');
-const testDescription = ref('');
-const testDuration = ref(60);
-const testDifficulty = ref<'beginner' | 'intermediate' | 'advanced'>('intermediate');
-const templateFile = ref<File | null>(null);
+const formData = ref({
+  title: '',
+  description: '',
+  category: '',
+  difficulty: 'intermediate',
+  duration: 30,
+  questions: null as File | null
+});
 
-interface TestQuestion {
-  text: string;
-  options: string[];
-  correctAnswer: number;
-  explanation: string;
-}
+const categories = [
+  'JavaScript',
+  'TypeScript',
+  'Vue.js',
+  'React',
+  'Node.js',
+  'Python',
+  'Java',
+  'Database',
+  'DevOps'
+];
 
-const validateQuestions = (questions: any[]): TestQuestion[] => {
-  return questions.map((q, index) => {
-    if (!q.text || !q.options || !Array.isArray(q.options) || q.options.length !== 4 || 
-        typeof q.correctAnswer !== 'number' || q.correctAnswer < 0 || q.correctAnswer > 3) {
-      throw new Error(`Invalid question format at row ${index + 1}`);
-    }
-    return {
-      text: q.text,
-      options: q.options,
-      correctAnswer: q.correctAnswer,
-      explanation: q.explanation || ''
-    };
-  });
+const difficulties = [
+  { value: 'beginner', label: 'Beginner' },
+  { value: 'intermediate', label: 'Intermediate' },
+  { value: 'advanced', label: 'Advanced' }
+];
+
+const handleFileUpload = (event: Event) => {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files[0]) {
+    formData.value.questions = input.files[0];
+  }
+};
+
+const downloadTemplate = () => {
+  const workbook = utils.book_new();
+  const data = [
+    ['Question', 'Option1', 'Option2', 'Option3', 'Option4', 'CorrectAnswer', 'Explanation'],
+    ['What is Vue.js?', 'A framework', 'A library', 'A database', 'A server', '1', 'Vue.js is a progressive JavaScript framework']
+  ];
+
+  const worksheet = utils.aoa_to_sheet(data);
+  utils.book_append_sheet(workbook, worksheet, 'Test Template');
+
+  utils.writeFile(workbook, 'test_template.xlsx');
+};
+
+const validateQuestions = (questions: any[]): boolean => {
+  return questions.every(q =>
+      q.text &&
+      q.options?.length === 4 &&
+      q.options.every((opt: string) => opt?.trim()) &&
+      typeof q.correctAnswer === 'number' &&
+      q.correctAnswer >= 0 &&
+      q.correctAnswer < 4
+  );
 };
 
 const parseExcel = async (file: File) => {
@@ -53,84 +83,51 @@ const parseExcel = async (file: File) => {
   }));
 };
 
-const parseCSV = async (file: File) => {
-  const text = await file.text();
-  const rows = text.split('\n').map(row => row.split(','));
-  const headers = rows[0];
-
-  return rows.slice(1).map(row => ({
-    text: row[0],
-    options: [row[1], row[2], row[3], row[4]],
-    correctAnswer: parseInt(row[5]) - 1,
-    explanation: row[6] || ''
-  }));
-};
-
-const downloadTemplate = () => {
-  const workbook = utils.book_new();
-  const data = [
-    ['Question', 'Option1', 'Option2', 'Option3', 'Option4', 'CorrectAnswer', 'Explanation'],
-    ['What is Vue.js?', 'A framework', 'A library', 'A database', 'A server', '1', 'Vue.js is a progressive JavaScript framework']
-  ];
-  
-  const worksheet = utils.aoa_to_sheet(data);
-  utils.book_append_sheet(workbook, worksheet, 'Test Template');
-  
-  utils.writeFile(workbook, 'test_template.xlsx');
-};
-
-const handleFileUpload = (event: Event) => {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files[0]) {
-    templateFile.value = input.files[0];
-  }
-};
-
 const handleSubmit = async () => {
-  if (!templateFile.value) {
-    error.value = 'Please select a file';
+  if (!formData.value.questions) {
+    error.value = 'Please upload questions file';
     return;
   }
 
   loading.value = true;
   error.value = '';
-  success.value = false;
 
   try {
-    let questions;
-    if (templateFile.value.name.endsWith('.xlsx') || templateFile.value.name.endsWith('.xls')) {
-      questions = await parseExcel(templateFile.value);
-    } else if (templateFile.value.name.endsWith('.csv')) {
-      questions = await parseCSV(templateFile.value);
-    } else {
-      throw new Error('Unsupported file format');
+    // Parse and validate questions
+    const questions = await parseExcel(formData.value.questions);
+    if (!validateQuestions(questions)) {
+      throw new Error('Invalid questions format. Please check the template and try again.');
     }
 
-    const validatedQuestions = validateQuestions(questions);
-
     // Upload file to Storage
-    const fileRef = storageRef(storage, `tests/${authStore.user?.uid}/${Date.now()}_${templateFile.value.name}`);
-    await uploadBytes(fileRef, templateFile.value);
+    const fileRef = storageRef(storage, `company-tests/${authStore.user?.uid}/${Date.now()}_${formData.value.questions.name}`);
+    await uploadBytes(fileRef, formData.value.questions);
     const fileUrl = await getDownloadURL(fileRef);
 
     // Save test to Firestore
     await addDoc(collection(db, 'tests'), {
-      title: testTitle.value,
-      description: testDescription.value,
-      duration: testDuration.value,
-      difficulty: testDifficulty.value,
-      questions: validatedQuestions,
+      title: formData.value.title,
+      description: formData.value.description,
+      category: formData.value.category,
+      difficulty: formData.value.difficulty,
+      duration: formData.value.duration,
+      questions,
       createdBy: authStore.user?.uid,
+      companyId: authStore.user?.uid,
       createdAt: new Date().toISOString(),
+      status: 'active',
       fileUrl
     });
 
     success.value = true;
-    testTitle.value = '';
-    testDescription.value = '';
-    testDuration.value = 60;
-    testDifficulty.value = 'intermediate';
-    templateFile.value = null;
+    formData.value = {
+      title: '',
+      description: '',
+      category: '',
+      difficulty: 'intermediate',
+      duration: 30,
+      questions: null
+    };
 
   } catch (err: any) {
     error.value = err.message;
@@ -149,71 +146,85 @@ const handleSubmit = async () => {
         <div>
           <label class="block text-sm font-medium mb-2">Test Title</label>
           <input
-            v-model="testTitle"
-            type="text"
-            required
-            class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              v-model="formData.title"
+              type="text"
+              required
+              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
 
         <div>
           <label class="block text-sm font-medium mb-2">Description</label>
           <textarea
-            v-model="testDescription"
-            required
-            rows="3"
-            class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              v-model="formData.description"
+              required
+              rows="3"
+              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
           ></textarea>
         </div>
 
         <div class="grid md:grid-cols-2 gap-6">
           <div>
-            <label class="block text-sm font-medium mb-2">Duration (minutes)</label>
-            <input
-              v-model="testDuration"
-              type="number"
-              min="1"
-              required
-              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-            />
+            <label class="block text-sm font-medium mb-2">Category</label>
+            <select
+                v-model="formData.category"
+                required
+                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+            >
+              <option value="">Select category</option>
+              <option v-for="category in categories" :key="category" :value="category">
+                {{ category }}
+              </option>
+            </select>
           </div>
 
           <div>
             <label class="block text-sm font-medium mb-2">Difficulty</label>
             <select
-              v-model="testDifficulty"
-              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+                v-model="formData.difficulty"
+                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             >
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <option v-for="diff in difficulties" :key="diff.value" :value="diff.value">
+                {{ diff.label }}
+              </option>
             </select>
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium mb-2">Upload Questions</label>
-          <div class="flex items-center space-x-4">
-            <input
-              type="file"
-              accept=".xlsx,.xls,.csv"
-              @change="handleFileUpload"
-              class="block w-full text-sm text-gray-300
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-md file:border-0
-                file:text-sm file:font-semibold
-                file:bg-primary-600 file:text-white
-                hover:file:bg-primary-700"
-            />
+          <label class="block text-sm font-medium mb-2">Duration (minutes)</label>
+          <input
+              v-model.number="formData.duration"
+              type="number"
+              min="1"
+              required
+              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+          />
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-2">
+            <label class="block text-sm font-medium">Questions File</label>
             <button
-              type="button"
-              @click="downloadTemplate"
-              class="px-4 py-2 bg-gray-700 rounded-md hover:bg-gray-600"
+                type="button"
+                @click="downloadTemplate"
+                class="text-primary-400 hover:text-primary-300"
             >
               Download Template
             </button>
           </div>
-          <p class="mt-2 text-sm text-gray-400">
+          <input
+              type="file"
+              accept=".xlsx,.xls,.csv"
+              @change="handleFileUpload"
+              class="block w-full text-sm text-gray-300
+              file:mr-4 file:py-2 file:px-4
+              file:rounded-md file:border-0
+              file:text-sm file:font-semibold
+              file:bg-primary-600 file:text-white
+              hover:file:bg-primary-700"
+          />
+          <p class="mt-1 text-sm text-gray-400">
             Upload questions in Excel (.xlsx, .xls) or CSV format
           </p>
         </div>
@@ -227,9 +238,9 @@ const handleSubmit = async () => {
         </div>
 
         <button
-          type="submit"
-          :disabled="loading"
-          class="w-full bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 disabled:opacity-50"
+            type="submit"
+            :disabled="loading"
+            class="w-full bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 disabled:opacity-50"
         >
           {{ loading ? 'Creating Test...' : 'Create Test' }}
         </button>
@@ -238,7 +249,7 @@ const handleSubmit = async () => {
 
     <div class="mt-8 bg-gray-800 rounded-lg p-6">
       <h3 class="text-xl font-bold mb-4">File Format Instructions</h3>
-      
+
       <div class="space-y-4">
         <div>
           <h4 class="font-medium mb-2">Required Columns:</h4>

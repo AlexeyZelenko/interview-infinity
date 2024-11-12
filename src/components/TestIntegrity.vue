@@ -1,38 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
 import screenfull from 'screenfull';
-import { useRouter } from 'vue-router';
 
 const emit = defineEmits<{
   (e: 'integrity-violation'): void;
 }>();
 
-const router = useRouter();
 const video = ref<HTMLVideoElement | null>(null);
 const stream = ref<MediaStream | null>(null);
 const hasLeftPage = ref(false);
 const warningCount = ref(0);
 const MAX_WARNINGS = 3;
-
-// Webcam setup
-const initializeWebcam = async () => {
-  try {
-    stream.value = await navigator.mediaDevices.getUserMedia({ 
-      video: { 
-        width: 320,
-        height: 240,
-        facingMode: 'user'
-      }
-    });
-    
-    if (video.value) {
-      video.value.srcObject = stream.value;
-    }
-  } catch (err) {
-    console.error('Failed to access webcam:', err);
-    emit('integrity-violation');
-  }
-};
+const webcamEnabled = ref(false); // New ref for webcam state
 
 // Full screen handling
 const enterFullScreen = async () => {
@@ -76,7 +55,7 @@ const preventRightClick = (e: Event) => {
 
 // Keyboard shortcuts prevention
 const preventKeyboardShortcuts = (e: KeyboardEvent) => {
-  if ((e.ctrlKey || e.metaKey) && 
+  if ((e.ctrlKey || e.metaKey) &&
       ['c', 'v', 'a', 'p', 's'].includes(e.key.toLowerCase())) {
     e.preventDefault();
     handleIntegrityViolation('Used keyboard shortcut');
@@ -85,16 +64,15 @@ const preventKeyboardShortcuts = (e: KeyboardEvent) => {
 
 const handleIntegrityViolation = (reason: string) => {
   warningCount.value++;
-  
+
   if (warningCount.value >= MAX_WARNINGS) {
     emit('integrity-violation');
   }
 };
 
 onMounted(async () => {
-  await initializeWebcam();
   await enterFullScreen();
-  
+
   // Set up event listeners
   document.addEventListener('visibilitychange', handleVisibilityChange);
   window.addEventListener('blur', handleFocusChange);
@@ -112,7 +90,7 @@ onUnmounted(() => {
   if (stream.value) {
     stream.value.getTracks().forEach(track => track.stop());
   }
-  
+
   document.removeEventListener('visibilitychange', handleVisibilityChange);
   window.removeEventListener('blur', handleFocusChange);
   document.removeEventListener('copy', preventCopyPaste);
@@ -127,16 +105,39 @@ onUnmounted(() => {
 
 <template>
   <div class="fixed bottom-4 right-4 bg-gray-800 rounded-lg shadow-lg p-4">
-    <video
-      ref="video"
-      autoplay
-      playsinline
-      muted
-      class="w-80 h-60 rounded-lg mb-2"
-    ></video>
-    
+    <!-- Optional webcam toggle -->
+    <div class="mb-4">
+      <label class="flex items-center space-x-2">
+        <input
+            type="checkbox"
+            v-model="webcamEnabled"
+            class="rounded border-gray-600 text-primary-600 focus:ring-primary-500"
+        >
+        <span>Enable webcam monitoring</span>
+      </label>
+    </div>
+
+    <!-- Only show video if webcam is enabled -->
+    <template v-if="webcamEnabled">
+      <video
+          ref="video"
+          autoplay
+          playsinline
+          muted
+          class="w-80 h-60 rounded-lg mb-2"
+      ></video>
+
+      <div class="text-sm text-gray-300">
+        <p>Webcam monitoring active</p>
+        <p v-if="warningCount > 0" class="text-yellow-400">
+          Warnings: {{ warningCount }}/{{ MAX_WARNINGS }}
+        </p>
+      </div>
+    </template>
+
+    <!-- Always show integrity monitoring status -->
     <div class="text-sm text-gray-300">
-      <p>Webcam monitoring active</p>
+      <p>Test integrity monitoring active</p>
       <p v-if="warningCount > 0" class="text-yellow-400">
         Warnings: {{ warningCount }}/{{ MAX_WARNINGS }}
       </p>

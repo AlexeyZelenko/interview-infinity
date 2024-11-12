@@ -28,7 +28,7 @@ const cardClasses = computed(() => {
 
 <template>
   <div 
-    class="bg-gray-800 rounded-lg p-6 border-2 transition-all duration-300"
+    class="flex flex-col justify-between bg-gray-800 rounded-lg p-6 border-2 transition-all duration-300"
     :class="cardClasses"
   >
     <div class="relative">

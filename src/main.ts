@@ -4,14 +4,30 @@ import router from './router';
 import { useAuthStore } from './stores/auth';
 import './style.css';
 import App from './App.vue';
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
 
-const app = createApp(App);
-const pinia = createPinia();
-app.use(pinia);
-app.use(router);
+async function initializeApp() {
+    const app = createApp(App);
+    const pinia = createPinia();
 
-// Initialize auth store before mounting
-const authStore = useAuthStore();
-await authStore.initialize();
+    // Подключение плагинов
+    app.use(pinia);
+    app.use(router);
+    app.use(Toast);
+    app.use(VueSweetalert2);
 
-app.mount('#app');
+    const authStore = useAuthStore();
+    try {
+        await authStore.initialize();
+        console.log("Auth store initialized successfully");
+    } catch (error) {
+        console.error("Failed to initialize auth store:", error);
+    }
+
+    app.mount('#app');
+}
+
+initializeApp();

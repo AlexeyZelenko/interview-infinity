@@ -3,6 +3,30 @@ import { onMounted, ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTestStore } from '../stores/tests';
 import { useAuthStore } from '../stores/auth';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../firebase/config';
+
+// Replace the existing categories constant with a ref
+const categories = ref<string[]>([]);
+
+// Add this function to load categories from Firestore
+const loadCategories = async () => {
+  try {
+    const testsSnapshot = await getDocs(collection(db, 'tests'));
+    const uniqueCategories = new Set<string>();
+
+    testsSnapshot.forEach(doc => {
+      const testData = doc.data();
+      if (testData.category) {
+        uniqueCategories.add(testData.category);
+      }
+    });
+
+    categories.value = Array.from(uniqueCategories).sort();
+  } catch (err) {
+    console.error('Error loading categories:', err);
+  }
+};
 
 const router = useRouter();
 const testStore = useTestStore();
@@ -27,15 +51,6 @@ const durationRanges = [
   { value: '15-30', label: '15-30 minutes' },
   { value: '30-60', label: '30-60 minutes' },
   { value: '60+', label: 'Over 60 minutes' }
-];
-
-const categories = [
-  { value: '', label: 'All Categories' },
-  { value: 'frontend', label: 'Frontend Development' },
-  { value: 'backend', label: 'Backend Development' },
-  { value: 'fullstack', label: 'Full Stack' },
-  { value: 'database', label: 'Database' },
-  { value: 'devops', label: 'DevOps' }
 ];
 
 const sortOptions = [
@@ -196,7 +211,8 @@ onMounted(async () => {
   try {
     await Promise.all([
       testStore.fetchTests(),
-      testStore.loadTestHistory()
+      testStore.loadTestHistory(),
+      loadCategories() // Add this line
     ]);
   } catch (err: any) {
     error.value = 'Failed to load tests. Please try again later.';
@@ -209,25 +225,25 @@ onMounted(async () => {
 
 <template>
   <div class="max-w-6xl mx-auto">
-    <div class="flex justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold">Skill Tests</h1>
-      <div class="flex gap-4">
+    <div class="flex flex-wrap justify-between items-center mb-8">
+      <h1 class="text-3xl font-bold mb-4">Skill Tests</h1>
+      <div class="flex gap-2">
         <input
             v-model="searchQuery"
             type="text"
             placeholder="Search tests..."
-            class="px-4 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+            class="px-2 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
         />
         <select
             v-model="sortBy"
-            class="px-4 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+            class="py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
         >
           <option
               v-for="option in sortOptions"
               :key="option.value"
               :value="option.value"
           >
-            Sort by: {{ option.label }}
+            {{ option.label }}
           </option>
         </select>
       </div>
@@ -279,21 +295,15 @@ onMounted(async () => {
           </div>
 
           <!-- Category -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Category</label>
-            <select
-                v-model="selectedCategory"
-                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option
-                  v-for="category in categories"
-                  :key="category.value"
-                  :value="category.value"
-              >
-                {{ category.label }}
-              </option>
-            </select>
-          </div>
+          <select
+              v-model="selectedCategory"
+              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">All Categories</option>
+            <option v-for="category in categories" :key="category" :value="category">
+              {{ category }}
+            </option>
+          </select>
 
           <!-- Filter Stats -->
           <div class="mt-6 pt-6 border-t border-gray-700">
@@ -331,7 +341,7 @@ onMounted(async () => {
             <div
                 v-for="test in paginatedTests"
                 :key="test.id"
-                class="bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors"
+                class="flex flex-col justify-between bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors"
             >
               <div class="flex justify-between items-start mb-4">
                 <div>

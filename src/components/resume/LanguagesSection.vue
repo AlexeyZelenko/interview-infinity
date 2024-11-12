@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+// Импорт иконок Heroicons
+import { PlusCircleIcon, TrashIcon } from '@heroicons/vue/24/outline';
+
 const props = defineProps<{
   languages?: { language: string; level: string }[];
   isEditing: boolean;
@@ -55,15 +58,19 @@ const getLevelColor = (level: string) => {
 
 <template>
   <div class="bg-gray-800 rounded-lg p-6">
-    <h3 class="text-xl font-semibold mb-4">Languages</h3>
+    <h3 class="text-xl font-semibold mb-4 text-white flex items-center gap-2">
+      <PlusCircleIcon class="w-6 h-6 text-primary-400" />
+      Languages
+    </h3>
 
+    <!-- Editing Mode -->
     <div v-if="isEditing" class="space-y-4">
       <div class="grid grid-cols-2 gap-4">
         <div>
           <input
               v-model="newLanguage"
               type="text"
-              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500 text-white"
               placeholder="Add a language"
               @keyup.enter="addLanguage"
           />
@@ -71,7 +78,7 @@ const getLevelColor = (level: string) => {
         <div class="flex gap-2">
           <select
               v-model="newLevel"
-              class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500 text-white"
           >
             <option value="">Select level</option>
             <option v-for="level in proficiencyLevels" :key="level" :value="level">
@@ -80,9 +87,10 @@ const getLevelColor = (level: string) => {
           </select>
           <button
               @click="addLanguage"
-              class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
+              class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center gap-1"
               :disabled="!newLanguage || !newLevel"
           >
+            <PlusCircleIcon class="w-5 h-5"/>
             Add
           </button>
         </div>
@@ -95,21 +103,23 @@ const getLevelColor = (level: string) => {
             class="flex justify-between items-center bg-gray-700 px-3 py-2 rounded"
         >
           <div class="flex items-center gap-2">
-            <span>{{ lang.language }}</span>
+            <span class="text-white">{{ lang.language }}</span>
             <span :class="[getLevelColor(lang.level), 'px-2 py-0.5 rounded-full text-sm']">
               {{ lang.level }}
             </span>
           </div>
           <button
               @click="removeLanguage(index)"
-              class="text-red-400 hover:text-red-300"
+              class="text-red-400 hover:text-red-300 flex items-center gap-1"
           >
+            <TrashIcon class="w-5 h-5"/>
             Remove
           </button>
         </div>
       </div>
     </div>
 
+    <!-- Display Mode -->
     <div v-else class="space-y-2">
       <div
           v-for="lang in languages"

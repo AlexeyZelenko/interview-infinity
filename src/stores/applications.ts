@@ -1,20 +1,8 @@
 import { defineStore } from 'pinia';
 import { db } from '../firebase/config';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, addDoc, getDocs, query, where, doc, updateDoc } from 'firebase/firestore';
 import { useAuthStore } from './auth';
-
-interface JobApplication {
-    id: string;
-    jobId: string;
-    userId: string;
-    companyId: string;
-    appliedAt: string;
-    status: 'pending' | 'reviewing' | 'interviewing' | 'rejected' | 'accepted';
-    applicantName: string;
-    applicantEmail: string;
-    coverLetter?: string;
-    resume?: string;
-}
+import { JobApplication } from '@/types/application.ts';
 
 export const useApplicationsStore = defineStore('applications', {
     state: () => ({
@@ -70,6 +58,7 @@ export const useApplicationsStore = defineStore('applications', {
             companyId: string;
             coverLetter?: string;
             resume?: string;
+            resumeId: string;
         }) {
             const authStore = useAuthStore();
             if (!authStore.user) throw new Error('User not authenticated');
@@ -85,7 +74,8 @@ export const useApplicationsStore = defineStore('applications', {
                     applicantName: authStore.user.displayName || 'Anonymous',
                     applicantEmail: authStore.user.email || '',
                     coverLetter: jobData.coverLetter,
-                    resume: jobData.resume
+                    resume: jobData.resume,
+                    resumeId: jobData.resumeId
                 };
 
                 const docRef = await addDoc(collection(db, 'applications'), application);
@@ -112,6 +102,57 @@ export const useApplicationsStore = defineStore('applications', {
             } finally {
                 this.loading = false;
             }
-        }
+        },
+
+        async duplicationPassingTest(testId: string, jobId: string): Promise<boolean> {
+            const authStore = useAuthStore();
+            if (!authStore.user) {
+                console.error('User not authenticated');
+                throw new Error('User not authenticated');
+            }
+
+            const userId = authStore.user.uid;
+            try {
+                // Create a base query to the collection 'jobTests' with conditions 'jobId'
+                const attemptsCollectionRef = collection(db, 'jobTests');
+                const q = query(
+                    attemptsCollectionRef,
+                    where('jobId', '==', jobId)
+                );
+                const querySnapshot = await getDocs(q);
+                if (querySnapshot.empty) {
+                    return false; // No records found for the jobId, hence no duplication
+                }
+                const jobTests = querySnapshot.docs.map(doc => {
+                    return {
+                        id: doc.id,       // ID самого документа
+                        ...doc.data()     // Все данные документа
+                    };
+                });
+                // Iterate over jobTests to check if a matching testId exists
+                for (const jobTest of jobTests) {
+                    if (jobTest.id === testId) {
+                        const testAttemptsCollectionRef = collection(db, 'testAttempts');
+                        const testAttemptsQuery = query(
+                            testAttemptsCollectionRef,
+                            where('userId', '==', userId),
+                            where('testId', '==', jobTest.testId)
+                        );
+                        const testAttemptsSnapshot = await getDocs(testAttemptsQuery);
+                        const testAttempts = testAttemptsSnapshot.docs.map(doc => { return { id: doc.id, ...doc.data() }; });
+                        if(testAttempts.length === 0) {
+                            console.log('No test attempts found for testId:', testId, 'jobId:', jobId);
+                            return false; // No test attempts found
+                        }
+                        return true; // Test attempt already exists
+                    }
+                }
+                return false;
+
+            } catch (error) {
+                console.error('Error occurred during duplicationPassingTest function:', error);
+                throw error;
+            }
+        },
     }
 });

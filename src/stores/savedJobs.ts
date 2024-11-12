@@ -64,6 +64,11 @@ export const useSavedJobsStore = defineStore('savedJobs', {
 
             this.loading = true;
             try {
+                // Ensure all required fields are present
+                if (!job.title || !job.company || !job.location || !job.type) {
+                    throw new Error('Missing required job information');
+                }
+
                 const savedJob = {
                     jobId: job.id,
                     userId: authStore.user.uid,

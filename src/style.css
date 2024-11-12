@@ -3,15 +3,11 @@
 @tailwind utilities;
 
 :root {
-    color-scheme: light dark;
-}
-
-:root[class~="dark"] {
     color-scheme: dark;
 }
 
 body {
-    @apply bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text;
+    @apply bg-dark-bg text-dark-text;
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -32,12 +28,12 @@ input[type="search"],
 input[type="month"],
 select,
 textarea {
-    @apply bg-light-card dark:bg-dark-card text-light-text dark:text-dark-text border-light-border dark:border-dark-border;
+    @apply bg-dark-card text-dark-text border-dark-border;
 }
 
 /* Cards and containers */
 .card {
-    @apply bg-light-card dark:bg-dark-card border border-light-border dark:border-dark-border;
+    @apply bg-dark-card border border-dark-border;
 }
 
 /* Buttons */
@@ -50,5 +46,5 @@ textarea {
 }
 
 .btn-secondary {
-    @apply bg-light-card dark:bg-dark-card text-light-text dark:text-dark-text hover:bg-light-hover dark:hover:bg-dark-hover;
+    @apply bg-dark-card text-dark-text hover:bg-dark-hover;
 }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, Ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useJobsStore } from '../../stores/jobs';
 
@@ -38,10 +38,14 @@ const jobTypes = [
   'Internship'
 ];
 
-const addItem = (list: string[], item: string, inputRef: any) => {
+const addItem = (list: string[], item: string, inputRef: Ref<string> | string) => {
   if (item.trim()) {
     list.push(item.trim());
-    inputRef.value = '';
+    if (typeof inputRef === 'string') {
+      inputRef = '';
+    } else {
+      inputRef.value = '';
+    }
   }
 };
 
@@ -172,11 +176,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a requirement"
-                @keyup.enter="addItem(job.requirements, newRequirement, $refs.requirementInput)"
+                @keyup.enter="addItem(job.requirements, newRequirement, newRequirement)"
             />
             <button
                 type="button"
-                @click="addItem(job.requirements, newRequirement, $refs.requirementInput)"
+                @click="addItem(job.requirements, newRequirement, newRequirement)"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -213,11 +217,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a responsibility"
-                @keyup.enter="addItem(job.responsibilities, newResponsibility, $refs.responsibilityInput)"
+                @keyup.enter="addItem(job.responsibilities, newResponsibility, newResponsibility)"
             />
             <button
                 type="button"
-                @click="addItem(job.responsibilities, newResponsibility, $refs.responsibilityInput)"
+                @click="addItem(job.responsibilities, newResponsibility, newResponsibility)"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -254,11 +258,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a benefit"
-                @keyup.enter="addItem(job.benefits, newBenefit, $refs.benefitInput)"
+                @keyup.enter="addItem(job.benefits, newBenefit, newBenefit)"
             />
             <button
                 type="button"
-                @click="addItem(job.benefits, newBenefit, $refs.benefitInput)"
+                @click="addItem(job.benefits, newBenefit, newBenefit)"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -295,11 +299,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a skill"
-                @keyup.enter="addItem(job.skills, newSkill, $refs.skillInput)"
+                @keyup.enter="addItem(job.skills, newSkill, newSkill)"
             />
             <button
                 type="button"
-                @click="addItem(job.skills, newSkill, $refs.skillInput)"
+                @click="addItem(job.skills, newSkill, newSkill)"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add

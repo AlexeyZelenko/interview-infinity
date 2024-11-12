@@ -1,19 +1,28 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
-
-const props = defineProps<{
-  isDark: boolean;
-}>();
-
-const emit = defineEmits<{
-  (e: 'toggle-theme'): void;
-}>();
+import { ref } from 'vue';
+import { useAuthStore } from '../stores/auth';
+import { useRouter, useRoute } from 'vue-router';
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 const isMenuOpen = ref(false);
+
+const menuItems = [
+  { path: '/jobs', label: 'Jobs' },
+  { path: '/all-resumes', label: 'Resumes' },
+  { path: '/tests', label: 'Tests' },
+  { path: '/community', label: 'Community' },
+  { path: '/pricing', label: 'Pricing' },
+  { path: '/developers', label: 'Developers' },
+];
+
+const isActive = (path: string) => {
+  if (path === '/') {
+    return route.path === path;
+  }
+  return route.path.startsWith(path);
+};
 
 const handleLogout = async () => {
   try {
@@ -23,94 +32,50 @@ const handleLogout = async () => {
     console.error('Logout failed:', error);
   }
 };
+
+// Функция для переключения состояния мобильного меню
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value;
+};
 </script>
 
 <template>
-  <nav class="bg-light-card dark:bg-dark-card border-b border-light-border dark:border-dark-border">
+  <nav class="bg-dark-card border-b border-dark-border">
     <div class="container mx-auto px-4">
       <div class="flex items-center justify-between h-16">
+        <!-- Logo Section -->
         <div class="flex items-center">
-          <router-link to="/" class="text-light-text dark:text-dark-text font-bold text-xl">DevHire</router-link>
+          <router-link to="/" class="text-dark-text font-bold text-xl">DevHire</router-link>
         </div>
 
+        <!-- Desktop Menu -->
         <div class="hidden md:block">
           <div class="flex items-center space-x-4">
             <router-link
-                to="/jobs"
-                class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
+                v-for="item in menuItems"
+                :key="item.path"
+                :to="item.path"
+                class="px-3 py-2 rounded-md transition-colors"
+                :class="isActive(item.path)
+              ? 'bg-primary-600/10 text-primary-400'
+              : 'text-dark-text-secondary hover:text-dark-text'"
             >
-              Jobs
+              {{ item.label }}
             </router-link>
-            <router-link
-                to="/developers"
-                class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
-            >
-              Developers
-            </router-link>
-            <router-link
-                to="/tests"
-                class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
-            >
-              Tests
-            </router-link>
-            <router-link
-                to="/community"
-                class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
-            >
-              Community
-            </router-link>
-            <router-link
-                to="/pricing"
-                class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
-            >
-              Pricing
-            </router-link>
-
-            <button
-                @click="emit('toggle-theme')"
-                class="p-2 rounded-md text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text"
-                :title="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
-            >
-              <svg
-                  v-if="isDark"
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-              >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"
-                />
-              </svg>
-              <svg
-                  v-else
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-              >
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"
-                />
-              </svg>
-            </button>
 
             <template v-if="authStore.user">
               <router-link
                   :to="authStore.isAdmin ? '/admin' : '/profile'"
-                  class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
+                  class="px-3 py-2 rounded-md transition-colors"
+                  :class="isActive(authStore.isAdmin ? '/admin' : '/profile')
+                ? 'bg-primary-600/10 text-primary-400'
+                : 'text-dark-text-secondary hover:text-dark-text'"
               >
                 {{ authStore.isAdmin ? 'Admin Dashboard' : 'Profile' }}
               </router-link>
               <button
                   @click="handleLogout"
-                  class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
+                  class="text-dark-text-secondary hover:text-dark-text px-3 py-2 rounded-md"
               >
                 Logout
               </button>
@@ -118,7 +83,10 @@ const handleLogout = async () => {
             <template v-else>
               <router-link
                   to="/login"
-                  class="text-light-text-secondary dark:text-dark-text-secondary hover:text-light-text dark:hover:text-dark-text px-3 py-2 rounded-md"
+                  class="px-3 py-2 rounded-md transition-colors"
+                  :class="isActive('/login')
+                ? 'bg-primary-600/10 text-primary-400'
+                : 'text-dark-text-secondary hover:text-dark-text'"
               >
                 Login
               </router-link>
@@ -130,6 +98,94 @@ const handleLogout = async () => {
               </router-link>
             </template>
           </div>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <div class="md:hidden">
+          <button
+              @click="toggleMenu"
+              class="text-dark-text-secondary hover:text-dark-text focus:outline-none"
+          >
+            <svg
+                v-if="!isMenuOpen"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="w-6 h-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <svg
+                v-else
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                class="w-6 h-6"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+          v-if="isMenuOpen"
+          class="md:hidden bg-dark-card border-t border-dark-border mt-2 py-4"
+      >
+        <div class="space-y-4 px-4">
+          <router-link
+              v-for="item in menuItems"
+              :key="item.path"
+              :to="item.path"
+              class="block px-3 py-2 rounded-md transition-colors"
+              :class="isActive(item.path)
+            ? 'bg-primary-600/10 text-primary-400'
+            : 'text-dark-text-secondary hover:text-dark-text'"
+              @click="isMenuOpen = false"
+          >
+            {{ item.label }}
+          </router-link>
+
+          <template v-if="authStore.user">
+            <router-link
+                :to="authStore.isAdmin ? '/admin' : '/profile'"
+                class="block px-3 py-2 rounded-md transition-colors"
+                :class="isActive(authStore.isAdmin ? '/admin' : '/profile')
+              ? 'bg-primary-600/10 text-primary-400'
+              : 'text-dark-text-secondary hover:text-dark-text'"
+                @click="isMenuOpen = false"
+            >
+              {{ authStore.isAdmin ? 'Admin Dashboard' : 'Profile' }}
+            </router-link>
+            <button
+                @click="() => { handleLogout(); isMenuOpen = false; }"
+                class="block w-full text-left text-dark-text-secondary hover:text-dark-text px-3 py-2 rounded-md"
+            >
+              Logout
+            </button>
+          </template>
+          <template v-else>
+            <router-link
+                to="/login"
+                class="block px-3 py-2 rounded-md transition-colors"
+                :class="isActive('/login')
+              ? 'bg-primary-600/10 text-primary-400'
+              : 'text-dark-text-secondary hover:text-dark-text'"
+                @click="isMenuOpen = false"
+            >
+              Login
+            </router-link>
+            <router-link
+                to="/register"
+                class="block bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 text-center"
+                @click="isMenuOpen = false"
+            >
+              Sign Up
+            </router-link>
+          </template>
         </div>
       </div>
     </div>

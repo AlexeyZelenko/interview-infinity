@@ -21,17 +21,27 @@ const routes = [
     {
         path: '/jobs',
         name: 'Jobs',
-        component: () => import('../views/Jobs.vue')
+        component: () => import('../views/Jobs/index.vue')
     },
     {
         path: '/jobs/:id',
         name: 'JobDetails',
-        component: () => import('../views/JobDetails.vue')
+        component: () => import('../views/Jobs/JobDetails.vue')
     },
     {
         path: '/developers',
         name: 'Developers',
         component: () => import('../views/Developers.vue')
+    },
+    {
+        path: '/all-resumes',
+        name: 'Resumes',
+        component: () => import('../views/Resumes.vue')
+    },
+    {
+        path: '/all-resumes/resume/:id',
+        name: 'AllResumeDetailsReview',
+        component: () => import('../views/AllResumeDetailsReview.vue')
     },
     {
         path: '/developers/:id',
@@ -68,9 +78,30 @@ const routes = [
     // Admin Routes
     {
         path: '/admin',
-        name: 'AdminDashboard',
-        component: () => import('../views/admin/AdminDashboard.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true }
+        component: () => import('../layouts/AdminLayout.vue'),
+        meta: { requiresAdmin: true },
+        children: [
+            {
+                path: '',
+                name: 'AdminDashboard',
+                component: () => import('../views/admin/AdminDashboard.vue')
+            },
+            {
+                path: 'upload-tests',
+                name: 'UploadTests',
+                component: () => import('../views/admin/UploadTests.vue')
+            },
+            {
+                path: 'cards-create',
+                name: 'CreateTestCard',
+                component: () => import('../views/admin/CreateCardTest.vue')
+            },
+            {
+                path: 'review',
+                name: 'ReviewSubmissions',
+                component: () => import('../views/admin/ReviewSubmissions.vue')
+            }
+        ]
     },
     // Profile redirect
     {
@@ -99,19 +130,53 @@ const routes = [
                 component: () => import('../views/account/SavedJobs.vue')
             },
             {
-                path: 'resume',
-                name: 'DeveloperResume',
-                component: () => import('../views/account/Resume.vue')
+                path: 'applications',
+                name: 'MyApplications',
+                component: () => import('../views/account/MyApplications.vue')
+            },
+            {
+                path: 'resumes',
+                name: 'DeveloperResumes',
+                component: () => import('../views/account/Developer/Resume.vue')
+            },
+            {
+                path: '/resumes/create',
+                name: 'ResumeCreate',
+                component: () => import('../views/account/Developer/ResumeCreate.vue'),
+                meta: { requiresAuth: true }
+            },
+            {
+                path: '/resumes/:id',
+                name: 'ResumeDetail',
+                component: () => import('../views/account/Developer/ResumeDetails.vue'),
+                meta: { requiresAuth: true }
             },
             {
                 path: 'test-results',
                 name: 'DeveloperTestResults',
-                component: () => import('../views/account/TestResults.vue')
+                component: () => import('../views/account/TestResults/index.vue')
             },
             {
                 path: 'subscription',
                 name: 'DeveloperSubscription',
                 component: () => import('../views/account/Subscription.vue')
+            },
+            {
+                path: 'challenges',
+                name: 'Challenges',
+                component: () => import('../views/CodingChallenges.vue')
+            },
+            {
+                path: 'challenges/:id',
+                name: 'ChallengeEditor',
+                component: () => import('../views/ChallengeEditor.vue'),
+                meta: { requiresAuth: true }
+            },
+            {
+                path: 'settings',
+                name: 'SettingsDeveloper',
+                component: () => import('../views/account/Developer/Settings/index.vue'),
+                meta: { requiresAuth: true }
             }
         ]
     },
@@ -123,15 +188,28 @@ const routes = [
         children: [
             {
                 path: '',
-                redirect: '/company/jobs'
+                redirect: '/company/profile'
+            },
+            {
+                path: 'profile',
+                name: 'CompanyProfile',
+                component: () => import('../views/account/Company/Profile.vue')
             },
             {
                 path: 'jobs',
                 name: 'CompanyJobs',
-                component: () => import('../views/account/CompanyJobs.vue')
+                component: () => import('../views/account/Company/Jobs.vue'),
+                props: (route) => ({
+                    companyId: route.query.companyId
+                }),
             },
             {
                 path: 'jobs-create',
+                name: 'CreateJob',
+                component: () => import('../views/account/CreateJob.vue')
+            },
+            {
+                path: 'jobs/create',
                 name: 'CreateJob',
                 component: () => import('../views/account/CreateJob.vue')
             },
@@ -143,27 +221,66 @@ const routes = [
             {
                 path: 'jobs/:id/applicants',
                 name: 'JobApplicants',
-                component: () => import('../views/account/JobApplicants.vue')
+                component: () => import('@views/account/Company/JobApplicants/index.vue')
             },
             {
                 path: 'saved-developers',
                 name: 'CompanySavedDevelopers',
-                component: () => import('../views/account/SavedDevelopers.vue')
+                component: () => import('../views/account/Company/SavedDevelopers.vue')
             },
             {
                 path: 'tests',
                 name: 'CompanyTests',
-                component: () => import('../views/account/CompanyTests.vue')
+                component: () => import('../views/account/Company/Tests.vue')
+            },
+            {
+                path: 'tests/:testId/results/',
+                name: 'TestResults',
+                component: () => import('../views/account/Company/TestsResults/index.vue'),
+                props: (route) => ({
+                    testId: route.params.testId,
+                    jobId: route.query.jobId
+                }),
+                meta: { requiresAuth: true, requiresType: 'company' }
+            },
+            {
+                path: '/test/:testId/user-review',
+                name: 'TestCompanyUserReview',
+                component: () => import('../views/account/Company/TestsResults/TestReview.vue'),
+                props: (route) => ({
+                    testId: route.params.testId,
+                    userId: route.query.userId,
+                }),
+            },
+            {
+                path: '/tests/:testId/user-details',
+                name: 'TestUserDetails',
+                component: () => import('../views/account/Company/TestsResults/TestDetails.vue'),
+                props: (route) => ({
+                    testId: route.params.testId,
+                    userId: route.query.userId,
+                    jobId: route.query.jobId
+                }),
+            },
+            {
+                path: 'tests/:id/edit',
+                name: 'TestEdit',
+                component: () => import('../views/account/Company/EditTest.vue')
+            },
+            {
+                path: 'create-test-ai',
+                name: 'CreateTestAI',
+                component: () => import('../views/account/Company/CreateTestAI.vue')
+            },
+            {
+                path: 'create-test-manual',
+                name: 'CreateTestManual',
+                component: () => import('../views/account/Company/CreateTestManual.vue')
             },
             {
                 path: 'create-test',
                 name: 'CreateTest',
                 component: () => import('../views/account/CreateTest.vue')
-            },
-            {
-                path: 'profile',
-                name: 'CompanyProfile',
-                component: () => import('../views/account/CompanyProfile.vue')
             },
             {
                 path: 'subscription',

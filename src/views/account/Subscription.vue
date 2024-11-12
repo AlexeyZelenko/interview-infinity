@@ -99,7 +99,7 @@ function handlePaymentSuccess() {
       <div
           v-for="plan in plans"
           :key="plan.id"
-          class="bg-gray-800 rounded-lg p-6"
+          class="flex flex-col justify-between bg-gray-800 rounded-lg p-6"
       >
         <h3 class="text-xl font-bold mb-2">{{ plan.name }}</h3>
         <p class="text-2xl font-bold mb-4">

@@ -1,0 +1,8 @@
+[
+  {
+    "origin": ["*"],
+    "method": ["GET", "HEAD", "POST", "PUT"],
+    "responseHeader": ["Content-Type", "Cross-Origin-Resource-Policy", "Cross-Origin-Embedder-Policy"],
+    "maxAgeSeconds": 3600
+  }
+]

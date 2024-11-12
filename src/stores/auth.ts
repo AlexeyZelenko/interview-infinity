@@ -4,25 +4,9 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
-    User as FirebaseUser
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
-
-interface Subscription {
-    plan: string;
-    status: 'active' | 'expired';
-    startDate: string;
-    endDate: string;
-}
-
-interface User {
-    uid: string;
-    email: string;
-    userType: 'developer' | 'company' | 'admin';
-    displayName?: string;
-    createdAt: string;
-    subscription: Subscription;
-}
+import { User, Subscription } from '@/types/auth';
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({

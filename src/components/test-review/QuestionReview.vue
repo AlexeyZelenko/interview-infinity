@@ -8,9 +8,11 @@ const props = defineProps<{
     explanation?: string;
   };
   answer: {
-    selectedAnswer: number;
-    isCorrect: boolean;
-    timeSpent: number;
+    testId: number | string | null;
+    selectedAnswer: number | null;
+    isCorrect: boolean | null;
+    timeTaken: number;
+    correctAnswer: number;
   };
   index: number;
 }>();
@@ -37,7 +39,7 @@ const formatTime = (seconds: number) => {
           {{ answer.isCorrect ? 'Correct' : 'Incorrect' }}
         </span>
         <span class="text-gray-400">
-          {{ formatTime(answer.timeSpent) }}
+          {{ formatTime(answer.timeTaken) }}
         </span>
       </div>
     </div>

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
+// Импорт Heroicons для иконок
+import { PlusCircleIcon, TrashIcon } from '@heroicons/vue/24/outline';
+
 interface Certification {
   name: string;
   issuer: string;
@@ -58,7 +61,11 @@ const formatDate = (dateString: string) => {
 
 <template>
   <div class="bg-gray-800 rounded-lg p-6">
-    <h3 class="text-xl font-semibold mb-4">Certifications</h3>
+    <h3 class="text-xl font-semibold mb-4 flex items-center gap-2">
+      <!-- Иконка заголовка -->
+      <PlusCircleIcon class="w-6 h-6 text-primary-400" />
+      Certifications
+    </h3>
 
     <div v-if="isEditing" class="space-y-6">
       <!-- Add New Certification Form -->
@@ -105,10 +112,11 @@ const formatDate = (dateString: string) => {
         </div>
 
         <button
-            @click="addCertification"
-            class="w-full px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:opacity-50"
+            @click.stop="addCertification"
+            class="w-full px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 flex items-center justify-center gap-2 transition disabled:opacity-50"
             :disabled="!newCertification.name || !newCertification.issuer || !newCertification.date"
         >
+          <PlusCircleIcon class="w-5 h-5"/>
           Add Certification
         </button>
       </div>
@@ -137,8 +145,9 @@ const formatDate = (dateString: string) => {
             </div>
             <button
                 @click="removeCertification(index)"
-                class="text-red-400 hover:text-red-300"
+                class="text-red-400 hover:text-red-300 flex items-center gap-1"
             >
+              <TrashIcon class="w-5 h-5"/>
               Remove
             </button>
           </div>
@@ -171,3 +180,9 @@ const formatDate = (dateString: string) => {
     </div>
   </div>
 </template>
+
+<style scoped>
+.text-primary-400 {
+  color: #3b82f6; /* Пример более яркого оттенка */
+}
+</style>
