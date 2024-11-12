@@ -77,7 +77,6 @@ const fetchUserData = async () => {
     if (userSnap.exists()) {
       const userData = userSnap.data() as User;
       user.value = { ...user.value, ...userData };
-      console.log('User data:', user.value);
 
       // Автоматическая загрузка данных Codewars, если username уже указан
       if (user.value.codewarsUsername) {
@@ -85,7 +84,7 @@ const fetchUserData = async () => {
       }
     }
   } catch (e) {
-    toast.error("Error fetching user data");
+    toast.error("Error fetching user data", e);
   }
 };
 

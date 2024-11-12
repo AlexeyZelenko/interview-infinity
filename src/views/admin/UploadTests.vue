@@ -214,33 +214,6 @@ const downloadTemplate = () => {
   URL.revokeObjectURL(url);
 };
 
-const downloadTemplateCSV = () => {
-  // Create CSV content with header and example row
-  const csvContent = [
-    ['Question', 'Option1', 'Option2', 'Option3', 'Option4', 'CorrectAnswer', 'Explanation'],
-    [
-      'What is the Composition API in Vue 3?',
-      'A new way to organize component logic',
-      'A database API',
-      'A routing solution',
-      'A state management pattern',
-      '1',
-      'The Composition API is Vue 3\'s new feature for better organizing component logic using composable functions'
-    ]
-  ]
-      .map(row => row.join(','))
-      .join('\n');
-
-  // Create blob and download
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.setAttribute('download', 'test_template.csv');
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
 
 const uploadFile = async () => {
   if (!selectedFile.value || !category.value) return;

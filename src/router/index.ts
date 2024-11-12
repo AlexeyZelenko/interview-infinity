@@ -137,7 +137,7 @@ const routes = [
             {
                 path: 'resumes',
                 name: 'DeveloperResumes',
-                component: () => import('../views/account/Developer/Resume.vue')
+                component: () => import('../views/account/Developer/Resumes.vue')
             },
             {
                 path: '/resumes/create',

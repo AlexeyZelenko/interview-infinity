@@ -221,7 +221,6 @@ onMounted(() => {
         @toggle-status="toggleResumeStatus"
     />
 
-    <!-- New Resume Modal -->
     <NewResumeModal
         v-if="showNewResumeModal"
         @close="showNewResumeModal = false"
@@ -287,5 +286,14 @@ onMounted(() => {
           :isEditing="isEditing"
       />
     </div>
+  </div>
+  <div v-else >
+    <p class="text-center text-gray-500">
+      No resumes found.
+      <button
+          @click="createNewResume"
+          class="text-primary-600 hover:underline">
+        Create a new resume
+      </button></p>
   </div>
 </template>

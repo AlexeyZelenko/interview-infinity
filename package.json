@@ -9,7 +9,8 @@
     "test": "vitest",
     "start": "node src/index.js",
     "emulators": "firebase emulators:start --only hosting",
-    "deploy": "firebase deploy --only hosting"
+    "deploy": "firebase deploy --only hosting",
+    "lint": "npx eslint ."
   },
   "dependencies": {
     "@heroicons/vue": "^2.1.5",

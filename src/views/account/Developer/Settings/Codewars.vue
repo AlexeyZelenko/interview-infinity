@@ -33,7 +33,7 @@ const checkCodewarsConnection = async () => {
     const response = await axios.get(`https://www.codewars.com/api/v1/users/${localUsername.value}`);
     codewarsData.value = response.data;
   } catch (error) {
-    useToast().error("Failed to connect to Codewars. Please check the username.");
+    useToast().error("Failed to connect to Codewars. Please check the username.", error);
   } finally {
     isCheckingCodewars.value = false;
   }

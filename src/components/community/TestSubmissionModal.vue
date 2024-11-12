@@ -140,7 +140,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useTestStore } from '../../stores/tests';
-import { read, utils, write } from 'xlsx';
+import { utils, write } from 'xlsx';
 import { useAuthStore } from '../../stores/auth';
 
 const authStore = useAuthStore();

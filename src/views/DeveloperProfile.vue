@@ -61,7 +61,6 @@ const fetchDeveloper = async () => {
         id: developerSnap.id,
         ...developerSnap.data()
       };
-      console.log('Developer fetched:', developer.value);
 
       // После успешного получения данных разработчика, получаем результаты тестов, резюме и данные из Codewars
       await fetchTestResults(developerId);
@@ -117,8 +116,6 @@ const fetchTestResults = async (userId: string) => {
     }));
 
     developer.value.testResults = detailedTestResults;
-
-    console.log('Test results fetched with details:', developer.value.testResults);
   } catch (error) {
     console.error('Error fetching test attempts:', error);
   }

@@ -2,14 +2,10 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { doc, getDoc, getDocs, collection } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { db } from '../../firebase/config';
-import TestOverview from '../../components/test-review/TestOverview.vue';
-import TimeDistribution from '../../components/test-review/TimeDistribution.vue';
-import QuestionReview from '../../components/test-review/QuestionReview.vue';
-import VideoReview from '../../components/test-review/VideoReview.vue';
-
-const auth = getAuth();
+import { db } from '@/firebase/config';
+import TestOverview from '@/components/test-review/TestOverview.vue';
+import TimeDistribution from '@/components/test-review/TimeDistribution.vue';
+import QuestionReview from '@/components/test-review/QuestionReview.vue';
 
 const route = useRoute();
 const router = useRouter();
