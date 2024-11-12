@@ -9,7 +9,6 @@ import AboutSection from '@/components/resume/AboutSection.vue';
 import ExperienceSection from '@/components/resume/ExperienceSection.vue';
 import EducationSection from '@/components/resume/EducationSection.vue';
 import SkillsSection from '@/components/resume/SkillsSection.vue';
-import NewResumeModal from '@/components/resume/NewResumeModal.vue';
 import LanguagesSection from '@/components/resume/LanguagesSection.vue';
 import CertificationsSection from '@/components/resume/CertificationsSection.vue';
 import ProjectsSection from '@/components/resume/ProjectsSection.vue';
@@ -24,7 +23,6 @@ const currentResumeId = ref('');
 const isEditing = ref(false);
 const error = ref('');
 const saving = ref(false);
-const showNewResumeModal = ref(false);
 
 // Dummy employment types
 const employmentTypes = ref(['Full-time', 'Part-time', 'Contract', 'Freelance', 'Internship']);
@@ -219,12 +217,6 @@ onMounted(() => {
         @create="createNewResume"
         @delete="deleteResume"
         @toggle-status="toggleResumeStatus"
-    />
-
-    <NewResumeModal
-        v-if="showNewResumeModal"
-        @close="showNewResumeModal = false"
-        @create="createNewResume"
     />
 
     <div v-if="error" class="mb-6 bg-red-500/10 text-red-400 p-4 rounded-lg">

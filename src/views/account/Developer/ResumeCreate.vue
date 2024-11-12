@@ -6,14 +6,14 @@ import { useAuthStore } from '@/stores/auth.ts';
 import { useRouter } from 'vue-router';
 import { Resume, Experience, Education } from '@/types/resumes.ts';
 
-import AboutSection from '../../../components/resume/AboutSection.vue';
-import ExperienceSection from '../../../components/resume/ExperienceSection.vue';
-import EducationSection from '../../../components/resume/EducationSection.vue';
-import SkillsSection from '../../../components/resume/SkillsSection.vue';
-import LanguagesSection from '../../../components/resume/LanguagesSection.vue';
-import CertificationsSection from '../../../components/resume/CertificationsSection.vue';
-import ProjectsSection from '../../../components/resume/ProjectsSection.vue';
-import PreferencesSection from '../../../components/resume/PreferencesSection.vue';
+import AboutSection from '../../../components/create-resume/AboutSection.vue';
+import ExperienceSection from '../../../components/create-resume/ExperienceSection.vue';
+import EducationSection from '../../../components/create-resume/EducationSection.vue';
+import SkillsSection from '../../../components/create-resume/SkillsSection.vue';
+import LanguagesSection from '../../../components/create-resume/LanguagesSection.vue';
+import CertificationsSection from '../../../components/create-resume/CertificationsSection.vue';
+import ProjectsSection from '../../../components/create-resume/ProjectsSection.vue';
+import PreferencesSection from '../../../components/create-resume/PreferencesSection.vue';
 
 // Initialize Auth and Router
 const authStore = useAuthStore();
@@ -25,8 +25,8 @@ const isActive = ref(true);
 const about = ref('');
 const experience = ref<Experience[]>([]);
 const education = ref<Education[]>([]);
-const skills = ref([]);
-const languages = ref([]);
+const skills = ref<string[]>([]);
+const languages = ref<{ language: string; level: string }[]>([]);
 const certifications = ref([]);
 const projects = ref([]);
 const preferences = ref({
@@ -81,12 +81,6 @@ const saveResume = async () => {
       })
     };
 
-    // Log each field in resumeData to check for any remaining undefined values
-    console.log("Prepared resumeData fields:");
-    Object.keys(resumeData).forEach(key => {
-      console.log(`  ${key}:`, resumeData[key as keyof typeof resumeData]);
-    });
-
     // Add the new resume to Firestore
     await addDoc(collection(db, 'resumes'), resumeData);
     console.log("Resume saved successfully");
@@ -99,7 +93,6 @@ const saveResume = async () => {
     saving.value = false;
   }
 };
-
 </script>
 
 <template>
@@ -126,22 +119,23 @@ const saveResume = async () => {
       </div>
 
       <!-- Resume Content Sections -->
-      <AboutSection v-model:about="about" :isEditing="true" />
-
+      <AboutSection v-model:about="about" @update="exp => about.value = exp" />
       <ExperienceSection
           :employmentTypes="employmentTypes"
           :experiences="experience"
-          :isEditing="true"
-          @update="exp => experience.value = exp"
+          @add="experience.push($event)"
+          @remove="experience = experience.filter(exp => exp.id !== $event)"
+          @update="exp => experience = experience.map(e => (e.id === exp.id ? exp : e))"
       />
 
       <EducationSection
           :education="education"
-          :isEditing="true"
-          @update="edu => education.value = edu"
+          @add="education.push($event)"
+          @remove="education = education.filter(edu => edu.id !== $event)"
+          @update="edu => education = education.map(e => (e.id === edu.id ? edu : e))"
       />
 
-      <SkillsSection v-model:skills="skills" :isEditing="true" />
+      <SkillsSection v-model:skills="skills" />
 
       <LanguagesSection v-model:languages="languages" :isEditing="true" />
 

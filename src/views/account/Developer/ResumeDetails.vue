@@ -65,7 +65,5 @@ onMounted(fetchResume);
     </button>
 
     <button @click="deleteResume" class="btn-danger">Delete Resume</button>
-
-    <!-- Add Edit Form Here -->
   </div>
 </template>
