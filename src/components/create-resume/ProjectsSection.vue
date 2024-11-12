@@ -141,10 +141,10 @@ const removeHighlight = (index: number) => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a technology"
-                @keyup.enter="addTechnology"
+                @keyup.enter.prevent="addTechnology"
             />
             <button
-                @click="addTechnology"
+                @click.prevent="addTechnology"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -158,7 +158,7 @@ const removeHighlight = (index: number) => {
             >
               {{ tech }}
               <button
-                  @click="removeTechnology(index)"
+                  @click.prevent="removeTechnology(index)"
                   class="ml-2 text-gray-400 group-hover:text-red-400"
               >
                 ×
@@ -176,10 +176,10 @@ const removeHighlight = (index: number) => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a highlight"
-                @keyup.enter="addHighlight"
+                @keyup.enter.prevent="addHighlight"
             />
             <button
-                @click="addHighlight"
+                @click.prevent="addHighlight"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -193,7 +193,7 @@ const removeHighlight = (index: number) => {
             >
               <span>{{ highlight }}</span>
               <button
-                  @click="removeHighlight(index)"
+                  @click.prevent="removeHighlight(index)"
                   class="text-red-400 hover:text-red-300"
               >
                 Remove
@@ -203,7 +203,7 @@ const removeHighlight = (index: number) => {
         </div>
 
         <button
-            @click="addProject"
+            @click.prevent="addProject"
             class="w-full px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:opacity-50"
             :disabled="!newProject.name || !newProject.description"
         >
@@ -253,7 +253,7 @@ const removeHighlight = (index: number) => {
               </a>
             </div>
             <button
-                @click="removeProject(index)"
+                @click.prevent="removeProject(index)"
                 class="text-red-400 hover:text-red-300"
             >
               Remove

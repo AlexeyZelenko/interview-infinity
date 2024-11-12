@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { getDocs, collection, deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { getDocs, collection, deleteDoc, doc, updateDoc, where, query } from 'firebase/firestore';
 import { db } from '@/firebase/config.ts';
 import Swal from 'sweetalert2';
 import ResumeSelector from '@/components/resume/ResumeSelector.vue';
@@ -50,8 +50,15 @@ const formatResumeData = (data: any, id: string): Resume => {
 // Fetch resumes from Firestore
 const fetchResumes = async () => {
   try {
+    const userId = authStore.user?.uid;
+    if (!userId) {
+      throw new Error('User not authenticated');
+    }
+
     const resumesCollectionRef = collection(db, 'resumes');
-    const resumesSnapshot = await getDocs(resumesCollectionRef);
+    // Query to fetch only resumes belonging to the current user
+    const userResumesQuery = query(resumesCollectionRef, where('userId', '==', userId));
+    const resumesSnapshot = await getDocs(userResumesQuery);
     resumes.value = resumesSnapshot.docs.map(doc => formatResumeData(doc.data(), doc.id));
 
     // Set the current resume ID to the first one if resumes exist
@@ -264,18 +271,18 @@ onMounted(() => {
       />
       <CertificationsSection
           v-if="currentResume.certifications && currentResume.certifications.length > 0"
-          :certifications="currentResume.certifications"
+          v-model:certifications="currentResume.certifications"
           :isEditing="isEditing"
       />
       <ProjectsSection
-          v-if="currentResume.projects && currentResume.projects.length > 0"
-          :projects="currentResume.projects"
+          v-if="currentResume.projects"
           :isEditing="isEditing"
+          v-model:projects="currentResume.projects"
       />
       <PreferencesSection
           v-if="currentResume.preferences"
-          :preferences="currentResume.preferences"
           :isEditing="isEditing"
+          v-model:preferences="currentResume.preferences"
       />
     </div>
   </div>

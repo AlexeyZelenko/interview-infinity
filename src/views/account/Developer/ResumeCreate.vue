@@ -137,9 +137,15 @@ const saveResume = async () => {
 
       <SkillsSection v-model:skills="skills" />
 
-      <LanguagesSection v-model:languages="languages" :isEditing="true" />
+      <LanguagesSection
+          v-model:languages="languages"
+          :isEditing="true"
+      />
 
-      <CertificationsSection v-model:certifications="certifications" :isEditing="true" />
+      <CertificationsSection
+          v-model:certifications="certifications"
+          :isEditing="true"
+      />
 
       <ProjectsSection v-model:projects="projects" :isEditing="true" />
 
