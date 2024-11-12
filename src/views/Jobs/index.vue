@@ -430,7 +430,7 @@ onMounted(async () => {
           <div
               v-for="job in paginatedJobs"
               :key="job.id"
-              class="bg-gray-800 rounded-lg p-6 cursor-pointer hover:bg-gray-700 transition-colors"
+              class="bg-gray-800 rounded-lg p-6 cursor-pointer transition-colors"
               @click="router.push(`/jobs/${job.id}`)"
           >
             <div class="flex flex-col justify-between items-start my-6">
@@ -505,11 +505,11 @@ onMounted(async () => {
             <!-- Required Tests Section -->
             <div v-if="job.tests?.length" class="mt-4 border-t border-gray-700 pt-4">
               <h3 class="text-sm font-medium mb-2">Tests:</h3>
-              <div class="flex flex-wrap gap-2">
+              <div class="flex flex-col flex-wrap gap-2">
                 <span
                     v-for="test in job.tests"
                     :key="test.id"
-                    class="bg-gray-700 text-sm px-3 py-1 rounded-full"
+                    class="bg-cyan-950 text-sm px-3 py-1 rounded-full"
                     :class="{ 'text-red-400': test.isRequired }"
                 >
                   {{ test.title }}

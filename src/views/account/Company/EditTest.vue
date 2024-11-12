@@ -53,7 +53,7 @@ const newQuestion = ref<Question>({
   explanation: ''
 });
 
-const categories = ['JavaScript', 'TypeScript', 'Vue.js', 'React', 'Node.js', 'Python', 'Java', 'Database', 'DevOps'];
+const categories = ['JavaScript', 'TypeScript', 'Vue.js', 'React', 'Node.js', 'Python', 'Java', 'Database', 'DevOps', 'Programming Logic', 'Design', 'Development'];
 const difficulties = [
   { value: 'beginner', label: 'Beginner' },
   { value: 'intermediate', label: 'Intermediate' },
@@ -306,8 +306,12 @@ const handleSubmit = async () => {
           <!-- Add New Question -->
           <div class="border-t border-gray-700 pt-6">
             <h3 class="text-lg font-semibold mb-4">Add New Question</h3>
-
-            <input v-model="newQuestion.text" type="text" class="w-full px-3 py-2 bg-gray-700 rounded-md mb-2" placeholder="Question text" />
+            <textarea
+                v-model="newQuestion.text"
+                rows="3"
+                placeholder="Question text"
+                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+            ></textarea>
             <div v-for="(option, index) in newQuestion.options" :key="index" class="flex items-center gap-2 mb-2">
               <input type="radio" :checked="newQuestion.correctAnswer === index" @change="newQuestion.correctAnswer = index" class="text-primary-600" />
               <input v-model="newQuestion.options[index]" type="text" class="flex-1 px-3 py-1 bg-gray-700 rounded-md" :placeholder="`Option ${index + 1}`" />

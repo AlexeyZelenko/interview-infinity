@@ -32,7 +32,6 @@ const fetchResults = async () => {
 // Fetch results when the component mounts
 onMounted(async () => {
   await fetchResults();
-  console.log("testResults", testResults.value);
 });
 </script>
 

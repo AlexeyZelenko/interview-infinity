@@ -141,7 +141,6 @@ export const useApplicationsStore = defineStore('applications', {
                         const testAttemptsSnapshot = await getDocs(testAttemptsQuery);
                         const testAttempts = testAttemptsSnapshot.docs.map(doc => { return { id: doc.id, ...doc.data() }; });
                         if(testAttempts.length === 0) {
-                            console.log('No test attempts found for testId:', testId, 'jobId:', jobId);
                             return false; // No test attempts found
                         }
                         return true; // Test attempt already exists
