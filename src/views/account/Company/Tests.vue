@@ -57,7 +57,7 @@ const loadTests = async () => {
 
     // Get test results
     const resultsQuery = query(
-        collection(db, 'testResults'),
+        collection(db, 'testAttempts'),
         where('testId', 'in', testsData.map(t => t.id))
     );
 
@@ -173,12 +173,12 @@ const formatDate = (date: string) => {
               Linked to job: {{ test.jobTitle }}
             </p>
           </div>
-          <div class="text-right">
-            <p class="text-2xl font-bold" :class="test.passRate >= 70 ? 'text-green-400' : 'text-yellow-400'">
-              {{ Math.round(test.passRate) }}%
-            </p>
-            <p class="text-sm text-gray-400">Pass Rate</p>
-          </div>
+<!--          <div class="text-right">-->
+<!--            <p class="text-2xl font-bold" :class="test.passRate >= 70 ? 'text-green-400' : 'text-yellow-400'">-->
+<!--              {{ Math.round(test.passRate) }}%-->
+<!--            </p>-->
+<!--            <p class="text-sm text-gray-400">Pass Rate</p>-->
+<!--          </div>-->
         </div>
 
         <!-- Test Results -->
@@ -210,12 +210,12 @@ const formatDate = (date: string) => {
         <div class="mt-4 flex justify-between items-center text-sm text-gray-400">
           <p>{{ test.totalAttempts }} total attempts</p>
           <div class="flex items-center gap-4">
-            <router-link
-                :to="`/company/tests/${test.id}/results?${jobId}`"
-                class="text-primary-400 hover:text-primary-300"
-            >
-              View All Results
-            </router-link>
+<!--            <router-link-->
+<!--                :to="`/company/tests/${test.id}/results?${jobId}`"-->
+<!--                class="text-primary-400 hover:text-primary-300"-->
+<!--            >-->
+<!--              View All Results-->
+<!--            </router-link>-->
             <button
                 @click="deleteTest(test.id)"
                 class="text-red-400 hover:text-red-300"
