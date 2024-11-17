@@ -92,9 +92,24 @@ const routes = [
                 component: () => import('../views/admin/UploadTests.vue')
             },
             {
+                path: 'create-manual-test',
+                name: 'CreateManualTest',
+                component: () => import('../views/admin/CreateManualTest.vue')
+            },
+            {
                 path: 'cards-create',
                 name: 'CreateTestCard',
                 component: () => import('../views/admin/CreateCardTest.vue')
+            },
+            {
+                path: 'test/:id/edit',
+                name: 'EditTest',
+                component: () => import('../views/admin/EditTest.vue')
+            },
+            {
+                path: 'tests',
+                name: 'TestsAdmin',
+                component: () => import('../views/admin/Tests.vue')
             },
             {
                 path: 'review',
@@ -108,6 +123,7 @@ const routes = [
         path: '/profile',
         name: 'Profile',
         redirect: to => {
+            console.log("isAdmin", useAuthStore().isAdmin);
             const authStore = useAuthStore();
             if (authStore.isAdmin) return '/admin';
             return authStore.isDeveloper ? '/developer' : '/company';

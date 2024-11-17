@@ -122,6 +122,7 @@ export const useAuthStore = defineStore('auth', {
             try {
                 const docRef = doc(db, 'users', uid);
                 const docSnap = await getDoc(docRef);
+                console.log("loadUser", docSnap);
 
                 if (docSnap.exists()) {
                     const userData = docSnap.data() as User;
@@ -136,6 +137,7 @@ export const useAuthStore = defineStore('auth', {
                     this.user = userData;
                     await this.checkSubscriptionStatus();
                 } else {
+                    console.error(`Document with uid ${uid} not found`);
                     throw new Error('User data not found');
                 }
             } catch (error: any) {

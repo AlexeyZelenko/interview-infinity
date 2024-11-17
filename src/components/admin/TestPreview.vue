@@ -35,7 +35,7 @@
 </script>
 
 <template>
-  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+  <div class="fixed inset-0 bg-black flex items-center justify-center z-50">
     <div class="bg-light-card dark:bg-dark-card rounded-lg p-6 max-w-4xl w-full mx-4 max-h-[90vh] overflow-y-auto">
       <div class="flex justify-between items-start mb-6">
         <div>

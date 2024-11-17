@@ -73,8 +73,10 @@ const route = useRoute();
 const menuItems = [
   { name: 'Dashboard', path: '/admin', icon: 'dashboard' },
   { name: 'Upload Tests', path: '/admin/upload-tests', icon: 'upload' },
-  { name: 'Create Test', path: '/admin/create-test', icon: 'form' },
-  { name: 'Review Submissions', path: '/admin/review', icon: 'review' }
+  { name: 'Create Test', path: '/admin/create-manual-test', icon: 'form' },
+  { name: 'Review Submissions', path: '/admin/review', icon: 'review' },
+  { name: 'Tests', path: '/admin/tests', icon: 'form' },
+  // { name: 'Edit Test', path: '/admin/edit-test', icon: 'form' },
 ];
 
 // Функция для проверки активного пункта меню
