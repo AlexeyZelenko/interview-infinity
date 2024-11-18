@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import Swal from 'sweetalert2';
 import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 
@@ -15,15 +16,32 @@ const userType = ref(route.query.type?.toString() || 'developer');
 
 const handleSubmit = async () => {
   if (password.value !== confirmPassword.value) {
-    error.value = 'Passwords do not match';
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Passwords do not match',
+    });
     return;
   }
 
   try {
     await authStore.register(email.value, password.value, userType.value as 'developer' | 'company');
-    // Redirect based on user type
+
+    // Успешная регистрация
+    Swal.fire({
+      icon: 'success',
+      title: 'Account Created',
+      text: `Your account has been created as a ${userType.value}.`,
+    });
+
+    // Перенаправление на соответствующую страницу
     router.push(userType.value === 'developer' ? '/developer' : '/company');
   } catch (err: any) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Registration Failed',
+      text: err.message || 'An unknown error occurred.',
+    });
     error.value = err.message;
   }
 };
@@ -91,8 +109,6 @@ const handleSubmit = async () => {
             </label>
           </div>
         </div>
-
-        <div v-if="error" class="text-red-500 text-sm">{{ error }}</div>
 
         <button type="submit" class="w-full bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700">
           Create Account

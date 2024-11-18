@@ -17,6 +17,10 @@ import {
     TestAnswer,
     TestAttemptDetails
 } from '../types/tests';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+const authStore = useAuthStore();
 
 export const useTestStore = defineStore('tests', {
     state: () => ({
@@ -28,7 +32,8 @@ export const useTestStore = defineStore('tests', {
         loading: false,
         error: null as string | null,
         testCompleted: false,
-        averageScore: 0
+        averageScore: 0,
+        testResults: [] as TestAttempt[],
     }),
 
     getters: {
@@ -135,7 +140,13 @@ export const useTestStore = defineStore('tests', {
                     submittedAt: new Date().toISOString()
                 };
 
-                await addDoc(collection(db, 'testSubmissions'), submissionData);
+                console.log("authStore.user", authStore.user)
+                if(authStore.user) {
+                    await addDoc(collection(db, 'testSubmissions'), submissionData);
+                } else {
+                    this.testResults.push(submissionData);
+                    console.log('Test results:', this.testResults);
+                }
             } catch (error: any) {
                 this.error = error.message;
                 throw error;
@@ -362,9 +373,16 @@ export const useTestStore = defineStore('tests', {
                     jobId: results.jobId
                 };
 
-                console.log('Saving test attempt:', testAttempt)
+                console.log('...Saving test attempt:', testAttempt)
 
-                await addDoc(collection(db, 'testAttempts'), testAttempt);
+                if(authStore && authStore?.user) {
+                    console.log('authStore.user', authStore?.user)
+                    await addDoc(collection(db, 'testAttempts'), testAttempt);
+                } else {
+                    this.testResults = [];
+                    this.testResults.push(testAttempt);
+                    console.log('Test results:', this.testResults);
+                }
                 this.testCompleted = true;
             } catch (error: any) {
                 this.error = error.message;

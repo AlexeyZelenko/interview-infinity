@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, ComputedRef } from 'vue';
-import { useTestStore } from '../stores/tests';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useTestStore } from '@/stores/tests';
 import { useRouter, useRoute } from 'vue-router';
-import TestIntegrity from '../components/TestIntegrity.vue';
-import { useAuthStore } from '../stores/auth'
+import TestIntegrity from '@/components/TestIntegrity.vue';
+import { useAuthStore } from '@/stores/auth'
 import {
   startScreenRecording,
   stopScreenRecording,
 } from '@/utils/screenRecording';
 import Swal from 'sweetalert2';
 
-const showInstructions = ref(true);
+const showInstructions = ref(false);
 function closeInstructions() {
   showInstructions.value = false;
 }
@@ -161,8 +161,13 @@ const submitTest = async () => {
   }
 };
 
-const finishTest = () => {
-  router.push('/developer/test-results');
+const finishTest = async () => {
+  console.log("Finishing test...", authStore.user);
+  if(authStore?.user?.userType === 'developer') {
+    await router.push('/developer/test-results');
+  } else {
+    await router.push('/test-result');
+  }
 };
 
 const handleIntegrityViolation = () => {
@@ -279,6 +284,9 @@ onUnmounted(() => {
     <h2 class="text-3xl font-bold text-primary-400 mb-6"><i class="fas fa-question-circle"></i> Test Your Knowledge</h2>
 
     <!-- Test Instructions -->
+    <button @click="showInstructions = true" class="px-4 py-2 bg-primary-600 text-white rounded transition duration-300 ease-in-out">
+      <i class="fas fa-info-circle"></i> Test Instructions
+    </button>
     <div v-if="showInstructions" class="bg-gray-800 rounded-lg p-6 mb-8 space-y-6">
       <div class="flex justify-between items-center">
         <h2 class="text-2xl font-bold">Test Instructions</h2>
@@ -312,7 +320,7 @@ onUnmounted(() => {
     <div v-else-if="error" class="bg-red-500/10 text-red-400 p-4 rounded-lg mb-6 flex items-center">
       <i class="fas fa-exclamation-circle mr-2"></i>{{ error }}
       <div class="mt-4">
-        <button @click="router.push('/tests')" class="text-primary-400 hover:text-primary-300 transition duration-300 ease-in-out">
+        <button @click="router.push('/tests')" class="text-primary-400 transition duration-300 ease-in-out">
           <i class="fas fa-arrow-left"></i> Back to Tests
         </button>
       </div>
@@ -331,9 +339,18 @@ onUnmounted(() => {
     <div v-else-if="showCompletionModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div class="bg-gray-800 p-6 rounded-lg max-w-2xl w-full mx-4 text-center shadow-lg">
         <h2 class="text-2xl font-bold mb-4 text-green-500"><i class="fas fa-trophy"></i> Test Completed!</h2>
-        <button @click="finishTest" class="px-6 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition duration-300 ease-in-out">
+        <button
+            v-if="authStore.user"
+            @click="finishTest" class="px-6 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition duration-300 ease-in-out">
           <i class="fas fa-check"></i> View Results
         </button>
+        <div v-else>
+          <router-link
+              to="/test-result"
+              class="px-6 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition duration-300 ease-in-out ml-4">
+            <i class="fas fa-arrow-right"></i> View Results
+          </router-link>
+        </div>
       </div>
     </div>
 
@@ -417,10 +434,6 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-/* Анимация при наведении */
-.bg-gray-800:hover {
-  transform: scale(1.02);
-}
 .bg-gray-800 {
   background-color: #2d3748;
 }

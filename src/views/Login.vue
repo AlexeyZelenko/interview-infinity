@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import Swal from 'sweetalert2';
 import { useAuthStore } from '../stores/auth';
 import { useRouter } from 'vue-router';
 
@@ -12,12 +13,43 @@ const router = useRouter();
 const handleSubmit = async () => {
   try {
     await authStore.login(email.value, password.value);
-    // Redirect based on user type
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Login Successful',
+      text: 'Welcome back!',
+    });
+
     router.push(authStore.isDeveloper ? '/developer' : '/company');
   } catch (err: any) {
-    error.value = err.message;
+    let errorMessage = 'An unknown error occurred.';
+
+    switch (err.code) {
+      case 'auth/invalid-credential':
+        errorMessage = 'Invalid credentials. Please check your email and password.';
+        break;
+      case 'auth/user-not-found':
+        errorMessage = 'No user found with this email.';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = 'Incorrect password. Please try again.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'The email address is badly formatted.';
+        break;
+      default:
+        errorMessage = err.message || errorMessage;
+    }
+
+    Swal.fire({
+      icon: 'error',
+      title: 'Login Failed',
+      text: errorMessage,
+    });
+    console.error('Login error:', err);
   }
 };
+
 </script>
 
 <template>
@@ -47,8 +79,6 @@ const handleSubmit = async () => {
               class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
           />
         </div>
-
-        <div v-if="error" class="text-red-500 text-sm">{{ error }}</div>
 
         <button type="submit" class="w-full bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700">
           Login

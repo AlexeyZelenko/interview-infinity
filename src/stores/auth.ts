@@ -91,7 +91,8 @@ export const useAuthStore = defineStore('auth', {
                     email,
                     userType: email === 'infinitydevelopinfinity@gmail.com' ? 'admin' : userType,
                     createdAt: new Date().toISOString(),
-                    subscription
+                    subscription,
+                    show: false
                 };
 
                 await setDoc(doc(db, 'users', firebaseUser.uid), userData);

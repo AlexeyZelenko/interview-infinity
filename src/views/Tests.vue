@@ -5,6 +5,7 @@ import { useTestStore } from '../stores/tests';
 import { useAuthStore } from '../stores/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/config';
+import Swal  from "sweetalert2";
 
 // Replace the existing categories constant with a ref
 const categories = ref<string[]>([]);
@@ -189,20 +190,31 @@ const getTestHistory = (testId: string) => {
 
 async function startTest(testId: string) {
   if (!authStore.user) {
-    router.push('/login');
-    return;
+    await Swal.fire({
+      title: 'Login Required',
+      text: 'If you want your test results to be saved, you need to register.',
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Continue as Guest',
+      cancelButtonText: 'Login'
+    }).then((result) => {
+      if (!result.isConfirmed) {
+        router.push('/login');
+      }
+    });
   }
 
   try {
     const canStart = await testStore.startTest(testId);
     if (canStart) {
-      router.push(`/test/${testId}`);
+      console.log("canStart", canStart, testId);
+      await router.push(`/test/${testId}`);
     } else {
-      const daysLeft = testStore.getDaysUntilAvailable(testId);
+      const daysLeft = testStore.getDaysUntilAvailable(testId) || 0;
       error.value = `You can take this test again in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}.`;
     }
-  } catch (err: any) {
-    error.value = 'Failed to start test. Please try again.';
+  } catch (err: unknown) {
+    error.value = err instanceof Error ? err.message : 'Failed to start test. Please try again.';
     console.error('Error starting test:', err);
   }
 }
@@ -401,7 +413,7 @@ onMounted(async () => {
               </div>
 
               <button
-                  @click="startTest(test.id)"
+                  @click.prevent="startTest(test.id)"
                   :disabled="!testStore.canTakeTest(test.id)"
                   class="w-full mt-4 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >

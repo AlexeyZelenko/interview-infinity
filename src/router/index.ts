@@ -75,6 +75,11 @@ const routes = [
         name: 'Community',
         component: () => import('../views/Community.vue')
     },
+    {
+        path: '/test-result',
+        name: 'TestResult',
+        component: () => import('../views/TestResult/index.vue')
+    },
     // Admin Routes
     {
         path: '/admin',
@@ -325,10 +330,10 @@ router.beforeEach(async (to, from, next) => {
     const isAuthenticated = auth.currentUser;
     const authStore = useAuthStore();
 
-    if (requiresAuth && !isAuthenticated) {
-        next('/login');
-        return;
-    }
+    // if (requiresAuth && !isAuthenticated) {
+    //     next('/login');
+    //     return;
+    // }
 
     if (requiresAdmin && !authStore.isAdmin) {
         next('/');

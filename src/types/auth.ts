@@ -12,4 +12,5 @@ export interface User {
     displayName?: string;
     createdAt: string;
     subscription: Subscription;
+    show: boolean;
 }
