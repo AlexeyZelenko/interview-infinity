@@ -45,7 +45,7 @@ const formatTime = (seconds: number) => {
     </div>
 
     <div class="space-y-4">
-      <p class="text-gray-300">{{ question.text }}</p>
+      <p class="text-gray-300 whitespace-pre-line">{{ question.text }}</p>
 
       <div class="space-y-2">
         <div

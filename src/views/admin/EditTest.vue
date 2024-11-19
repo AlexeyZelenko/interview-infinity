@@ -292,14 +292,23 @@ const handleSubmit = async () => {
                 <div>
                   <button v-if="editableQuestionIndex !== index" @click="editQuestion(index)" class="text-blue-400 hover:text-blue-300">Edit</button>
                   <button v-else @click="saveQuestionEdit" class="text-green-400 hover:text-green-300">Save</button>
-                  <button v-if="editableQuestionIndex === index" @click="cancelQuestionEdit" class="ml-2 text-red-400 hover:text-red-300">Cancel</button>
+                  <button
+                      v-if="editableQuestionIndex === index"
+                      @click="cancelQuestionEdit"
+                      class="ml-2 text-red-400 hover:text-red-300">Cancel</button>
                   <button @click="deleteQuestion(index)" class="ml-2 text-red-400 hover:text-red-300">Delete</button>
                 </div>
               </div>
 
               <div v-if="editableQuestionIndex === index">
                 <!-- Editable Question Form -->
-                <input v-model="editQuestionData.text" type="text" class="w-full px-3 py-2 mb-2 bg-gray-700 rounded-md" placeholder="Edit question text" />
+                <textarea
+                    v-model="editQuestionData.text"
+                    class="w-full px-3 py-2 mb-2 bg-gray-700 rounded-md"
+                    rows="5"
+                    placeholder="Edit question text"
+                ></textarea>
+
                 <div v-for="(option, optIndex) in editQuestionData.options" :key="optIndex" class="flex items-center gap-2 mb-1">
                   <input type="radio" :checked="editQuestionData.correctAnswer === optIndex" @change="editQuestionData.correctAnswer = optIndex" class="text-primary-600" />
                   <input v-model="editQuestionData.options[optIndex]" type="text" class="flex-1 px-3 py-1 bg-gray-700 rounded-md" :placeholder="`Option ${optIndex + 1}`" />

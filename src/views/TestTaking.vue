@@ -395,7 +395,10 @@ onUnmounted(() => {
 
       <!-- Current Question -->
       <div v-if="currentQuestion" class="bg-gray-800 rounded-lg p-6 mb-6 shadow-lg">
-        <h2 class="text-xl font-semibold mb-6 text-primary-300"><i class="fas fa-question-circle"></i> {{ currentQuestion.text }}</h2>
+        <h2 class="text-xl font-semibold mb-6 text-primary-300">
+          <i class="fas fa-question-circle"></i>
+          <span class="whitespace-pre-line" v-html="currentQuestion.text"></span>
+        </h2>
 
         <div class="space-y-4">
           <div v-for="(option, index) in currentQuestion.options" :key="index" class="flex items-center">
