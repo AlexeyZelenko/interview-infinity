@@ -71,7 +71,6 @@ const results = ref<TestResult[]>([]);
 const users = ref<Map<string, User>>(new Map());
 
 const loadTestResults = async () => {
-  console.log('test ID:', testId);
   if (!testId) {
     error.value = 'Invalid test ID';
     return;

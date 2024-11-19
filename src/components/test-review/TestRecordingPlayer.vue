@@ -92,7 +92,6 @@ const handleError = async (e: Event) => {
   // Implement retry logic
   if (retryCount.value < MAX_RETRIES) {
     retryCount.value++;
-    console.log(`Retrying playback (${retryCount.value}/${MAX_RETRIES})...`);
 
     // Wait briefly before retrying
     await new Promise(resolve => setTimeout(resolve, 1000));

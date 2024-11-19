@@ -207,7 +207,6 @@ async function startTest(testId: string) {
   try {
     const canStart = await testStore.startTest(testId);
     if (canStart) {
-      console.log("canStart", canStart, testId);
       await router.push(`/test/${testId}`);
     } else {
       const daysLeft = testStore.getDaysUntilAvailable(testId) || 0;
@@ -417,7 +416,7 @@ onMounted(async () => {
                   :disabled="!testStore.canTakeTest(test.id)"
                   class="w-full mt-4 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span v-if="!authStore.user">Login to Start</span>
+                <span v-if="!authStore.user">Start</span>
                 <span v-else-if="!testStore.canTakeTest(test.id)">
                   Available in {{ testStore.getDaysUntilAvailable(test.id) }} days
                 </span>

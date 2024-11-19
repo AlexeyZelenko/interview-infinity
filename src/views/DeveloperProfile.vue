@@ -79,7 +79,6 @@ const fetchCodewarsData = async (username: string) => {
   try {
     const response = await axios.get(`https://www.codewars.com/api/v1/users/${username}`);
     codewarsData.value = response.data;
-    console.log('Codewars data fetched:', codewarsData.value);
   } catch (error) {
     console.error('Error fetching Codewars data:', error);
   }
@@ -187,7 +186,6 @@ const saveDeveloper = async () => {
         technologies: developer.value.technologies
       })
     });
-    console.log('Developer saved:', developer.value.id);
     alert('Developer successfully saved to your list.');
   } catch (error) {
     console.error('Error saving developer:', error);

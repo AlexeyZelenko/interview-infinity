@@ -172,7 +172,6 @@ const filters = ref({
 });
 
 const filteredChallenges = computed(() => {
-   console.log("www")
    if(challengesStore.challenges.length === 0) {
       return [];
     }
@@ -206,7 +205,6 @@ const getDifficultyColor = (difficulty: string) => {
 };
 
 const getStatusColor = (status: string) => {
-   console.log("www")
   switch (status) {
     case 'completed': return 'bg-green-500/10 text-green-400';
     case 'attempted': return 'bg-yellow-500/10 text-yellow-400';

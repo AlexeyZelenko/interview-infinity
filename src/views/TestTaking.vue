@@ -125,7 +125,6 @@ const startBurnVideo = async () => {
 
 const submitTest = async () => {
   urlVideoRecording.value = await stopScreenRecording();
-  console.log("Video recording URL:", urlVideoRecording.value);
 
   if (timer.value) {
     clearInterval(timer.value);
@@ -162,11 +161,10 @@ const submitTest = async () => {
 };
 
 const finishTest = async () => {
-  console.log("Finishing test...", authStore.user);
   if(authStore?.user?.userType === 'developer') {
     await router.push('/developer/test-results');
   } else {
-    await router.push('/test-result');
+    await router.push(`/test-result`);
   }
 };
 
@@ -210,7 +208,6 @@ const initializeTest = async () => {
         confirmButtonText: "Start"
       }).then(async (result) => {
         if (result.isConfirmed) {
-          console.log("Starting video recording...");
           saveVideoRecording.value = true;
           startBurnVideo();
 
@@ -251,15 +248,10 @@ const initializeTestDetails = async () => {
       correctAnswer: 0,
     }));
 
-    console.log("Answers initialized:", answers.value);
-
     // Start main timer for the test
     startTimer();
-    console.log("Main test timer started.");
-
     // Start question timer for the first question
     startTimerForQuestion();
-    console.log("Timer started for first question.");
   } catch (err) {
     error.value = err.message;
     console.error('Error in initializeTestDetails:', err);
@@ -281,8 +273,6 @@ onUnmounted(() => {
 
 <template>
   <div class="max-w-3xl mx-auto space-y-8">
-    <h2 class="text-3xl font-bold text-primary-400 mb-6"><i class="fas fa-question-circle"></i> Test Your Knowledge</h2>
-
     <!-- Test Instructions -->
     <button @click="showInstructions = true" class="px-4 py-2 bg-primary-600 text-white rounded transition duration-300 ease-in-out">
       <i class="fas fa-info-circle"></i> Test Instructions

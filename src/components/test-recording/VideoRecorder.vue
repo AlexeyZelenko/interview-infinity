@@ -34,7 +34,6 @@ const stream = ref<MediaStream | null>(null);
 const error = ref<string | null>(null);
 
 const startRecording = async () => {
-  console.log("Запуск записи...");
   try {
     error.value = null;
     stream.value = await navigator.mediaDevices.getUserMedia(RECORDING_OPTIONS);
@@ -43,7 +42,6 @@ const startRecording = async () => {
     if (videoPreview.value) {
       videoPreview.value.srcObject = stream.value;
       await videoPreview.value.play();
-      console.log("Видео-предпросмотр запущен");
     }
 
     mediaRecorder.value = new MediaRecorder(stream.value, {
@@ -84,7 +82,6 @@ const handleDataAvailable = (event: BlobEvent) => {
 };
 
 const handleRecordingStop = async () => {
-  console.log("Запись остановлена. Обработка записи...");
   try {
     if (recordedChunks.value.length === 0) {
       console.warn("Фрагменты записи отсутствуют.");
@@ -113,7 +110,6 @@ const handleRecordingError = (event: Event) => {
 
 const stopRecording = () => {
   if (mediaRecorder.value && mediaRecorder.value.state === 'recording') {
-    console.log("Остановка записи...");
     mediaRecorder.value.stop();
     isRecording.value = false;
   }
@@ -130,16 +126,13 @@ const cleanUp = () => {
   }
   recordedChunks.value = [];
   currentSize.value = 0;
-  console.log("Очистка завершена.");
 };
 
 onMounted(() => {
-  console.log("Компонент смонтирован, запуск записи...");
   startRecording();
 });
 
 onUnmounted(() => {
-  console.log("Компонент демонтируется, остановка записи и очистка...");
   stopRecording();
   cleanUp();
 });

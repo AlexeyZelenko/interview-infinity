@@ -123,7 +123,6 @@ export const useAuthStore = defineStore('auth', {
             try {
                 const docRef = doc(db, 'users', uid);
                 const docSnap = await getDoc(docRef);
-                console.log("loadUser", docSnap);
 
                 if (docSnap.exists()) {
                     const userData = docSnap.data() as User;

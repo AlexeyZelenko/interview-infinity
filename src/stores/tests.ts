@@ -140,7 +140,6 @@ export const useTestStore = defineStore('tests', {
                     submittedAt: new Date().toISOString()
                 };
 
-                console.log("authStore.user", authStore.user)
                 if(authStore.user) {
                     await addDoc(collection(db, 'testSubmissions'), submissionData);
                 } else {
@@ -336,7 +335,6 @@ export const useTestStore = defineStore('tests', {
                     this.averageScore = 0;
                 }
 
-                console.log('Average score:', this.averageScore);
             } catch (error: any) {
                 this.error = 'An error occurred while loading test history. Please try again later.';
                 console.error('Error fetching test attempts:', error);
@@ -373,15 +371,12 @@ export const useTestStore = defineStore('tests', {
                     jobId: results.jobId
                 };
 
-                console.log('...Saving test attempt:', testAttempt)
-
                 if(authStore && authStore?.user) {
                     console.log('authStore.user', authStore?.user)
                     await addDoc(collection(db, 'testAttempts'), testAttempt);
                 } else {
                     this.testResults = [];
                     this.testResults.push(testAttempt);
-                    console.log('Test results:', this.testResults);
                 }
                 this.testCompleted = true;
             } catch (error: any) {
@@ -448,7 +443,6 @@ export const useTestStore = defineStore('tests', {
 
                     // Удаляем документ из Firestore
                     await deleteDoc(docRef);
-                    console.log('Test document successfully deleted.');
 
                     // Показываем сообщение об успешном удалении пользователю
                     Swal.fire({

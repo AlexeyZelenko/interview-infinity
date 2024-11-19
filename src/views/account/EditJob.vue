@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { useJobsStore } from '../../stores/jobs';
+import { useJobsStore } from '@/stores/jobs';
 
 const route = useRoute();
 const router = useRouter();

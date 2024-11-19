@@ -15,6 +15,7 @@ interface Developer {
   status: 'searching' | 'paused' | 'not_searching';
   testsCompleted: number;
   avatar?: string;
+  show: boolean
 }
 
 const router = useRouter();
@@ -31,13 +32,18 @@ const selectedStatus = ref<string[]>([]);
 // Фильтрация разработчиков по выбранным технологиям и статусу
 const filteredDevelopers = computed(() => {
   return developers.value.filter(dev => {
-    const matchesTech = selectedTechnologies.value.length === 0 ||
+    const matchesTech =
+        selectedTechnologies.value.length === 0 ||
         dev.technologies.some(tech => selectedTechnologies.value.includes(tech));
 
-    const matchesStatus = selectedStatus.value.length === 0 ||
+    const matchesStatus =
+        selectedStatus.value.length === 0 ||
         selectedStatus.value.includes(dev.status);
 
-    return matchesTech && matchesStatus;
+    const isVisible = dev.show === true;
+
+    // Вернуть true только если все условия выполнены
+    return matchesTech && matchesStatus && isVisible;
   });
 });
 
@@ -75,7 +81,8 @@ const fetchDevelopers = async () => {
       technologies: doc.data().technologies || [],
       status: doc.data().status,
       testsCompleted: 0, // Изначально устанавливаем 0, чтобы обновить позже
-      avatar: doc.data().avatar
+      avatar: doc.data().avatar,
+      show: doc.data().show || false
     }));
 
     // Теперь обновляем количество пройденных тестов для каждого разработчика
@@ -89,9 +96,6 @@ const fetchDevelopers = async () => {
       dev.technologies.forEach(tech => technologySet.add(tech));
     });
     allTechnologies.value = Array.from(technologySet).sort(); // Сортировка технологий
-
-    console.log('Developers fetched:', developers.value);
-    console.log('All Technologies:', allTechnologies.value);
   } catch (error) {
     console.error('Error fetching developers:', error);
   }
@@ -192,7 +196,7 @@ const getStatusColor = (status: string) => {
             v-for="dev in filteredDevelopers"
             :key="dev.id"
             @click="viewDeveloper(dev.id)"
-            class="bg-gray-800 p-6 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors"
+            class="bg-gray-800 p-6 rounded-lg cursor-pointer transition-colors"
         >
           <div class="flex items-start justify-between mb-4">
             <div>

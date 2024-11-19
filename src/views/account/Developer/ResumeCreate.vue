@@ -83,7 +83,6 @@ const saveResume = async () => {
 
     // Add the new resume to Firestore
     await addDoc(collection(db, 'resumes'), resumeData);
-    console.log("Resume saved successfully");
 
     await router.push('/developer/resumes'); // Redirect to the resumes list page after saving
   } catch (err: any) {

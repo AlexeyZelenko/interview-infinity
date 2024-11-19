@@ -14,7 +14,6 @@ export async function startScreenRecording() {
     recordedChunks = [];
     isRecording = true;
     updateRecordingIndicator();
-    console.log("Запись начата.", { isRecording });
 
     mediaRecorder.ondataavailable = event => {
       if (event.data.size > 0) {
@@ -27,7 +26,6 @@ export async function startScreenRecording() {
     mediaRecorder.onstop = async () => {
       isRecording = false;
       updateRecordingIndicator();
-      console.log("Запись остановлена.", { isRecording });
 
       const blob = new Blob(recordedChunks, { type: 'video/webm' });
       recordedChunks = [];
@@ -46,8 +44,6 @@ export async function startScreenRecording() {
 export async function stopScreenRecording() {
   if (mediaRecorder && mediaRecorder.state === "recording") {
     mediaRecorder.stop();
-    console.log("Запись остановлена вручную.");
-
     // Wait for upload and return the download URL
     return await new Promise((resolve, reject) => {
       mediaRecorder.onstop = async () => {
@@ -62,7 +58,6 @@ export async function stopScreenRecording() {
       };
     });
   } else {
-    console.log("Нет активной записи для остановки.");
     return null;
   }
 }
@@ -73,16 +68,10 @@ async function uploadRecording(blob) {
     const storage = getStorage();
     const videoRef = ref(storage, `videos/${Date.now()}.webm`);
 
-    console.log("Начало загрузки видео на Firebase Storage...");
-
     const snapshot = await uploadBytes(videoRef, blob);
-    console.log("Видео успешно загружено в Firebase Storage.");
 
-    const downloadURL = await getDownloadURL(snapshot.ref);
-    console.log("Ссылка на загруженное видео:", downloadURL);
-    return downloadURL;
+    return await getDownloadURL(snapshot.ref);
   } catch (error) {
-    console.error("Ошибка при загрузке видео на Firebase Storage:", error);
     throw error;
   }
 }
@@ -92,7 +81,6 @@ function updateRecordingIndicator() {
   const recordingIndicator = document.getElementById("recordingIndicator");
   if (recordingIndicator) {
     recordingIndicator.style.display = isRecording ? "block" : "none";
-    console.log("Статус индикатора записи:", isRecording ? "Активен" : "Неактивен");
   } else {
     console.warn("Элемент recordingIndicator не найден.");
   }

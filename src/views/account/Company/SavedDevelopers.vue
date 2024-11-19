@@ -67,8 +67,6 @@ const fetchSavedDevelopers = async () => {
         notes: savedUsers.find((user: any) => user.id === doc.id)?.notes || '',
         todos: savedUsers.find((user: any) => user.id === doc.id)?.todos || []
       }));
-
-      console.log('Saved Developers fetched:', savedDevelopers.value);
     } else {
       console.error('No such company found');
     }

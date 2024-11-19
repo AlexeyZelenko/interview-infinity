@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import { useTestStore } from '@/stores/tests';
+import TestReview from "@views/TestResult/TestReview.vue";
 
 const testStore = useTestStore();
 
@@ -71,7 +72,9 @@ onMounted(async () => {
         ></div>
       </div>
     </div>
-    <div class="mt-4">To see detailed results for each question, please register.</div>
+    <div class="mt-4">To save detailed results for each question, please register.</div>
+
+    <TestReview />
   </div>
   <div v-else class="text-gray-400 text-center">No result data available.</div>
 </template>

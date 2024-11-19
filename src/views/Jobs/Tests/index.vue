@@ -16,7 +16,6 @@ const testResults = ref<Record<string, string | null>>({});
 
 // Fetch the results for each test
 const fetchResults = async () => {
-  console.log(props.tests)
   for (const test of props.tests) {
     try {
       const result = await applicationsStore.duplicationPassingTest(test.id, props.jobId);

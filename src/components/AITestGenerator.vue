@@ -94,8 +94,6 @@ const generateTest = async () => {
   success.value = false;
 
   try {
-    console.log('Generating test with data:', formData.value);
-
     // Generate prompt
     const prompt = generatePrompt(
         formData.value.technology,
@@ -118,8 +116,6 @@ const generateTest = async () => {
       })
     });
 
-    console.log('OpenAI API response status:', response.status);
-
     const data = await response.json();
     console.log('OpenAI API response data:', data);
 
@@ -128,7 +124,6 @@ const generateTest = async () => {
     }
 
     // Validate and upload the generated test
-    console.log('Validating and uploading test...');
     await validateAndUploadTest(data.choices[0].message.content, {
       title: `${formData.value.technology} ${formData.value.difficulty} Test`,
       description: formData.value.description,

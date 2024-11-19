@@ -191,7 +191,6 @@ const handleSave = async () => {
     // Update the existing resume in Firestore
     const resumeDocRef = doc(db, 'resumes', currentResume.value.id);
     await updateDoc(resumeDocRef, resumeData);
-    console.log('Resume updated successfully');
 
     // Show success notification
     Swal.fire('Saved!', 'The resume has been successfully saved.', 'success');

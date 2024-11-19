@@ -35,7 +35,6 @@ const formatDate = (date: string) => {
 onMounted(async () => {
   try {
     await applicationsStore.fetchApplications();
-    console.log("applications", applications.value);
     await useJobs.fetchAllJobs();
     console.log("jobs", useJobs.jobs);
   } catch (err: any) {
