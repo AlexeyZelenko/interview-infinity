@@ -41,6 +41,21 @@
             </select>
           </div>
 
+          <!-- Test Language -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Language</label>
+            <select
+                v-model="language"
+                required
+                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+            >
+              <option value="">Select category</option>
+              <option v-for="language in languages" :key="language" :value="language">
+                {{ language }}
+              </option>
+            </select>
+          </div>
+
           <!-- Difficulty and Duration -->
           <div class="grid grid-cols-2 gap-4">
             <div>
@@ -169,6 +184,8 @@ const uploading = ref(false);
 const error = ref('');
 const success = ref(false);
 const uploadHistory = ref<any[]>([]);
+const languages = ['EN', 'UA', 'RU'];
+const language = ref('');
 
 const handleFileUpload = (event: Event) => {
   const input = event.target as HTMLInputElement;
@@ -271,7 +288,8 @@ const uploadFile = async () => {
       uploadedAt: new Date().toISOString(),
       status: 'active',
       submissions: 0,
-      successRate: 0
+      successRate: 0,
+      language: language.value
     };
 
     await setDoc(newTestRef, testData);
@@ -282,7 +300,8 @@ const uploadFile = async () => {
       filename: selectedFile.value.name,
       category: category.value,
       timestamp: new Date().toISOString(),
-      status: 'success'
+      status: 'success',
+      language: language.value
     };
 
     uploadHistory.value.unshift(historyEntry);
@@ -295,6 +314,7 @@ const uploadFile = async () => {
     testDescription.value = '';
     difficulty.value = 'intermediate';
     duration.value = 30;
+    language.value = 'EN';
 
   } catch (err: any) {
     error.value = err.message;

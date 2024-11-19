@@ -1,19 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { db } from '../../../firebase/config';
+import { db } from '@/firebase/config';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { useAuthStore } from '../../../stores/auth';
-import { useJobsStore } from '../../../stores/jobs';
+import { useJobsStore } from '@/stores/jobs';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 
 const route = useRoute();
 const toast = useToast();
-const authStore = useAuthStore();
 const jobsStore = useJobsStore();
 const loading = ref(false);
-const error = ref('');
-const success = ref(false);
+const languages = ['EN', 'UA', 'RU'];
 
 const testId = route.params.id;
 
@@ -40,6 +37,7 @@ const formData = ref({
   jobId: '',
   isRequired: false,
   isVideoRecord: false,
+  language: 'EN',
 });
 
 const jobs = ref<Job[]>([]);
@@ -237,6 +235,33 @@ const handleSubmit = async () => {
                 <option
                     v-for="category in categories"
                     :key="category" :value="category">{{ category }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2">Difficulty</label>
+              <select
+                  v-model="formData.difficulty"
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option v-for="diff in difficulties" :key="diff.value" :value="diff.value">{{ diff.label }}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Language</label>
+              <select
+                  v-model="formData.language"
+                  required
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">Select language</option>
+                <option
+                    v-for="language in languages"
+                    :key="language" :value="language">{{ language }}
                 </option>
               </select>
             </div>

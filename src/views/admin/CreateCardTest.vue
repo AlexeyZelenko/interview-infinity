@@ -43,6 +43,18 @@
             </div>
 
             <div>
+              <label class="block text-sm font-medium mb-2">Language</label>
+              <select
+                  v-model="testData.language"
+                  required
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">Select category</option>
+                <option v-for="language in languages" :key="language" :value="language">{{ language }}</option>
+              </select>
+            </div>
+
+            <div>
               <label class="block text-sm font-medium mb-2">Difficulty</label>
               <select
                   v-model="testData.difficulty"
@@ -192,6 +204,7 @@ interface TestData {
   difficulty: string;
   duration: number;
   questions: Question[];
+  language: string;
 }
 
 const categories = [
@@ -218,12 +231,14 @@ const initialTestData: TestData = {
   category: '',
   difficulty: 'intermediate',
   duration: 30,
-  questions: []
+  questions: [],
+  language: 'EN'
 };
 
 const testData = ref<TestData>({ ...initialTestData });
 const saving = ref(false);
 const error = ref('');
+const languages = ['EN', 'UA', 'RU'];
 
 const addQuestion = () => {
   testData.value.questions.push({

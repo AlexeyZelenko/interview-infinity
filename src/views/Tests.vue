@@ -41,7 +41,8 @@ const searchQuery = ref('');
 const selectedDuration = ref('');
 const selectedCategory = ref('');
 const sortBy = ref('recent');
-
+const selectedLanguage = ref('');
+const languages = ['EN', 'UA', 'RU'];
 // Pagination
 const currentPage = ref(1);
 const itemsPerPage = ref(6);
@@ -88,7 +89,11 @@ const filteredTests = computed(() => {
     const matchesCategory = !selectedCategory.value ||
         test.category === selectedCategory.value;
 
-    return matchesSearch && matchesDifficulty && matchesDuration && matchesCategory;
+    // Language filter
+    const matchesLanguage = !selectedLanguage.value ||
+        test.language === selectedLanguage.value;
+
+    return matchesSearch && matchesDifficulty && matchesDuration && matchesCategory && matchesLanguage;
   }).sort((a, b) => {
     switch (sortBy.value) {
       case 'popular':
@@ -155,6 +160,7 @@ const clearFilters = () => {
   selectedCategory.value = '';
   sortBy.value = 'recent';
   currentPage.value = 1;
+  selectedLanguage.value = '';
 };
 
 const getDifficultyColor = (difficulty: string) => {
@@ -272,6 +278,20 @@ onMounted(async () => {
             >
               Clear all
             </button>
+          </div>
+
+          <!-- Language -->
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-2">Language</label>
+            <select
+              v-model="selectedLanguage"
+              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+          >
+            <option value="">Language</option>
+            <option v-for="language in languages" :key="language" :value="language">
+              {{ language }}
+            </option>
+          </select>
           </div>
 
           <!-- Difficulty -->

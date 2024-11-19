@@ -51,6 +51,21 @@
             </select>
           </div>
 
+          <!-- Language -->
+          <div>
+            <label class="block text-sm font-medium mb-2">Language</label>
+            <select
+                v-model="formData.language"
+                required
+                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+            >
+              <option value="">Select language</option>
+              <option v-for="language in languages" :key="language" :value="language">
+                {{ language }}
+              </option>
+            </select>
+          </div>
+
           <!-- Difficulty -->
           <div>
             <label class="block text-sm font-medium mb-2">Difficulty</label>
@@ -139,9 +154,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useTestStore } from '../../stores/tests';
+import { useTestStore } from '@/stores/tests';
 import { utils, write } from 'xlsx';
-import { useAuthStore } from '../../stores/auth';
+import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
 
@@ -162,6 +177,7 @@ interface FormData {
   difficulty: string;
   duration: number;
   questions: File | null;
+  language: string;
 }
 
 const formData = ref<FormData>({
@@ -170,7 +186,8 @@ const formData = ref<FormData>({
   category: '',
   difficulty: 'intermediate',
   duration: 30,
-  questions: null
+  questions: null,
+  language: 'EN'
 });
 
 
@@ -185,6 +202,8 @@ const categories = [
   'Database',
   'DevOps'
 ];
+
+const languages = ['EN', 'UA', 'RU'];
 
 const difficulties = [
   { value: 'beginner', label: 'Beginner' },
@@ -254,7 +273,8 @@ const submitTest = async () => {
       questionsFile: formData.value.questions, // Передаем сам файл
       submittedBy: authStore.user?.uid || 'anonymous',
       submittedAt: new Date().toISOString(),
-      adminEmail: 'infinitydevelopinfinity@gmail.com'
+      adminEmail: 'infinitydevelopinfinity@gmail.com',
+      language: formData.value.language
     };
 
     await testStore.submitTest(submissionData);

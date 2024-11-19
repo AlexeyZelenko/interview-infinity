@@ -40,6 +40,7 @@ const formData = ref({
   jobId: '',
   isRequired: false,
   isVideoRecord: false,
+  language: 'EN'
 });
 
 const jobs = ref<Job[]>([]);
@@ -59,6 +60,8 @@ const difficulties = [
   { value: 'intermediate', label: 'Intermediate' },
   { value: 'advanced', label: 'Advanced' },
 ];
+
+const languages = ['EN', 'UA', 'RU'];
 
 // Load company jobs and existing test data
 onMounted(async () => {
@@ -81,6 +84,7 @@ onMounted(async () => {
         jobId: data.jobId || '',
         isRequired: data.isRequired || false,
         isVideoRecord: data.isVideoRecord || false,
+        language: data.language || 'EN'
       };
     } else {
       toast.error('Test not found');
@@ -250,6 +254,20 @@ const handleSubmit = async () => {
                 <option v-for="diff in difficulties" :key="diff.value" :value="diff.value">{{ diff.label }}</option>
               </select>
             </div>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Language</label>
+            <select
+                v-model="formData.language"
+                required
+                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+            >
+              <option value="">Select category</option>
+              <option v-for="language in languages" :key="language" :value="language">
+                {{ language }}
+              </option>
+            </select>
           </div>
 
           <div>

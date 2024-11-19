@@ -10,6 +10,7 @@ const jobsStore = useJobsStore();
 const loading = ref(false);
 const error = ref(false);
 const success = ref(false);
+const languages = ['EN', 'UA', 'RU'];
 
 interface Job {
   id: string;
@@ -33,7 +34,8 @@ const formData = ref({
   questions: [] as Question[],
   jobId: '', // New field for job linking
   isRequired: false, // Whether the test is required for job application
-  isVideoRecord: false
+  isVideoRecord: false,
+  language: 'EN'
 });
 
 const jobs = ref<Job[]>([]);
@@ -140,7 +142,8 @@ const handleSubmit = async () => {
       questions: [],
       jobId: '',
       isRequired: false,
-      isVideoRecord: false
+      isVideoRecord: false,
+      language: 'EN'
     };
   } catch (err: any) {
     error.value = err.message;
@@ -236,6 +239,20 @@ const handleSubmit = async () => {
                 <option value="">Select category</option>
                 <option v-for="category in categories" :key="category" :value="category">
                   {{ category }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2">Language</label>
+              <select
+                  v-model="formData.language"
+                  required
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">Select category</option>
+                <option v-for="language in languages" :key="language" :value="language">
+                  {{ language }}
                 </option>
               </select>
             </div>

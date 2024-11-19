@@ -34,6 +34,7 @@ export const useTestStore = defineStore('tests', {
         testCompleted: false,
         averageScore: 0,
         testResults: [] as TestAttempt[],
+        language: 'EN',
     }),
 
     getters: {
