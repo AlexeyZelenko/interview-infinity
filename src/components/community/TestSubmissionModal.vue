@@ -200,7 +200,9 @@ const categories = [
   'Python',
   'Java',
   'Database',
-  'DevOps'
+  'DevOps',
+  'Frontend',
+  'Backend'
 ];
 
 const languages = ['EN', 'UA', 'RU'];

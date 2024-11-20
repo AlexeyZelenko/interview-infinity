@@ -17,10 +17,8 @@ import {
     TestAnswer,
     TestAttemptDetails
 } from '../types/tests';
-import { useRouter } from 'vue-router';
 
-const router = useRouter();
-const authStore = useAuthStore();
+const authStore= useAuthStore();
 
 export const useTestStore = defineStore('tests', {
     state: () => ({
@@ -156,40 +154,57 @@ export const useTestStore = defineStore('tests', {
         },
 
         async approveTestSubmission(submissionId: string, submissionData: any) {
+            console.log('Starting approval process for submission:', submissionId);
+            console.log('Submission data received:', submissionData);
+
             this.loading = true;
+
             try {
+                // Получаем ссылку на документ заявки
                 const submissionRef = doc(db, 'testSubmissions', submissionId);
                 const submissionDoc = await getDoc(submissionRef);
 
                 if (!submissionDoc.exists()) {
+                    console.error(`Submission not found for ID: ${submissionId}`);
                     throw new Error('Submission not found');
                 }
 
+                console.log('Fetched submission document:', submissionDoc.data());
+
                 const submission = submissionDoc.data() as TestSubmission;
 
-                // Create new test with ID
+                // Подготовка данных для нового теста
                 const testData = {
-                    id: submissionData.id,
                     title: submission.title,
                     description: submission.description,
                     category: submission.category,
                     difficulty: submission.difficulty,
                     duration: submission.duration,
-                    questions: submissionData.questions,
+                    questions: submissionData,
                     status: 'active',
                     createdAt: new Date().toISOString(),
-                    createdBy: submission.submittedBy
+                    createdBy: submission.submittedBy,
                 };
 
-                await addDoc(collection(db, 'tests'), testData);
+                console.log('Prepared test data for creation:', testData);
 
-                // Update submission status
+                // Добавление теста и обновление ID
+                const newTestRef = await addDoc(collection(db, 'tests'), testData);
+                console.log('New test successfully created with ID:', newTestRef.id);
+
+                await updateDoc(newTestRef, { id: newTestRef.id });
+                console.log(`Document updated with ID: ${newTestRef.id}`);
+
+                // Обновление статуса заявки
                 await updateDoc(submissionRef, { status: 'approved' });
+                console.log(`Submission ${submissionId} status updated to 'approved'.`);
             } catch (error: any) {
-                this.error = error.message;
+                console.error('Error during approval process:', error);
+                this.error = error.message; // Сохраняем сообщение об ошибке в локальное состояние
                 throw error;
             } finally {
-                this.loading = false;
+                this.loading = false; // Отключаем индикатор загрузки
+                console.log('Approval process completed.');
             }
         },
 
@@ -492,7 +507,37 @@ export const useTestStore = defineStore('tests', {
                 this.error = 'An error occurred while loading test history. Please try again later.';
                 console.error('Error fetching test attempts:', error);
             }
-        }
+        },
 
+        async deleteTestFromCompany(testId: string, jobId: string) {
+            try {
+                // Удаляем тест
+                const docRef = doc(db, 'tests', testId);
+                await deleteDoc(docRef);
+                console.log(`Test ${testId} deleted successfully.`);
+
+                // Удаляем связь с jobId
+                const jobTestQuery = query(
+                    collection(db, 'jobTests'),
+                    where('testId', '==', testId),
+                    where('jobId', '==', jobId)
+                );
+
+                const jobTestSnapshot = await getDocs(jobTestQuery);
+
+                if (!jobTestSnapshot.empty) {
+                    console.log(`Found ${jobTestSnapshot.size} jobTests to delete.`);
+                    jobTestSnapshot.forEach(async (doc) => {
+                        console.log(`Deleting jobTest with ID: ${doc.id}`);
+                        await deleteDoc(doc.ref);
+                    });
+                } else {
+                    console.log(`No jobTests found for testId: ${testId} and jobId: ${jobId}`);
+                }
+            } catch (error: any) {
+                this.error = 'An error occurred while deleting the test. Please try again later.';
+                console.error('Error deleting test:', error);
+            }
+        }
     }
 });

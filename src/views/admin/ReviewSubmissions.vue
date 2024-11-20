@@ -108,8 +108,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useTestStore } from '../../stores/tests';
+import {ref, computed, onMounted} from 'vue';
+import { useTestStore } from '@/stores/tests.ts';
 import TestPreview from '../../components/admin/TestPreview.vue';
 import { read, utils } from 'xlsx';
 
@@ -161,10 +161,12 @@ const getStatusColor = (status: string) => {
 };
 
 const loadSubmissions = async () => {
+  console.log('Loading submissions...');
   loading.value = true;
   try {
     const response = await testStore.fetchTestSubmissions();
     submissions.value = response;
+    console.log('>>>Submissions loaded:', response);
   } catch (err: any) {
     error.value = err.message;
   } finally {
@@ -227,6 +229,7 @@ const parseQuestions = async (fileUrl: string) => {
 };
 
 const previewTest = async (submission: any) => {
+  console.log('Previewing submission:', submission);
   try {
     if (!submission?.questionsFile) {
       throw new Error('No questions file attached');
@@ -314,6 +317,7 @@ const rejectSubmission = async (submission: any) => {
   }
 };
 
-// Load submissions on mount
-loadSubmissions();
+onMounted(async () => {
+  await loadSubmissions();
+});
 </script>

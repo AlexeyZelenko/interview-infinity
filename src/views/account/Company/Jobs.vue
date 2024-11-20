@@ -1,29 +1,18 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useJobsStore } from '../../../stores/jobs';
-import { useApplicationsStore } from '../../../stores/applications';
+import { ref, onMounted } from 'vue';
+import { useJobsStore } from '@/stores/jobs';
+import { useTestStore } from '@/stores/tests.ts';
+import { useApplicationsStore } from '@/stores/applications';
+import { useToast } from 'vue-toastification';
+import Swal from 'sweetalert2';
 
-const router = useRouter();
 const jobsStore = useJobsStore();
+const testStore = useTestStore();
 const applicationsStore = useApplicationsStore();
 const loading = ref(true);
 const error = ref('');
 const applications = ref([]);
-const companyJobs = computed(() => jobsStore.companyJobs);
-
-onMounted(async () => {
-  try {
-    await jobsStore.fetchCompanyJobs();
-    await applicationsStore.fetchApplications();
-    applications.value = applicationsStore.applications;
-    console.log(applications.value);
-  } catch (err: any) {
-    error.value = err.message;
-  } finally {
-    loading.value = false;
-  }
-});
+const toast = useToast();
 
 const getStatusColor = (status: string) => {
   switch (status) {
@@ -37,6 +26,52 @@ const getStatusColor = (status: string) => {
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString();
 };
+
+const removeTest = async (testId: string, jobId: string) => {
+  // Подтверждение через SweetAlert2
+  const { isConfirmed } = await Swal.fire({
+    title: 'Are you sure?',
+    text: 'Do you really want to remove this test? This action cannot be undone.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Yes, remove it',
+  });
+
+  if (!isConfirmed) {
+    return; // Пользователь отменил действие
+  }
+
+  try {
+    // Удаление теста
+    await testStore.deleteTestFromCompany(testId, jobId);
+
+    await jobsStore.fetchCompanyJobs();
+    await applicationsStore.fetchApplications();
+    applications.value = applicationsStore.applications;
+    // Успешное уведомление
+    toast.success("Test removed successfully!");
+  } catch (err: any) {
+    // Логирование ошибки
+    console.error("Error removing test:", err);
+
+    // Показываем пользователю понятное сообщение
+    toast.error("Failed to remove the test. Please try again later.");
+  }
+};
+
+onMounted(async () => {
+  try {
+    await jobsStore.fetchCompanyJobs();
+    await applicationsStore.fetchApplications();
+    applications.value = applicationsStore.applications;
+  } catch (err: any) {
+    error.value = err.message;
+  } finally {
+    loading.value = false;
+  }
+});
 </script>
 
 <template>
@@ -116,6 +151,7 @@ const formatDate = (date: string) => {
                 </router-link>
 
                 <button
+                    @click="removeTest(test.testId, job.id)"
                     class="px-3 py-1 bg-red-600/20 text-red-400 rounded hover:bg-red-600/30"
                 >
                   Remove

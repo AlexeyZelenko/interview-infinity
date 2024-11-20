@@ -157,9 +157,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { read, utils, write } from 'xlsx';
-import { db, storage } from '../../firebase/config';
+import { db, storage } from '@/firebase/config';
 import { collection, doc, setDoc, getDocs, query, orderBy, limit } from 'firebase/firestore';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref as storageRef, uploadBytes, getDownloadURL, uploadBytesResumable } from 'firebase/storage';
 
 const categories = [
   'JavaScript',
@@ -170,7 +170,13 @@ const categories = [
   'Python',
   'Java',
   'Database',
-  'DevOps'
+  'DevOps',
+  'Frontend',
+  'Backend',
+  'Fullstack',
+    'HTML',
+    'CSS',
+    'HR'
 ];
 
 // Form fields
@@ -231,51 +237,90 @@ const downloadTemplate = () => {
   URL.revokeObjectURL(url);
 };
 
-
 const uploadFile = async () => {
-  if (!selectedFile.value || !category.value) return;
+  // Проверяем обязательные поля
+  if (!selectedFile.value) {
+    error.value = 'Please select a file to upload.';
+    return;
+  }
+
+  if (!category.value) {
+    error.value = 'Please select a category.';
+    return;
+  }
 
   uploading.value = true;
   error.value = '';
   success.value = false;
 
   try {
+    // Чтение файла в ArrayBuffer
     const data = await selectedFile.value.arrayBuffer();
     const workbook = read(data);
     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-    const jsonData = utils.sheet_to_json(worksheet);
+    let jsonData = utils.sheet_to_json(worksheet);
 
-    // Validate data format
+    // Исправляем кодировку UTF-8 (если данные некорректны)
+    jsonData = jsonData.map((row: any) =>
+        Object.fromEntries(
+            Object.entries(row).map(([key, value]) => [
+              key,
+              typeof value === 'string' ? decodeURIComponent(escape(value)) : value,
+            ])
+        )
+    );
+
+    // Логируем данные для проверки
+    console.log('Parsed data:', jsonData);
+
+    // Проверяем формат данных
     if (!validateQuestions(jsonData)) {
-      throw new Error('Invalid file format. Please use the provided template.');
+      throw new Error('Invalid file format. Please ensure all required columns are present and filled.');
     }
 
-    // Get metadata from first row if available
+    // Получение метаданных из первой строки (если доступно)
     const firstRow: any = jsonData[0];
     const title = testTitle.value || firstRow.Title || `${category.value} Test`;
     const description = testDescription.value || firstRow.Description || `Test questions for ${category.value}`;
     const testDifficulty = difficulty.value || firstRow.Difficulty || 'intermediate';
     const testDuration = duration.value || firstRow.Duration || 30;
 
-    // Create document reference first to get the ID
+    // Создаём новый документ Firestore
     const testsRef = collection(db, 'tests');
     const newTestRef = doc(testsRef);
     const testId = newTestRef.id;
 
-    // Upload file to Firebase Storage using the document ID
-    const fileRef = storageRef(storage, `test-files/${category.value}/${testId}_${selectedFile.value.name}`);
+    // Загружаем файл в Firebase Storage
+    const sanitizedCategory = category.value.replace(/[^a-zA-Z0-9_-]/g, '_');
+    const fileRef = storageRef(storage, `test-files/${sanitizedCategory}/${testId}_${selectedFile.value.name}`);
+    const uploadTask = uploadBytesResumable(fileRef, selectedFile.value);
+
+    // Обработка прогресса загрузки
+    uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+          const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(`Upload is ${progress}% done`);
+        },
+        (error) => {
+          console.error('Upload failed:', error);
+          throw new Error('Failed to upload file. Please try again.');
+        }
+    );
+
+    // Дожидаемся завершения загрузки
     await uploadBytes(fileRef, selectedFile.value);
     const fileUrl = await getDownloadURL(fileRef);
 
-    // Format questions for Firestore
+    // Форматируем вопросы для Firestore
     const questions = jsonData.map((row: any) => ({
       text: row.Question,
       options: [row.Option1, row.Option2, row.Option3, row.Option4],
       correctAnswer: parseInt(row.CorrectAnswer) - 1,
-      explanation: row.Explanation || ''
+      explanation: row.Explanation || '',
     }));
 
-    // Save test to Firestore with all fields
+    // Сохраняем тест в Firestore
     const testData = {
       id: testId,
       title,
@@ -289,58 +334,155 @@ const uploadFile = async () => {
       status: 'active',
       submissions: 0,
       successRate: 0,
-      language: language.value
+      language: language.value,
     };
 
     await setDoc(newTestRef, testData);
 
-    // Add to upload history
-    const historyEntry = {
+    // Добавляем запись в историю загрузок
+    uploadHistory.value.unshift({
       id: testId,
       filename: selectedFile.value.name,
       category: category.value,
       timestamp: new Date().toISOString(),
       status: 'success',
-      language: language.value
-    };
+      language: language.value,
+    });
 
-    uploadHistory.value.unshift(historyEntry);
     success.value = true;
 
-    // Reset form
-    selectedFile.value = null;
-    category.value = '';
-    testTitle.value = '';
-    testDescription.value = '';
-    difficulty.value = 'intermediate';
-    duration.value = 30;
-    language.value = 'EN';
-
+    // Сбрасываем форму
+    resetForm();
   } catch (err: any) {
-    error.value = err.message;
+    console.error('Upload failed:', err.message);
+    error.value = 'An error occurred while uploading the test. Please try again or contact support.';
+
+    // Добавляем запись об ошибке в историю
     uploadHistory.value.unshift({
       id: Date.now(),
-      filename: selectedFile.value.name,
-      category: category.value,
+      filename: selectedFile.value?.name || 'unknown',
+      category: category.value || 'unknown',
       timestamp: new Date().toISOString(),
-      status: 'error'
+      status: 'error',
+      errorMessage: err.message || 'Unknown error',
     });
   } finally {
     uploading.value = false;
   }
 };
 
+const cleanData = (data) => {
+  return data.map((row, index) => {
+    // Удаление полей с "__EMPTY"
+    const cleanedRow = Object.fromEntries(
+        Object.entries(row).filter(([key]) => !key.startsWith('__EMPTY'))
+    );
+
+    // Преобразуем все опции в строки
+    ['Option1', 'Option2', 'Option3', 'Option4'].forEach((key) => {
+      if (cleanedRow[key] !== undefined) {
+        cleanedRow[key] = cleanedRow[key].toString();
+      } else {
+        console.warn(`Missing ${key} in row ${index + 1}`);
+        cleanedRow[key] = ''; // Заменяем на пустую строку, если опция отсутствует
+      }
+    });
+
+    // Исправление CorrectAnswer: если текст, преобразуем в индекс
+    if (typeof cleanedRow.CorrectAnswer === 'string') {
+      const correctIndex = ['Option1', 'Option2', 'Option3', 'Option4'].indexOf(
+          cleanedRow.CorrectAnswer
+      );
+      if (correctIndex !== -1) {
+        cleanedRow.CorrectAnswer = correctIndex + 1;
+      } else {
+        console.error(
+            `Invalid CorrectAnswer value "${cleanedRow.CorrectAnswer}" in row ${
+                index + 1
+            }.`
+        );
+        cleanedRow.CorrectAnswer = null; // Устанавливаем в null, если ответ некорректен
+      }
+    }
+
+    // Проверяем, что все обязательные поля присутствуют
+    const requiredFields = [
+      'Question',
+      'Option1',
+      'Option2',
+      'Option3',
+      'Option4',
+      'CorrectAnswer',
+    ];
+    requiredFields.forEach((field) => {
+      if (!cleanedRow[field]) {
+        console.error(`Missing required field "${field}" in row ${index + 1}`);
+      }
+    });
+
+    return cleanedRow;
+  });
+};
+
+// Функция для валидации данных
 const validateQuestions = (data: any[]) => {
-  return data.every(row =>
-      row.Question &&
-      row.Option1 &&
-      row.Option2 &&
-      row.Option3 &&
-      row.Option4 &&
-      row.CorrectAnswer &&
-      parseInt(row.CorrectAnswer) >= 1 &&
-      parseInt(row.CorrectAnswer) <= 4
-  );
+  let isValid = true;
+
+  data = cleanData(data)
+
+  data.forEach((row, index) => {
+    // Проверяем основные поля
+    const rowIsValid =
+        typeof row.Question === 'string' &&
+        typeof row.Option1 === 'string' &&
+        typeof row.Option2 === 'string' &&
+        typeof row.Option3 === 'string' &&
+        typeof row.Option4 === 'string' &&
+        row.CorrectAnswer &&
+        !isNaN(parseInt(row.CorrectAnswer)) &&
+        parseInt(row.CorrectAnswer) >= 1 &&
+        parseInt(row.CorrectAnswer) <= 4;
+
+    // Если строка не валидна, логируем ошибку и отмечаем её
+    if (!rowIsValid) {
+      isValid = false;
+      console.error(`Validation failed for row ${index + 1}:`, row);
+      console.error(
+          `Issues detected: ${
+              typeof row.Question !== 'string' ? 'Question is invalid. ' : ''
+          }${
+              typeof row.Option1 !== 'string' ? 'Option1 is invalid. ' : ''
+          }${
+              typeof row.Option2 !== 'string' ? 'Option2 is invalid. ' : ''
+          }${
+              typeof row.Option3 !== 'string' ? 'Option3 is invalid. ' : ''
+          }${
+              typeof row.Option4 !== 'string' ? 'Option4 is invalid. ' : ''
+          }${
+              !row.CorrectAnswer || isNaN(parseInt(row.CorrectAnswer))
+                  ? 'CorrectAnswer must be a number. '
+                  : ''
+          }${
+              parseInt(row.CorrectAnswer) < 1 || parseInt(row.CorrectAnswer) > 4
+                  ? 'CorrectAnswer must be between 1 and 4. '
+                  : ''
+          }`
+      );
+    }
+  });
+
+  return isValid;
+};
+
+// Функция для сброса формы
+const resetForm = () => {
+  selectedFile.value = null;
+  category.value = '';
+  testTitle.value = '';
+  testDescription.value = '';
+  difficulty.value = 'intermediate';
+  duration.value = 30;
+  language.value = 'EN';
 };
 
 const loadUploadHistory = async () => {

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { db } from '../../../firebase/config';
-import { collection, getDocs, query, where, deleteDoc, doc } from 'firebase/firestore';
-import { useAuthStore } from '../../../stores/auth';
+import { db } from '@/firebase/config';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { useAuthStore } from '@/stores/auth';
 import { useToast } from 'vue-toastification';
+import { useTestStore } from '@/stores/tests.ts';
 
+const testStore = useTestStore();
 const toast = useToast();
 const authStore = useAuthStore();
 const loading = ref(true);
@@ -38,34 +40,53 @@ const tests = ref<Test[]>([]);
 const loadTests = async () => {
   try {
     loading.value = true;
+
+    // Fetch tests
     const testsQuery = query(
         collection(db, 'tests'),
         where('companyId', '==', authStore.user?.uid)
     );
 
-    if(testsQuery === null) {
+    const testsSnapshot = await getDocs(testsQuery);
+
+    if (testsSnapshot.empty) {
       console.log('No tests found');
       toast.error(`No tests found`);
       return;
     }
 
-    const testsSnapshot = await getDocs(testsQuery);
     const testsData = testsSnapshot.docs.map(doc => ({
       id: doc.id,
       ...doc.data()
     }));
 
-    // Get test results
-    const resultsQuery = query(
-        collection(db, 'testAttempts'),
-        where('testId', 'in', testsData.map(t => t.id))
-    );
+    console.log('testsData:', testsData);
 
-    const resultsSnapshot = await getDocs(resultsQuery);
-    const resultsData = resultsSnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
-    })) as TestResult[];
+    // Fetch test results
+    const chunkArray = (array, size) => {
+      const result = [];
+      for (let i = 0; i < array.length; i += size) {
+        result.push(array.slice(i, i + size));
+      }
+      return result;
+    };
+
+    const testIdChunks = chunkArray(testsData.map(t => t.id), 10);
+    const resultsData = [];
+
+    for (const chunk of testIdChunks) {
+      const chunkQuery = query(
+          collection(db, 'testAttempts'),
+          where('testId', 'in', chunk)
+      );
+      const chunkSnapshot = await getDocs(chunkQuery);
+      resultsData.push(...chunkSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      })));
+    }
+
+    console.log('Results:', resultsData);
 
     // Combine tests with their results
     tests.value = testsData.map(test => {
@@ -75,12 +96,15 @@ const loadTests = async () => {
         results: testResults,
         totalAttempts: testResults.length,
         passRate: testResults.length > 0
-            ? (testResults.filter(r => r.passed).length / testResults.length) * 100
+            ? Math.round((testResults.filter(r => r.passed).length / testResults.length) * 100)
             : 0
       };
     });
 
-  } catch (err: any) {
+    console.log('Tests:', tests.value);
+
+  } catch (err) {
+    console.error(err);
     error.value = err.message;
   } finally {
     loading.value = false;
@@ -88,14 +112,15 @@ const loadTests = async () => {
 };
 
 // Функция для удаления теста
-const deleteTest = async (testId: string) => {
+const deleteTest = async (testId: string, jobId: string) => {
   if (!confirm("Are you sure you want to delete this test?")) {
     return;
   }
 
   try {
     // Удаление документа из Firestore
-    await deleteDoc(doc(db, 'tests', testId));
+    // await deleteDoc(doc(db, 'tests', testId));
+    await testStore.deleteTestFromCompany(testId, jobId);
 
     // Обновление локального списка тестов
     tests.value = tests.value.filter(test => test.id !== testId);
@@ -106,8 +131,6 @@ const deleteTest = async (testId: string) => {
     toast.error(`Failed to delete test: ${err.message}`);
   }
 };
-
-onMounted(loadTests);
 
 const getDifficultyColor = (difficulty: string) => {
   switch (difficulty.toLowerCase()) {
@@ -121,6 +144,8 @@ const getDifficultyColor = (difficulty: string) => {
 const formatDate = (date: string) => {
   return new Date(date).toLocaleDateString();
 };
+
+onMounted(loadTests);
 </script>
 
 <template>
@@ -132,6 +157,12 @@ const formatDate = (date: string) => {
           class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
       >
         Create New Test
+      </router-link>
+      <router-link
+          to="/company/add-test"
+          class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
+      >
+        Add Test
       </router-link>
     </div>
 
@@ -186,7 +217,7 @@ const formatDate = (date: string) => {
           <h4 class="font-medium mb-2">Recent Results</h4>
           <div class="space-y-2">
             <div
-                v-for="result in test.results.slice(0, 5)"
+                v-for="result in test.results"
                 :key="result.id"
                 class="bg-gray-700 p-3 rounded-lg flex justify-between items-center"
             >
@@ -217,7 +248,7 @@ const formatDate = (date: string) => {
 <!--              View All Results-->
 <!--            </router-link>-->
             <button
-                @click="deleteTest(test.id)"
+                @click="deleteTest(test.id, test.jobId)"
                 class="text-red-400 hover:text-red-300"
             >
               Delete Test

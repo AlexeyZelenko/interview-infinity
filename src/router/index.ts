@@ -301,13 +301,27 @@ const routes = [
             {
                 path: 'create-test',
                 name: 'CreateTest',
-                component: () => import('../views/account/CreateTest.vue')
+                component: () => import('../views/account/CreateTest.vue'),
+                meta: { requiresAuth: true }
             },
             {
                 path: 'subscription',
                 name: 'CompanySubscription',
                 component: () => import('../views/account/Subscription.vue')
-            }
+            },
+            {
+                path: 'add-test',
+                name: 'AddTestToCompany',
+                component: () => import('../views/account/Company/AddTest.vue'),
+                meta: { requiresAuth: true }
+            },
+            {
+                path: 'test-selected/:testId/edit',
+                name: 'EditSelectedTestFromCompany',
+                component: () => import('../views/account/Company/EditSelectedTest.vue'),
+                params: true,
+                meta: { requiresAuth: true }
+            },
         ]
     }
 ];
