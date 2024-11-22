@@ -18,7 +18,6 @@ export enum JobApplicationStatus {
     Reviewing = 'reviewing',
     Interviewing = 'interviewing',
     Rejected = 'rejected',
-    Accepted = 'accepted',
     Hired = 'hired',
     None = ''
 }

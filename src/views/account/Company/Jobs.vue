@@ -159,13 +159,23 @@ onMounted(async () => {
               </div>
             </div>
           </div>
-          <div class="mt-2 flex justify-end">
-            <router-link
-                :to="`/company/create-test-manual?jobId=${job.id}`"
-                class="text-primary-400 hover:text-primary-300"
-            >
-              Add Test
-            </router-link>
+          <div class="flex justify-end">
+            <div class="mt-2 flex justify-end mr-4">
+              <router-link
+                  :to="`/company/create-test-manual?jobId=${job.id}`"
+                  class="text-primary-400 hover:text-primary-300"
+              >
+                Create new test
+              </router-link>
+            </div>
+            <div class="mt-2 mx-2 flex justify-end">
+              <router-link
+                  to="/company/add-test"
+                  class="text-primary-400 hover:text-primary-300"
+              >
+                Add test from list
+              </router-link>
+            </div>
           </div>
         </div>
 

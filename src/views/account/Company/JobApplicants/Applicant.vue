@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { defineProps, ref, onMounted } from 'vue';
+import {defineProps, ref, onMounted, computed} from 'vue';
 import { Resume } from "@/types/resumes";
 import { useResumeStore } from '@/stores/resume.ts';
+import { useAuthStore } from '@/stores/auth.ts';
 import { useApplicationsStore } from '@/stores/applications.ts';
 import { useTestStore } from '@/stores/tests.ts';
 import { JobApplication, JobApplicationStatus } from '@/types/application.ts';
 import MatchScore from './MatchScore.vue';
 import TestsResult from './TestsResult.vue';
+import Chat from '@/components/Chat.vue';
 
 // Properly define props with TypeScript
 const props = defineProps<{
@@ -16,54 +18,63 @@ const props = defineProps<{
 // Use resume store
 const useResume = useResumeStore();
 const resume = ref<Resume | null>(null);
-const resumeId = ref<string | null | undefined>(null);
+const resumeId = ref<string | null>(null);
 const resultTests = ref<any | null>(null);
+
+const UseAuth = useAuthStore();
+const currentUserId = computed(() => UseAuth.user?.uid ?? '');
 
 const UseJobApplication = useApplicationsStore();
 const UseTest = useTestStore();
 
 // Function to update applicant status
+const localStatus = ref<JobApplicationStatus>(props.applicant.status || JobApplicationStatus.Pending);
+
 const updateApplicantStatus = async (newStatus: JobApplicationStatus) => {
   try {
     await UseJobApplication.updateApplicationStatus(props.applicant.id, newStatus);
     await UseJobApplication.fetchApplications();
-  } catch (err: any) {
-    console.error(err.message);
+  } catch (err) {
+    console.error("Error updating status:", err);
   }
 };
 
 // Get color classes based on applicant status
-const getStatusColor = (status: string) => {
+const getStatusColor = (status: JobApplicationStatus) => {
   switch (status) {
-    case 'new': return 'bg-blue-500/10 text-blue-400';
-    case 'reviewing': return 'bg-yellow-500/10 text-yellow-400';
-    case 'interviewing': return 'bg-green-500/10 text-green-400';
-    case 'rejected': return 'bg-red-500/10 text-red-400';
-    case 'hired': return 'bg-primary-500/10 text-primary-400';
+    case JobApplicationStatus.Pending: return 'bg-blue-500/10 text-blue-400';
+    case JobApplicationStatus.Reviewing: return 'bg-yellow-500/10 text-yellow-400';
+    case JobApplicationStatus.Interviewing: return 'bg-green-500/10 text-green-400';
+    case JobApplicationStatus.Rejected: return 'bg-red-500/10 text-red-400';
+    case JobApplicationStatus.Hired: return 'bg-primary-500/10 text-primary-400';
     default: return 'bg-gray-500/10 text-gray-400';
   }
 };
 
 // Fetch resume on mounted
 onMounted(async () => {
-  resumeId.value = props.applicant.resumeId;
-  if (resumeId.value) {
-    try {
-      const resumeData = await useResume.getResumeById(resumeId.value);
-      if (resumeData) {
-        resume.value = resumeData;
-      }
-    } catch (error) {
-      console.error("Error fetching resume:", error);
-    }
+  console.log("Applicant:", props.applicant);
+  console.log("Current user ID:", currentUserId.value);
+  if (!props.applicant.status) {
+    localStatus.value = JobApplicationStatus.Pending;
   }
-});
 
-onMounted(async () => {
+  resumeId.value = props.applicant.resumeId ?? null;
+
+
   try {
-    resultTests.value = await UseTest.getTestAttemptUserFromJob(props.applicant.userId, props.applicant.jobId);
-  } catch (err: any) {
-    console.error(err.message);
+    const [resumeData, testResults] = await Promise.all([
+      resumeId.value ? useResume.getResumeById(resumeId.value) : Promise.resolve(null),
+      UseTest.getTestAttemptUserFromJob(props.applicant.userId, props.applicant.jobId)
+    ]);
+
+    if (resumeData) {
+      resume.value = resumeData;
+    }
+
+    resultTests.value = testResults;
+  } catch (error) {
+    console.error("Error during initialization:", error);
   }
 });
 </script>
@@ -79,21 +90,21 @@ onMounted(async () => {
         </p>
       </div>
 
-      <div v-if="resultTests">
-        <MatchScore :tests="resultTests"/>
+      <div v-if="resultTests?.length > 0" class="mr-3">
+        <MatchScore :tests="resultTests" />
       </div>
 
       <div>
         <select
-            v-model="applicant.status"
-            @change="updateApplicantStatus($event.target.value)"
-            :class="[getStatusColor(applicant.status), 'px-3 py-1 rounded-full text-sm bg-opacity-10']"
+            v-model="localStatus"
+            @change="updateApplicantStatus(localStatus)"
+            :class="[getStatusColor(localStatus), 'px-3 py-1 rounded-full text-sm bg-opacity-10']"
         >
-          <option value="new">New</option>
-          <option value="reviewing">Reviewing</option>
-          <option value="interviewing">Interviewing</option>
-          <option value="rejected">Rejected</option>
-          <option value="hired">Hired</option>
+          <option :value="JobApplicationStatus.Pending">New</option>
+          <option :value="JobApplicationStatus.Reviewing">Reviewing</option>
+          <option :value="JobApplicationStatus.Interviewing">Interviewing</option>
+          <option :value="JobApplicationStatus.Rejected">Rejected</option>
+          <option :value="JobApplicationStatus.Hired">Hired</option>
         </select>
       </div>
     </div>
@@ -127,5 +138,13 @@ onMounted(async () => {
         </button>
       </div>
     </div>
+
+    <hr class="my-4 border-gray-700" />
+
+    <Chat
+        :chatId="`chat_${props.applicant.userId}_${props.applicant.id}_${currentUserId}`"
+        :currentUserId="currentUserId"
+    />
+
   </div>
 </template>

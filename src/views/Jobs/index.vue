@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router';
 import { useJobsStore } from '@/stores/jobs.ts';
 import { useApplicationsStore } from '@/stores/applications.ts';
 import CompanyInfoModal from '../../components/CompanyInfoModal.vue';
+import Swal from 'sweetalert2';
 
 const router = useRouter();
 const jobsStore = useJobsStore();
@@ -228,6 +229,17 @@ const clearFilters = () => {
   currentPage.value = 1;
 };
 
+const goToJobDetails = (job: Object) => {
+  if(job.status === 'closed') {
+    Swal.fire({
+      icon: 'info',
+      title: 'Job closed'
+    });
+  } else {
+    router.push(`/jobs/${job.id}`);
+  }
+};
+
 onMounted(async () => {
   try {
     await Promise.all([
@@ -431,7 +443,7 @@ onMounted(async () => {
               v-for="job in paginatedJobs"
               :key="job.id"
               class="bg-gray-800 rounded-lg p-6 cursor-pointer transition-colors"
-              @click="router.push(`/jobs/${job.id}`)"
+              @click="goToJobDetails(job)"
           >
             <div class="flex flex-col justify-between items-start my-6">
               <div>
