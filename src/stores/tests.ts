@@ -33,6 +33,7 @@ export const useTestStore = defineStore('tests', {
         averageScore: 0,
         testResults: [] as TestAttempt[],
         language: 'EN',
+        testsCategories: [] as string[]
     }),
 
     getters: {
@@ -143,7 +144,6 @@ export const useTestStore = defineStore('tests', {
                     await addDoc(collection(db, 'testSubmissions'), submissionData);
                 } else {
                     this.testResults.push(submissionData);
-                    console.log('Test results:', this.testResults);
                 }
             } catch (error: any) {
                 this.error = error.message;
@@ -537,6 +537,19 @@ export const useTestStore = defineStore('tests', {
             } catch (error: any) {
                 this.error = 'An error occurred while deleting the test. Please try again later.';
                 console.error('Error deleting test:', error);
+            }
+        },
+
+        async fetchTestsCategories() {
+            try {
+                const snapshot = await getDocs(collection(db, 'tests'));
+                this.testsCategories = Array.from(
+                    new Set(snapshot.docs.map(doc => doc.data().category).filter(Boolean))
+                ) as string[];
+                return this.testsCategories;
+            } catch (error: any) {
+                this.error = 'An error occurred while fetching test categories. Please try again later.';
+                console.error('Error fetching test categories:', error);
             }
         }
     }

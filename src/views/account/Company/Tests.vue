@@ -60,8 +60,6 @@ const loadTests = async () => {
       ...doc.data()
     }));
 
-    console.log('testsData:', testsData);
-
     // Fetch test results
     const chunkArray = (array, size) => {
       const result = [];
@@ -85,9 +83,6 @@ const loadTests = async () => {
         ...doc.data()
       })));
     }
-
-    console.log('Results:', resultsData);
-
     // Combine tests with their results
     tests.value = testsData.map(test => {
       const testResults = resultsData.filter(r => r.testId === test.id);

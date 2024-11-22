@@ -114,8 +114,6 @@ self.onmessage = async (e) => {
                 };
             }
         });
-
-        console.log('All test results:', results);
         self.postMessage({ type: 'results', data: results });
     } catch (err) {
         console.error('Worker error:', err);

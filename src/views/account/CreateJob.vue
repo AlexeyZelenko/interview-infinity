@@ -38,14 +38,9 @@ const jobTypes = [
   'Internship'
 ];
 
-const addItem = (list: string[], item: string, inputRef: Ref<string> | string) => {
+const addItem = (list: string[], item: string) => {
   if (item.trim()) {
     list.push(item.trim());
-    if (typeof inputRef === 'string') {
-      inputRef = '';
-    } else {
-      inputRef.value = '';
-    }
   }
 };
 
@@ -176,11 +171,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a requirement"
-                @keyup.enter="addItem(job.requirements, newRequirement, newRequirement)"
+                @keyup.enter="() => { addItem(job.requirements, newRequirement); newRequirement = ''; }"
             />
             <button
                 type="button"
-                @click="addItem(job.requirements, newRequirement, newRequirement)"
+                @click="() => { addItem(job.requirements, newRequirement); newRequirement = ''; }"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -217,11 +212,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a responsibility"
-                @keyup.enter="addItem(job.responsibilities, newResponsibility, newResponsibility)"
+                @keyup.enter="() => { addItem(job.responsibilities, newResponsibility); newResponsibility = ''; }"
             />
             <button
                 type="button"
-                @click="addItem(job.responsibilities, newResponsibility, newResponsibility)"
+                @click="() => { addItem(job.responsibilities, newResponsibility); newResponsibility= ''}"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -258,11 +253,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a benefit"
-                @keyup.enter="addItem(job.benefits, newBenefit, newBenefit)"
+                @keyup.enter="() => { addItem(job.benefits, newBenefit); newBenefit = ''; }"
             />
             <button
                 type="button"
-                @click="addItem(job.benefits, newBenefit, newBenefit)"
+                @click="() => { addItem(job.benefits, newBenefit); newBenefit = ''; }"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add
@@ -299,11 +294,11 @@ const handleSubmit = async () => {
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                 placeholder="Add a skill"
-                @keyup.enter="addItem(job.skills, newSkill, newSkill)"
+                @keyup.enter="() => { addItem(job.skills, newSkill); newSkill = ''; }"
             />
             <button
                 type="button"
-                @click="addItem(job.skills, newSkill, newSkill)"
+                @click="() => { addItem(job.skills, newSkill); newSkill = ''; }"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
               Add

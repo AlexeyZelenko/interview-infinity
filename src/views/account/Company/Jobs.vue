@@ -11,7 +11,7 @@ const testStore = useTestStore();
 const applicationsStore = useApplicationsStore();
 const loading = ref(true);
 const error = ref('');
-const applications = ref([]);
+const applications = ref<any>([]);
 const toast = useToast();
 
 const getStatusColor = (status: string) => {
