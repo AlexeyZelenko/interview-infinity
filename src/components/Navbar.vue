@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import {ref, computed, onMounted} from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
+import { useChatStore } from '@/stores/chats';
+
+const useAuth = useAuthStore();
+const currentUserId = computed(() => useAuth.user?.uid ?? '');
+const chatStore = useChatStore();
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -37,6 +42,13 @@ const handleLogout = async () => {
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
 };
+
+onMounted( () => {
+  console.log("currentUserId", currentUserId.value)
+  if (currentUserId.value) {
+    chatStore.loadUnreadMessages(currentUserId.value);
+  }
+});
 </script>
 
 <template>
@@ -71,7 +83,15 @@ const toggleMenu = () => {
                 ? 'bg-primary-600/10 text-primary-400'
                 : 'text-dark-text-secondary hover:text-dark-text'"
               >
-                {{ authStore.isAdmin ? 'Admin Dashboard' : 'Profile' }}
+                <span>{{ authStore.isAdmin ? 'Admin Dashboard' : 'Profile' }}</span>
+                <span
+                    v-if="chatStore.allUnreadCount > 0"
+                    class="bg-red-400 text-amber-50 py-1 px-2 rounded-2xl text-xs ml-2"
+                    :title="`You have ${chatStore.allUnreadCount} unread messages.
+                     Go to *Job Listings* and view jobs that have messages`"
+                >
+                {{chatStore.allUnreadCount}}
+              </span>
               </router-link>
               <button
                   @click="handleLogout"

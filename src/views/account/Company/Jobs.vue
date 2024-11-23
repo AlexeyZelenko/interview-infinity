@@ -5,7 +5,9 @@ import { useTestStore } from '@/stores/tests.ts';
 import { useApplicationsStore } from '@/stores/applications';
 import { useToast } from 'vue-toastification';
 import Swal from 'sweetalert2';
+import { useChatStore } from '@/stores/chats';
 
+const chatStore = useChatStore();
 const jobsStore = useJobsStore();
 const testStore = useTestStore();
 const applicationsStore = useApplicationsStore();
@@ -61,17 +63,36 @@ const removeTest = async (testId: string, jobId: string) => {
   }
 };
 
+const unreadMessagesMap = ref<Record<string, number>>({});
+
+
 onMounted(async () => {
   try {
+    console.log("Fetching company jobs...");
     await jobsStore.fetchCompanyJobs();
+    console.log("Company jobs fetched:", jobsStore.companyJobs);
+
+    console.log("Fetching applications...");
     await applicationsStore.fetchApplications();
+    console.log("Applications fetched:", applicationsStore.applications);
+
     applications.value = applicationsStore.applications;
+
+    for (const job of jobsStore.companyJobs) {
+      const unreadMessages = await chatStore.getCountMessagesFromJob(job.id);
+      unreadMessagesMap.value[job.id] = unreadMessages;
+
+      console.log(`Unread messages for job ${job.id}:`, unreadMessages);
+    }
   } catch (err: any) {
+    console.error("Error:", err.message);
     error.value = err.message;
   } finally {
     loading.value = false;
+    console.log("Finished loading data.");
   }
 });
+
 </script>
 
 <template>
@@ -190,6 +211,12 @@ onMounted(async () => {
             >
               View Applicants
             </router-link>
+          </div>
+          <div
+              v-if="unreadMessagesMap[job.id] > 0"
+          >
+            <span class="text-sm">Unread messages:</span>
+            <span class="bg-red-400 text-amber-50 py-1 px-2 rounded-2xl text-xs ml-2">{{ unreadMessagesMap[job.id]}}</span>
           </div>
           <div class="flex gap-2">
             <router-link

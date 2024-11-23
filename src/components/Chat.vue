@@ -173,15 +173,36 @@ const editingMessageId = ref<string | null>(null);
 const editingMessageText = ref("");
 
 // Проверка существования чата
+// Проверка существования чата
 const ensureChatExists = async () => {
   const chatRef = dbRef(db, `chats/${props.chatId}`);
-  onValue(chatRef, (snapshot) => {
+  const userChatsRef = dbRef(db, `users/${props.currentUserId}/chats`);
+
+  // Проверяем, существует ли чат
+  onValue(chatRef, async (snapshot) => {
     if (!snapshot.exists()) {
-      set(chatRef, {
+      // Создаем новый чат, если он не существует
+      await set(chatRef, {
         createdAt: serverTimestamp(),
         createdBy: props.currentUserId,
         messages: {},
       });
+      console.log(`[Chat] Chat ${props.chatId} created.`);
+    } else {
+      console.log(`[Chat] Chat ${props.chatId} already exists.`);
+    }
+  }, { onlyOnce: true });
+
+  // Проверяем, привязан ли чат к пользователю
+  onValue(userChatsRef, async (snapshot) => {
+    const userChats = snapshot.val() || {};
+    if (!userChats[props.chatId]) {
+      // Добавляем ID чата в массив чатов пользователя
+      await update(userChatsRef, {
+        [props.chatId]: true,
+      });
+    } else {
+      console.log(`[Chat] Chat ${props.chatId} already exists in user ${props.currentUserId}'s chats.`);
     }
   }, { onlyOnce: true });
 };

@@ -3,7 +3,15 @@
     <div class="p-6">
       <div class="mb-6">
         <h2 class="text-xl font-bold text-white">Account</h2>
-        <p class="text-sm text-primary-400">Developer Account</p>
+        <p class="text-sm text-primary-400">
+          <span>Developer Account</span>
+          <span
+              v-if="chatStore.allUnreadCount > 0"
+              class="bg-red-400 text-amber-50 py-1 px-2 rounded-2xl text-xs ml-2"
+          >
+            {{chatStore.allUnreadCount}}
+          </span>
+        </p>
       </div>
       <nav class="space-y-2">
         <router-link
@@ -27,6 +35,12 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router';
 import MenuIcon from './MenuIcon.vue';
+import { useChatStore } from '@/stores/chats';
+import {computed, onMounted} from "vue";
+import {useAuthStore} from "@/stores/auth.ts";
+
+const useAuth = useAuthStore();
+const currentUserId = computed(() => useAuth.user?.uid ?? '');
 
 const route = useRoute();
 
@@ -41,5 +55,13 @@ const menuItems = [
 ];
 
 const isActive = (path: string) => route.path === path;
+
+const chatStore = useChatStore();
+
+onMounted( () => {
+  if (currentUserId.value) {
+    chatStore.loadUnreadMessages(currentUserId.value);
+  }
+});
 </script>
 

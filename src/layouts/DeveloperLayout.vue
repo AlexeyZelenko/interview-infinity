@@ -1,9 +1,5 @@
 <template>
   <div class="min-h-screen bg-gray-900">
-    <MobileHeader
-        :isMobileMenuOpen="isMobileMenuOpen"
-        @toggle-menu="toggleMobileMenu"
-    />
     <MobileMenu
         v-if="isMobileMenuOpen"
         :isMobileMenuOpen="isMobileMenuOpen"
@@ -21,15 +17,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import MobileHeader from './Developer/MobileHeader.vue';
 import MobileMenu from './Developer/MobileMenu.vue';
 import Sidebar from './Developer/Sidebar.vue';
 
 const isMobileMenuOpen = ref(false);
-
-const toggleMobileMenu = () => {
-  isMobileMenuOpen.value = !isMobileMenuOpen.value;
-};
 
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false;

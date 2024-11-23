@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import {ref, computed} from 'vue';
 import { useRoute } from 'vue-router';
+
 
 const route = useRoute();
 const isMobileMenuOpen = ref(false);
@@ -29,7 +30,9 @@ const currentMenuItem = computed(() => {
         <div class="flex items-center justify-between">
           <div>
             <h1 class="text-xl font-semibold">{{ currentMenuItem }}</h1>
-            <p class="text-sm text-primary-400">Company Account</p>
+            <p class="text-sm text-primary-400">
+              <span>Company Account</span>
+            </p>
           </div>
           <button
               @click="isMobileMenuOpen = !isMobileMenuOpen"
@@ -82,7 +85,9 @@ const currentMenuItem = computed(() => {
         <div class="p-6">
           <div class="mb-6">
             <h2 class="text-xl font-bold text-white">Account</h2>
-            <p class="text-sm text-primary-400">Company Account</p>
+            <p class="text-sm text-primary-400">
+              <span>Company Account</span>
+            </p>
           </div>
           <nav class="space-y-1">
             <router-link
