@@ -76,6 +76,7 @@ const menuItems = [
   { name: 'Create Test', path: '/admin/create-manual-test', icon: 'form' },
   { name: 'Review Submissions', path: '/admin/review', icon: 'review' },
   { name: 'Tests', path: '/admin/tests', icon: 'form' },
+  { name: 'Chats', path: '/admin/chats', icon: 'form' },
   // { name: 'Edit Test', path: '/admin/edit-test', icon: 'form' },
 ];
 

@@ -86,12 +86,10 @@ onMounted( () => {
                 <span>{{ authStore.isAdmin ? 'Admin Dashboard' : 'Profile' }}</span>
                 <span
                     v-if="chatStore.allUnreadCount > 0"
-                    class="bg-red-400 text-amber-50 py-1 px-2 rounded-2xl text-xs ml-2"
-                    :title="`You have ${chatStore.allUnreadCount} unread messages.
+                    class="bg-red-400 text-amber-50 py-1 px-3 rounded-2xl text-xs ml-2"
+                    :title="`You have unread messages.
                      Go to *Job Listings* and view jobs that have messages`"
-                >
-                {{chatStore.allUnreadCount}}
-              </span>
+                ></span>
               </router-link>
               <button
                   @click="handleLogout"

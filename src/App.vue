@@ -2,6 +2,7 @@
 import { RouterView } from 'vue-router';
 import { useAuthStore } from './stores/auth';
 import Navbar from './components/Navbar.vue';
+import Chat from "./components/ChatWithAdmin.vue";
 
 const authStore = useAuthStore();
 </script>
@@ -13,6 +14,7 @@ const authStore = useAuthStore();
       <main class="container mx-auto px-4 py-8">
         <RouterView />
       </main>
+      <Chat />
     </template>
     <div v-else class="min-h-screen flex items-center justify-center">
       <div class="text-center">

@@ -120,6 +120,11 @@ const routes = [
                 path: 'review',
                 name: 'ReviewSubmissions',
                 component: () => import('../views/admin/ReviewSubmissions.vue')
+            },
+            {
+                path: 'chats',
+                name: 'AdminChats',
+                component: () => import('../views/admin/Chats.vue')
             }
         ]
     },

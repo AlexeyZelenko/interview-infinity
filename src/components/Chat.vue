@@ -201,6 +201,7 @@ const ensureChatExists = async () => {
       await update(userChatsRef, {
         [props.chatId]: true,
       });
+      console.log(`[Chat] Chat ${props.chatId} added to user ${props.currentUserId}.`);
     } else {
       console.log(`[Chat] Chat ${props.chatId} already exists in user ${props.currentUserId}'s chats.`);
     }
