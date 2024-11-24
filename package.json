@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "npx vite build",
     "preview": "vite preview",
     "test": "vitest",
     "start": "node src/index.js",
@@ -26,6 +26,8 @@
     "express": "^4.18.2",
     "firebase": "^11.0.2",
     "firebase-admin": "^12.0.0",
+    "moment": "^2.30.1",
+    "moment-timezone": "^0.5.46",
     "openai": "^4.71.1",
     "pinia": "^2.2.6",
     "prismjs": "^1.29.0",

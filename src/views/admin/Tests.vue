@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useTestStore } from '@/stores/tests';
-import { useAuthStore } from '@/stores/auth';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
 
@@ -28,9 +26,7 @@ const loadCategories = async () => {
   }
 };
 
-const router = useRouter();
 const testStore = useTestStore();
-const authStore = useAuthStore();
 const error = ref('');
 const loading = ref(true);
 
@@ -187,26 +183,6 @@ const getTestHistory = (testId: string) => {
   return testStore.testHistory.filter(attempt => attempt.testId === testId);
 };
 
-async function startTest(testId: string) {
-  if (!authStore.user) {
-    router.push('/login');
-    return;
-  }
-
-  try {
-    const canStart = await testStore.startTest(testId);
-    if (canStart) {
-      router.push(`/test/${testId}`);
-    } else {
-      const daysLeft = testStore.getDaysUntilAvailable(testId);
-      error.value = `You can take this test again in ${daysLeft} day${daysLeft !== 1 ? 's' : ''}.`;
-    }
-  } catch (err: any) {
-    error.value = 'Failed to start test. Please try again.';
-    console.error('Error starting test:', err);
-  }
-}
-
 onMounted(async () => {
   try {
     await Promise.all([
@@ -341,7 +317,7 @@ onMounted(async () => {
             <div
                 v-for="test in paginatedTests"
                 :key="test.id"
-                class="flex flex-col justify-between bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors"
+                class="h-full flex flex-col justify-between bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors"
             >
               <div class="flex justify-between items-start mb-4">
                 <div>
@@ -400,24 +376,15 @@ onMounted(async () => {
                 </div>
               </div>
 
-              <button
-                  @click="startTest(test.id)"
-                  :disabled="!testStore.canTakeTest(test.id)"
-                  class="w-full mt-4 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span v-if="!authStore.user">Login to Start</span>
-                <span v-else-if="!testStore.canTakeTest(test.id)">
-                  Available in {{ testStore.getDaysUntilAvailable(test.id) }} days
-                </span>
-                <span v-else>Start Test</span>
-              </button>
-
-              <router-link
-                  :to="`/admin/test/${test.id}/edit`"
-                  class="text-primary-400 hover:text-primary-300"
-              >
-                Edit Test
-              </router-link>
+              <div class="flex justify-between">
+                <router-link
+                    :to="`/admin/test/${test.id}/edit`"
+                    class="text-primary-400 hover:text-primary-300"
+                >
+                  Edit Test
+                </router-link>
+                <p class="text-blue-600">{{test.id}}</p>
+              </div>
             </div>
           </div>
 

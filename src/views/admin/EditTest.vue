@@ -2,18 +2,16 @@
 import { ref, onMounted } from 'vue';
 import { db } from '@/firebase/config';
 import { doc, updateDoc, getDoc } from 'firebase/firestore';
-import { useAuthStore } from '@/stores/auth';
 import { useJobsStore } from '@/stores/jobs';
+import { useTestStore } from '@/stores/tests';
 import { useRoute } from 'vue-router';
 import { useToast } from 'vue-toastification';
 
 const route = useRoute();
 const toast = useToast();
-const authStore = useAuthStore();
 const jobsStore = useJobsStore();
 const loading = ref(false);
-const error = ref('');
-const success = ref(false);
+const testsStore = useTestStore();
 
 const testId = route.params.id;
 
@@ -54,12 +52,12 @@ const newQuestion = ref<Question>({
   explanation: ''
 });
 
-const categories = ['JavaScript', 'TypeScript', 'Vue.js', 'React', 'Node.js', 'Python', 'Java', 'Database', 'DevOps', 'Programming Logic', 'Design', 'Development'];
 const difficulties = [
   { value: 'beginner', label: 'Beginner' },
   { value: 'intermediate', label: 'Intermediate' },
   { value: 'advanced', label: 'Advanced' },
 ];
+const categories = ref<string[] | []>([]);
 
 const languages = ['EN', 'UA', 'RU'];
 
@@ -69,6 +67,9 @@ onMounted(async () => {
     loading.value = true;
     await jobsStore.fetchCompanyJobs();
     jobs.value = jobsStore.companyJobs;
+
+    await testsStore.fetchTestsCategories();
+    categories.value = testsStore.testsCategories;
 
     const docRef = doc(db, 'tests', testId);
     const testSnapshot = await getDoc(docRef);

@@ -12,6 +12,7 @@ export default defineConfig({
       '@router': resolve(__dirname, 'src/router'),
       '@store': resolve(__dirname, 'src/store'),
     },
+    extensions: [".vue", ".ts", ".js"]
   },
   worker: {
     format: 'es',
@@ -20,7 +21,7 @@ export default defineConfig({
   server: {
     cors: true,
     headers: {
-      'Cross-Origin-Opener-Policy': 'same-origin',
+      'Cross-Origin-Opener-Policy': 'unsafe-none',
       'Cross-Origin-Embedder-Policy': 'unsafe-none'
     }
   }

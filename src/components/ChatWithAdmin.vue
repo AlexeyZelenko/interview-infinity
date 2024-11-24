@@ -116,6 +116,8 @@ import {
   update,
 } from "firebase/database";
 import { useAuthStore } from "@/stores/auth";
+import { useTelegramStore } from "@/stores/telegram.ts";
+import moment from 'moment-timezone';
 
 // Инициализация пользователя
 const authStore = useAuthStore();
@@ -126,6 +128,8 @@ if (!userId) {
   console.error("User is not logged in!");
   throw new Error("User is not logged in!");
 }
+
+const telegramStore = useTelegramStore();
 
 const db = getDatabase();
 
@@ -144,6 +148,10 @@ const formatDate = (timestamp: number | undefined) => {
   return new Date(timestamp).toLocaleString();
 };
 
+const getUkraineTimestamp = () => {
+  return moment().tz('Europe/Kiev').format('YYYY-MM-DD HH:mm:ss');
+};
+
 // Отправка сообщения
 const sendMessage = async () => {
   if (newMessage.value.trim()) {
@@ -151,11 +159,26 @@ const sendMessage = async () => {
     const message = {
       sender: userId,
       text: newMessage.value.trim(),
-      timestamp: serverTimestamp(),
+      timestamp: serverTimestamp(), // Серверный временной штамп
       read: false,
       role: "user",
     };
+
+    // Сохраняем сообщение в базе данных
     await push(messagesRef, message);
+
+    const messageTelegram = {
+      sender: userId,
+      text: newMessage.value.trim(),
+      timestamp: getUkraineTimestamp(), // Временная метка Украины
+      role: "user",
+      targetUserId: 876117897, // ID администратора
+    };
+
+    // Уведомление бота
+    await telegramStore.notifyNewMessageToTelegramBot(messagesRef, messageTelegram);
+
+    // Очищаем поле ввода
     newMessage.value = "";
   }
 };
