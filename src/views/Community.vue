@@ -27,9 +27,9 @@ onMounted(async () => {
   <div class="max-w-4xl mx-auto">
     <div class="flex justify-between items-center mb-8">
       <div>
-        <h1 class="text-3xl font-bold">Community</h1>
+        <h1 class="text-3xl font-bold mb-4">{{ $t('community.title') }}</h1>
         <p class="text-light-text-secondary dark:text-dark-text-secondary mt-2">
-          Contribute to our test collection
+          {{ $t('community.description') }}
         </p>
       </div>
     </div>
@@ -39,9 +39,9 @@ onMounted(async () => {
       <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg p-6 flex items-start gap-4">
         <DocumentArrowUpIcon class="h-10 w-10 text-white" />
         <div>
-          <h2 class="text-2xl font-semibold text-white mb-4">Create Tests by Uploading a Table</h2>
+          <h2 class="text-2xl font-semibold text-white mb-4">{{ $t('community.aiTests.title') }}</h2>
           <p class="text-gray-200">
-            Download a template by clicking "Submit Test," and upload as many tests as you like. You can generate tests using ChatGPT by providing it with the template and asking it to create and save tests in the required format. Manual test entry in the table is also supported.
+            {{ $t('community.aiTests.description') }}
           </p>
         </div>
       </div>
@@ -50,9 +50,9 @@ onMounted(async () => {
       <div class="bg-gradient-to-r from-green-500 to-teal-600 rounded-lg p-6 flex items-start gap-4">
         <BoltIcon class="h-10 w-10 text-white" />
         <div>
-          <h2 class="text-2xl font-semibold text-white mb-4">Generate Tests with AI Assistance</h2>
+          <h2 class="text-2xl font-semibold text-white mb-4">{{ $t('community.companyTests.title') }}</h2>
           <p class="text-gray-200">
-            Generate tests with up to 20 questions, specifying the technology focus. You can add a brief description (e.g., tests in Chinese or for emerging technologies) to personalize the AI-generated tests.
+            {{ $t('community.companyTests.description') }}
           </p>
         </div>
       </div>
@@ -61,21 +61,9 @@ onMounted(async () => {
       <div class="bg-gradient-to-r from-yellow-500 to-orange-600 rounded-lg p-6 flex items-start gap-4">
         <BriefcaseIcon class="h-10 w-10 text-white" />
         <div>
-          <h2 class="text-2xl font-semibold text-white mb-4">For Companies: Create Tests in Your Dashboard</h2>
+          <h2 class="text-2xl font-semibold text-white mb-4">{{ $t('community.developmentNotice.title') }}</h2>
           <p class="text-gray-200">
-            Companies have a dedicated option to create tests directly in the dashboard, where they can attach these tests to job listings for applicants. Candidates must complete the required tests before applying.
-          </p>
-        </div>
-      </div>
-
-      <!-- Block 4: Site Development Notice -->
-      <div class="bg-gradient-to-r from-gray-500 to-gray-700 rounded-lg p-6 flex items-start gap-4">
-        <WrenchScrewdriverIcon class="h-10 w-10 text-white" />
-        <div>
-          <h2 class="text-2xl font-semibold text-white mb-4">Site Under Development</h2>
-          <p class="text-gray-200">
-            This site is continuously improving. Your feedback is valuable to us! Please send any suggestions or comments to
-            <a href="mailto:infinitydevelopinfinity@gmail.com" class="text-primary-300 hover:text-primary-200">infinitydevelopinfinity@gmail.com</a>.
+            {{ $t('community.developmentNotice.description') }}
           </p>
         </div>
       </div>
@@ -84,41 +72,41 @@ onMounted(async () => {
     <!-- Guidelines Panel -->
     <div class="bg-gray-800 rounded-lg p-6 mb-8">
       <div class="flex justify-between items-center">
-        <h2 class="text-xl font-semibold mb-4">Test Submission Guidelines</h2>
+        <h2 class="text-xl font-semibold mb-4">{{ $t('community.testSubmissionGuidelines.title') }}</h2>
         <button
             v-if="authStore.user"
             @click="showSubmissionModal = true"
             class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
         >
-          Submit Test
+          {{ $t('community.testSubmissionGuidelines.submitTest') }}
         </button>
         <router-link
             v-else
             to="/login"
             class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
         >
-          Login to Contribute
+          {{ $t('community.testSubmissionGuidelines.loginToContribute') }}
         </router-link>
       </div>
       <div class="grid md:grid-cols-2 gap-6">
         <div>
-          <h3 class="font-medium mb-2">Required Parameters</h3>
+          <h3 class="font-medium mb-2">{{ $t('community.testSubmissionGuidelines.requiredParamsTitle') }}</h3>
           <ul class="list-disc list-inside space-y-1 text-light-text-secondary dark:text-dark-text-secondary">
-            <li>Test title and description</li>
-            <li>Target difficulty level</li>
-            <li>Estimated duration</li>
-            <li>Technology/topic category</li>
-            <li>Questions in Excel/CSV format</li>
+            <li>{{ $t('community.testSubmissionGuidelines.requiredParamsList[0]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.requiredParamsList[1]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.requiredParamsList[2]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.requiredParamsList[3]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.requiredParamsList[4]') }}</li>
           </ul>
         </div>
         <div>
-          <h3 class="font-medium mb-2">Question Format</h3>
+          <h3 class="font-medium mb-2">{{ $t('community.testSubmissionGuidelines.questionFormatTitle') }}</h3>
           <ul class="list-disc list-inside space-y-1 text-light-text-secondary dark:text-dark-text-secondary">
-            <li>Question text</li>
-            <li>4 multiple choice options</li>
-            <li>Correct answer index (1-4)</li>
-            <li>Explanation for the answer</li>
-            <li>Optional code snippets</li>
+            <li>{{ $t('community.testSubmissionGuidelines.questionFormatList[0]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.questionFormatList[1]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.questionFormatList[2]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.questionFormatList[3]') }}</li>
+            <li>{{ $t('community.testSubmissionGuidelines.questionFormatList[4]') }}</li>
           </ul>
         </div>
       </div>

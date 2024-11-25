@@ -3,6 +3,7 @@ import {ref, computed, onMounted} from 'vue';
 import { useAuthStore } from '../stores/auth';
 import { useRouter, useRoute } from 'vue-router';
 import { useChatStore } from '@/stores/chats';
+import LanguageSwitcher from './LanguageSwitcher.vue';
 
 const useAuth = useAuthStore();
 const currentUserId = computed(() => useAuth.user?.uid ?? '');
@@ -14,12 +15,12 @@ const route = useRoute();
 const isMenuOpen = ref(false);
 
 const menuItems = [
-  { path: '/jobs', label: 'Jobs' },
-  { path: '/all-resumes', label: 'Resumes' },
-  { path: '/tests', label: 'Tests' },
-  { path: '/community', label: 'Community' },
-  { path: '/pricing', label: 'Pricing' },
-  { path: '/developers', label: 'Developers' },
+  { path: '/jobs', label: 'menu.Jobs' },
+  { path: '/all-resumes', label: 'menu.Resumes' },
+  { path: '/tests', label: 'menu.Tests' },
+  { path: '/community', label: 'menu.Community' },
+  { path: '/pricing', label: 'menu.Pricing' },
+  { path: '/developers', label: 'menu.Developers' },
 ];
 
 const isActive = (path: string) => {
@@ -62,7 +63,7 @@ onMounted( () => {
 
         <!-- Desktop Menu -->
         <div class="hidden md:block">
-          <div class="flex items-center space-x-4">
+          <div class="flex items-center justify-center space-x-4">
             <router-link
                 v-for="item in menuItems"
                 :key="item.path"
@@ -72,9 +73,8 @@ onMounted( () => {
               ? 'bg-primary-600/10 text-primary-400'
               : 'text-dark-text-secondary hover:text-dark-text'"
             >
-              {{ item.label }}
+              {{ $t(item.label) }}
             </router-link>
-
             <template v-if="authStore.user">
               <router-link
                   :to="authStore.isAdmin ? '/admin' : '/profile'"
@@ -83,7 +83,7 @@ onMounted( () => {
                 ? 'bg-primary-600/10 text-primary-400'
                 : 'text-dark-text-secondary hover:text-dark-text'"
               >
-                <span>{{ authStore.isAdmin ? 'Admin Dashboard' : 'Profile' }}</span>
+                <span>{{ $t(authStore.isAdmin ? 'menu.AdminDashboard' : 'menu.Profile') }}</span>
                 <span
                     v-if="chatStore.allUnreadCount > 0"
                     class="bg-red-400 text-amber-50 py-1 px-3 rounded-2xl text-xs ml-2"
@@ -95,7 +95,7 @@ onMounted( () => {
                   @click="handleLogout"
                   class="text-dark-text-secondary hover:text-dark-text px-3 py-2 rounded-md"
               >
-                Logout
+                {{ $t('menu.Logout') }}
               </button>
             </template>
             <template v-else>
@@ -106,15 +106,16 @@ onMounted( () => {
                 ? 'bg-primary-600/10 text-primary-400'
                 : 'text-dark-text-secondary hover:text-dark-text'"
               >
-                Login
+                {{ $t('menu.Login') }}
               </router-link>
               <router-link
                   to="/register"
                   class="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700"
               >
-                Sign Up
+                {{ $t('menu.SignUp') }}
               </router-link>
             </template>
+            <LanguageSwitcher />
           </div>
         </div>
 
@@ -164,7 +165,7 @@ onMounted( () => {
             : 'text-dark-text-secondary hover:text-dark-text'"
               @click="isMenuOpen = false"
           >
-            {{ item.label }}
+            {{ $t(item.label) }}
           </router-link>
 
           <template v-if="authStore.user">
@@ -176,13 +177,13 @@ onMounted( () => {
               : 'text-dark-text-secondary hover:text-dark-text'"
                 @click="isMenuOpen = false"
             >
-              {{ authStore.isAdmin ? 'Admin Dashboard' : 'Profile' }}
+              {{ authStore.isAdmin ? 'menu.AdminDashboard' : 'menu.Profile' }}
             </router-link>
             <button
                 @click="() => { handleLogout(); isMenuOpen = false; }"
                 class="block w-full text-left text-dark-text-secondary hover:text-dark-text px-3 py-2 rounded-md"
             >
-              Logout
+              {{ $t('menu.Logout') }}
             </button>
           </template>
           <template v-else>
@@ -194,16 +195,17 @@ onMounted( () => {
               : 'text-dark-text-secondary hover:text-dark-text'"
                 @click="isMenuOpen = false"
             >
-              Login
+              {{ $t('menu.Login') }}
             </router-link>
             <router-link
                 to="/register"
                 class="block bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 text-center"
                 @click="isMenuOpen = false"
             >
-              Sign Up
+              {{ $t('menu.SignUp') }}
             </router-link>
           </template>
+          <LanguageSwitcher />
         </div>
       </div>
     </div>

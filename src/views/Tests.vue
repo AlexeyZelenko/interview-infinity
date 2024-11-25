@@ -56,10 +56,10 @@ const durationRanges = [
 ];
 
 const sortOptions = [
-  { value: 'recent', label: 'Most Recent' },
-  { value: 'popular', label: 'Most Popular' },
-  { value: 'duration', label: 'Duration' },
-  { value: 'difficulty', label: 'Difficulty Level' }
+  { value: 'recent', label: 'tests.sortOptions.recent' },
+  { value: 'popular', label: 'tests.sortOptions.popular' },
+  { value: 'duration', label: 'tests.sortOptions.duration' },
+  { value: 'difficulty', label: 'tests.sortOptions.difficulty' }
 ];
 
 const filteredTests = computed(() => {
@@ -243,7 +243,7 @@ onMounted(async () => {
 <template>
   <div class="max-w-6xl mx-auto">
     <div class="flex flex-wrap justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold mb-4">Skill Tests</h1>
+      <h1 class="text-3xl font-bold mb-4">{{ $t('tests.skillTests') }}</h1>
       <div class="flex gap-2">
         <input
             v-model="searchQuery"
@@ -260,7 +260,7 @@ onMounted(async () => {
               :key="option.value"
               :value="option.value"
           >
-            {{ option.label }}
+            {{ $t(option.label) }}
           </option>
         </select>
       </div>
@@ -271,18 +271,18 @@ onMounted(async () => {
       <div class="space-y-6">
         <div class="bg-gray-800 rounded-lg p-6">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Filters</h2>
+            <h2 class="text-lg font-semibold">{{ $t('tests.filters') }}</h2>
             <button
                 @click="clearFilters"
                 class="text-sm text-primary-400 hover:text-primary-300"
             >
-              Clear all
+              {{ $t('tests.clearAll') }}
             </button>
           </div>
 
           <!-- Language -->
           <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Language</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tests.language') }}</label>
             <select
               v-model="selectedLanguage"
               class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -296,21 +296,21 @@ onMounted(async () => {
 
           <!-- Difficulty -->
           <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Difficulty</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tests.difficulty') }}</label>
             <select
                 v-model="selectedDifficulty"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             >
-              <option value="">All Difficulties</option>
-              <option value="beginner">Beginner</option>
-              <option value="intermediate">Intermediate</option>
-              <option value="advanced">Advanced</option>
+              <option value="">{{ $t('tests.allDifficulties') }}</option>
+              <option value="beginner">{{ $t('tests.beginner') }}</option>
+              <option value="intermediate">{{ $t('tests.intermediate') }}</option>
+              <option value="advanced">{{ $t('tests.advanced') }}</option>
             </select>
           </div>
 
           <!-- Duration -->
           <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Duration</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('tests.duration') }}</label>
             <select
                 v-model="selectedDuration"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -330,7 +330,7 @@ onMounted(async () => {
               v-model="selectedCategory"
               class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
           >
-            <option value="">All Categories</option>
+            <option value="">{{ $t('tests.allCategories') }}</option>
             <option v-for="category in categories" :key="category" :value="category">
               {{ category }}
             </option>
@@ -339,7 +339,7 @@ onMounted(async () => {
           <!-- Filter Stats -->
           <div class="mt-6 pt-6 border-t border-gray-700">
             <p class="text-sm text-gray-400">
-              Showing {{ paginatedTests.length }} of {{ filteredTests.length }} tests
+              {{ $t('tests.showingTests', { shown: paginatedTests.length, total: filteredTests.length }) }}
             </p>
           </div>
         </div>
@@ -357,12 +357,12 @@ onMounted(async () => {
         </div>
 
         <div v-else-if="filteredTests.length === 0" class="bg-gray-800 rounded-lg p-6 text-center">
-          <p class="text-gray-300 mb-4">No tests found matching your criteria.</p>
+          <p class="text-gray-300 mb-4">{{ $t('tests.noTestsFound') }}</p>
           <button
               @click="clearFilters"
               class="text-primary-400 hover:text-primary-300"
           >
-            Clear all filters
+            {{ $t('tests.clearFilters') }}
           </button>
         </div>
 
@@ -453,7 +453,7 @@ onMounted(async () => {
                   :disabled="currentPage === 1"
                   class="px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
               >
-                Previous
+                {{ $t('tests.previous') }}
               </button>
 
               <div v-for="page in pageNumbers" :key="page" class="flex items-center">
@@ -477,7 +477,7 @@ onMounted(async () => {
                   :disabled="currentPage === totalPages"
                   class="px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
               >
-                Next
+                {{ $t('tests.next') }}
               </button>
             </nav>
           </div>

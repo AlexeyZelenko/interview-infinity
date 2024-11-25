@@ -8,6 +8,7 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import VueSweetalert2 from 'vue-sweetalert2';
 import 'sweetalert2/dist/sweetalert2.min.css';
+import i18n from './plugins/i18n';
 
 async function initializeApp() {
     const app = createApp(App);
@@ -16,6 +17,7 @@ async function initializeApp() {
     // Подключение плагинов
     app.use(pinia);
     app.use(router);
+    app.use(i18n);
     app.use(Toast);
     app.use(VueSweetalert2);
 

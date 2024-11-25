@@ -1,0 +1,146 @@
+{
+  "menu": {
+    "Jobs": "Positions",
+    "Resumes": "Resumes",
+    "Tests": "Tests",
+    "Community": "Community",
+    "Pricing": "Pricing",
+    "Developers": "Developers",
+    "Logout": "Logout",
+    "Login": "Login",
+    "SignUp": "Sign Up",
+    "AdminDashboard": "Admin Dashboard",
+    "Profile": "Profile"
+  },
+  "home": {
+      "title": "Find Your Next Tech Opportunity",
+      "description": "Whether you’re looking for a job in tech or seeking top talent, our platform is designed to connect developers and companies seamlessly.",
+      "forDevelopers": "For Developers",
+      "developerDescription": "Showcase your skills, take tests, and find your dream job",
+      "joinAsDeveloper": "Join as Developer",
+      "forCompanies": "For Companies",
+      "companyDescription": "Find top tech talent and streamline your hiring process",
+      "joinAsCompany": "Join as Company"
+    },
+  "blocks": {
+    "forDevelopers": "For Developers",
+    "forCompanies": "For Companies",
+    "generalInformation": "General Information",
+    "joinAsDeveloper": "Join as Developer",
+    "joinAsCompany": "Join as Company",
+    "features": {
+      "developer": [
+        { "title": "Join the Community and Create Tests", "description": "Create and share tests to challenge your knowledge, using AI or upload your own test templates." },
+        { "title": "Search and Apply for Jobs", "description": "Browse and apply for tech jobs that match your skills and preferences." },
+        { "title": "Create and Manage Resumes", "description": "Easily manage multiple resumes and tailor them for different applications." },
+        { "title": "Skill Assessment Tests", "description": "Take tests to prove your skills and increase your chances of landing the right job." },
+        { "title": "Track Application Status", "description": "Stay informed about each application’s status, right from your dashboard." },
+        { "title": "Set Job Alerts", "description": "Get alerts for jobs that match your career goals and skill set." }
+      ],
+      "company": [
+        { "title": "Search and Evaluate Candidates", "description": "Find top talent with filters, and review candidates’ test results." },
+        { "title": "Create Custom Tests", "description": "Create or generate skill tests in multiple languages and technologies using AI, or upload custom test templates." },
+        { "title": "Track Applicant Progress", "description": "Monitor candidates' test scores and progress directly within the platform." },
+        { "title": "Post and Manage Job Listings", "description": "List job openings and reach a large audience of tech professionals." },
+        { "title": "Flexible Job Posting", "description": "Post jobs with or without tests, allowing flexibility in hiring processes." },
+        { "title": "Video Test Recording", "description": "Subscribe to enable video recordings of candidates during tests for enhanced screening." }
+      ],
+      "general": [
+        { "title": "One Month Free Access", "description": "Enjoy a full month of free access without the need for credit card information." },
+        { "title": "Anti-Fraud Measures", "description": "Candidates can retake a test only after a week to prevent gaming the system." },
+        { "title": "Site in Development", "description": "We’re constantly improving." }
+      ]
+    }
+  },
+  "chats": {
+    "chat": "Chat",
+    "unreadMessages": "Unread Messages",
+    "sendMessage": "Send",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "loading": "Loading...",
+    "errorLoading": "Error loading data. Please try again.",
+    "typeMessage": "Type a message"
+  },
+  "tests": {
+    "skillTests": "Skill Tests",
+    "searchTests": "Search tests...",
+    "filters": "Filters",
+    "clearAll": "Clear all",
+    "language": "Language",
+    "difficulty": "Difficulty",
+    "duration": "Duration",
+    "category": "Category",
+    "allCategories": "All Categories",
+    "noTestsFound": "No tests found matching your criteria.",
+    "clearFilters": "Clear all filters",
+    "showingTests": "Showing {shown} of {total} tests",
+    "startTest": "Start Test",
+    "availableIn": "Available in {days} days",
+    "previous": "Previous",
+    "next": "Next",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced",
+    "allDifficulties": "All Difficulties",
+    "sortOptions": {
+      "recent": "Most Recent",
+      "popular": "Most Popular",
+      "duration": "Duration",
+      "difficulty": "Difficulty Level"
+    }
+  },
+  "community": {
+    "title": "Community",
+    "description": "Contribute to our test collection",
+    "createTests": "Create Tests by Uploading a Table",
+    "submitTest": "Submit Test",
+    "loginToContribute": "Login to Contribute",
+    "requiredParameters": "Required Parameters",
+    "questionFormat": "Question Format",
+    "testTitle": "Test title and description",
+    "targetDifficulty": "Target difficulty level",
+    "estimatedDuration": "Estimated duration",
+    "category": "Technology/topic category",
+    "questionsFormat": "Questions in Excel/CSV format",
+    "questionText": "Question text",
+    "multipleChoice": "4 multiple choice options",
+    "correctAnswer": "Correct answer index (1-4)",
+    "explanation": "Explanation for the answer",
+    "codeSnippets": "Optional code snippets",
+    "aiTests": {
+      "title": "Generate Tests with AI Assistance",
+      "description": "Generate tests to 20 questions, specifying the technology focus. You can add a brief description (e.g., tests in english or for emerging technologies) to personalize the AI-generated tests."
+    },
+    "companyTests": {
+      "title": "For Companies: Create Tests in Your Dashboard",
+      "description": "Companies have a dedicated option to create tests directly in the dashboard, where they can attach these tests to job listings for applicants. Candidates must complete the required tests before applying."
+    },
+    "developmentNotice": {
+      "title": "Site Under Development",
+      "description": "This site is continuously improving. Your feedback is valuable to us! Please send any suggestions or comments to chat."
+    },
+    "testSubmissionGuidelines": {
+      "title": "Test Submission Guidelines",
+      "requiredParamsTitle": "Required Parameters",
+      "requiredParamsList": [
+        "Test title and description",
+        "Target difficulty level",
+        "Estimated duration",
+        "Technology/topic category",
+        "Questions in Excel/CSV format"
+      ],
+      "questionFormatTitle": "Question Format",
+      "questionFormatList": [
+        "Question text",
+        "4 multiple choice options",
+        "Correct answer index (1-4)",
+        "Explanation for the answer",
+        "Optional code snippets"
+      ],
+      "submitTest": "Submit Test"
+    }
+  }
+}

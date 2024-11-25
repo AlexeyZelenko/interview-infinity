@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import FeatureBlocks from '../components/FeatureBlocks.vue';
+import FeatureBlocks from '@/components/FeatureBlocks.vue';
 </script>
 
 <template>
   <div class="text-center">
-    <h1 class="text-4xl font-bold mb-8">Find Your Next Tech Opportunity</h1>
+    <h1 class="text-4xl font-bold mb-8">{{ $t('home.title') }}</h1>
   </div>
   <div class="text-center mt-12">
     <p class="text-gray-300 mb-12 max-w-2xl mx-auto">
-      Whether you’re looking for a job in tech or seeking top talent, our platform is designed to connect developers and companies seamlessly.
+      {{ $t('home.description') }}
     </p>
     <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
       <div class="bg-gray-800 p-6 rounded-lg">
@@ -25,18 +25,18 @@ import FeatureBlocks from '../components/FeatureBlocks.vue';
     <div class="text-center mt-10">
       <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         <div class="bg-gray-800 p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold mb-4">For Developers</h2>
-          <p class="mb-4">Showcase your skills, take tests, and find your dream job</p>
+          <h2 class="text-2xl font-semibold mb-4">{{ $t('home.forDevelopers') }}</h2>
+          <p class="mb-4">{{ $t('home.developerDescription') }}</p>
           <router-link to="/register?type=developer" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700">
-            Join as Developer
+            {{ $t('home.joinAsDeveloper') }}
           </router-link>
         </div>
 
         <div class="bg-gray-800 p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold mb-4">For Companies</h2>
-          <p class="mb-4">Find top tech talent and streamline your hiring process</p>
+          <h2 class="text-2xl font-semibold mb-4">{{ $t('home.forCompanies') }}</h2>
+          <p class="mb-4">{{ $t('home.companyDescription') }}</p>
           <router-link to="/register?type=company" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700">
-            Join as Company
+            {{ $t('home.joinAsCompany') }}
           </router-link>
         </div>
       </div>

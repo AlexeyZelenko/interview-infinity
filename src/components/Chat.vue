@@ -12,7 +12,7 @@
         {{ unreadCount }}
       </div>
       <div class="flex items-center space-x-2">
-        <h4 class="font-semibold">Chat</h4>
+        <h4 class="font-semibold">{{ $t('chats.chat') }}</h4>
         <svg
             xmlns="http://www.w3.org/2000/svg"
             class="h-5 w-5 transform transition-transform duration-200"
@@ -59,13 +59,13 @@
                     @click="saveEditedMessage"
                     class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
                 >
-                  Save
+                  {{ $t('chats.save') }}
                 </button>
                 <button
                     @click="cancelEditing"
                     class="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
                 >
-                  Cancel
+                  {{ $t('chats.cancel') }}
                 </button>
               </div>
             </div>
@@ -130,14 +130,14 @@
           <input
               v-model="newMessage"
               type="text"
-              placeholder="Type a message"
+              :placeholder="$t('chats.typeMessage')"
               class="flex-1 px-3 py-2 bg-gray-800 text-gray-200 rounded-lg focus:ring-primary focus:border-primary"
           />
           <button
               @click="sendMessage"
               class="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
           >
-            Send
+            {{ $t('chats.sendMessage') }}
           </button>
         </div>
       </div>
@@ -172,7 +172,6 @@ const unreadCount = ref(0);
 const editingMessageId = ref<string | null>(null);
 const editingMessageText = ref("");
 
-// Проверка существования чата
 // Проверка существования чата
 const ensureChatExists = async () => {
   const chatRef = dbRef(db, `chats/${props.chatId}`);
