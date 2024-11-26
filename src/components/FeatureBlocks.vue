@@ -16,14 +16,16 @@ const features = {
     { icon: "💡", title: 'blocks.features.developer.3.title', description: 'blocks.features.developer.3.description' },
     { icon: "📊", title: 'blocks.features.developer.4.title', description: 'blocks.features.developer.4.description' },
     { icon: "🎯", title: 'blocks.features.developer.5.title', description: 'blocks.features.developer.5.description' },
+    { icon: "💬", title: 'blocks.features.developer.6.title', description: 'blocks.features.developer.6.description' },
   ],
   company: [
     { icon: "👥", title: 'blocks.features.company.0.title', description: 'blocks.features.company.0.description' },
     { icon: "📋", title: 'blocks.features.company.1.title', description: 'blocks.features.company.1.description' },
-    { icon: "📈", title: 'blocks.features.company.2.title', description: 'blocks.features.company.2.description' },
-    { icon: "📮", title: 'blocks.features.company.3.title', description: 'blocks.features.company.3.description' },
-    { icon: "💼", title: 'blocks.features.company.4.title', description: 'blocks.features.company.4.description' },
-    { icon: "📹", title: 'blocks.features.company.5.title', description: 'blocks.features.company.5.description' },
+    { icon: "📝", title: 'blocks.features.company.2.title', description: 'blocks.features.company.2.description' },
+    { icon: "📈", title: 'blocks.features.company.3.title', description: 'blocks.features.company.3.description' },
+    { icon: "📮", title: 'blocks.features.company.4.title', description: 'blocks.features.company.4.description' },
+    { icon: "💼", title: 'blocks.features.company.5.title', description: 'blocks.features.company.5.description' },
+    { icon: "📹", title: 'blocks.features.company.6.title', description: 'blocks.features.company.6.description' },
   ],
   general: [
     { icon: "🗓️", title: 'blocks.features.general.0.title', description: 'blocks.features.general.0.description' },
@@ -68,7 +70,7 @@ onMounted(() => {
       >
         <div class="flex flex-nowrap items-center justify-between">
           <div class="text-4xl">{{ feature.icon }}</div>
-          <h3 class="text-lg font-semibold">{{ $t(feature.title) }}</h3>
+          <h3 v-if="feature.title" class="text-lg font-semibold">{{ $t(feature.title) }}</h3>
         </div>
         <p class="text-gray-300">{{ $t(feature.description) }}</p>
       </div>

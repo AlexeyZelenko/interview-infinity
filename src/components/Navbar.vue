@@ -19,7 +19,8 @@ const menuItems = [
   { path: '/all-resumes', label: 'menu.Resumes' },
   { path: '/tests', label: 'menu.Tests' },
   { path: '/community', label: 'menu.Community' },
-  { path: '/pricing', label: 'menu.Pricing' },
+  { path: '/faq', label: 'menu.Faq' },
+  // { path: '/pricing', label: 'menu.Pricing' },
   { path: '/developers', label: 'menu.Developers' },
 ];
 

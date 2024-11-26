@@ -10,7 +10,8 @@
     "Login": "Login",
     "SignUp": "Sign Up",
     "AdminDashboard": "Admin Dashboard",
-    "Profile": "Profile"
+    "Profile": "Profile",
+    "Faq": "FAQ"
   },
   "home": {
       "title": "Find Your Next Tech Opportunity",
@@ -35,15 +36,17 @@
         { "title": "Create and Manage Resumes", "description": "Easily manage multiple resumes and tailor them for different applications." },
         { "title": "Skill Assessment Tests", "description": "Take tests to prove your skills and increase your chances of landing the right job." },
         { "title": "Track Application Status", "description": "Stay informed about each application’s status, right from your dashboard." },
-        { "title": "Set Job Alerts", "description": "Get alerts for jobs that match your career goals and skill set." }
+        { "title": "Set Job Alerts", "description": "Get alerts for jobs that match your career goals and skill set." },
+        { "title": "Chat with employers", "description": "Send messages to employers directly through the app." }
       ],
       "company": [
         { "title": "Search and Evaluate Candidates", "description": "Find top talent with filters, and review candidates’ test results." },
         { "title": "Create Custom Tests", "description": "Create or generate skill tests in multiple languages and technologies using AI, or upload custom test templates." },
+        { "title": "Add tests from existing ones to your vacancies", "description": "Use pre-prepared tests and add them to your vacancies for a more accurate assessment of candidates. You can choose from a variety of existing tests that will help you assess the knowledge and skills of applicants." },
         { "title": "Track Applicant Progress", "description": "Monitor candidates' test scores and progress directly within the platform." },
         { "title": "Post and Manage Job Listings", "description": "List job openings and reach a large audience of tech professionals." },
         { "title": "Flexible Job Posting", "description": "Post jobs with or without tests, allowing flexibility in hiring processes." },
-        { "title": "Video Test Recording", "description": "Subscribe to enable video recordings of candidates during tests for enhanced screening." }
+        { "title": "Record Video During Tests", "description": "Subscribe to enable video recording of candidates during tests for enhanced verification." }
       ],
       "general": [
         { "title": "One Month Free Access", "description": "Enjoy a full month of free access without the need for credit card information." },
@@ -141,6 +144,36 @@
         "Optional code snippets"
       ],
       "submitTest": "Submit Test"
+    }
+  },
+  "faq": {
+    "title": "User Guide",
+    "sections": {
+      "introduction": "Welcome to our platform.<br><br> Here you can find useful articles, tutorials, and videos to help you get started.",
+      "articles": {
+        "title": "Useful Articles",
+        "description": "Read our detailed articles to understand how to get the most out of our platform."
+      },
+      "video": {
+        "title": "Video Tutorials",
+        "description": "Watch helpful tutorials to guide you through the platform's features."
+      },
+      "faq": {
+        "title": "Frequently Asked Questions",
+        "description": "Find answers to the most common questions."
+      },
+      "functionsOverview": {
+        "title": "Platform Features Overview",
+        "description": "Our platform offers a variety of features to help developers and companies streamline their processes. Whether you are a developer looking for your next job or a company searching for top talent, our platform provides the tools to succeed.",
+        "featuresList": [
+          "Create and share tests using AI or custom templates.",
+          "Browse and apply for tech jobs that match your skills.",
+          "Track your application status in real-time.",
+          "Create and manage resumes tailored for different job applications.",
+          "Find top talent by evaluating their skills with custom tests.",
+          "Publish and manage job postings with flexibility in test requirements."
+        ]
+      }
     }
   }
 }

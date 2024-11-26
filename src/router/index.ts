@@ -80,6 +80,11 @@ const routes = [
         name: 'TestResult',
         component: () => import('../views/TestResult/index.vue')
     },
+    {
+        path: '/faq',
+        name: 'FAQ',
+        component: () => import('../views/FAQ/index.vue')
+    },
     // Admin Routes
     {
         path: '/admin',
