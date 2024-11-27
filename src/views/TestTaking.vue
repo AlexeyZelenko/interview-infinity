@@ -372,17 +372,6 @@ onUnmounted(() => {
               </p>
               <p class="text-sm text-gray-400">Time Remaining</p>
             </div>
-            <div>
-              <!-- Navigation Buttons -->
-              <div class="mt-6 flex justify-between">
-<!--                <button v-if="currentQuestionIndex > 0" @click="currentQuestionIndex&#45;&#45;" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition duration-300 ease-in-out">-->
-<!--                  <i class="fas fa-arrow-left"></i> Previous-->
-<!--                </button>-->
-                <button v-if="selectedAnswer !== null" @click="submitAnswer" class="ml-auto px-6 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition duration-300 ease-in-out">
-                  {{ currentQuestionIndex === store.currentTest.questions.length - 1 ? 'Submit Test' : 'Next' }} <i class="fas fa-arrow-right"></i>
-                </button>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -390,7 +379,18 @@ onUnmounted(() => {
         <div class="w-full bg-gray-700 rounded-full h-2">
           <div class="bg-primary-600 h-2 rounded-full transition-all duration-300" :style="{ width: `${progress}%` }"></div>
         </div>
-        <p class="text-sm text-gray-400 mt-2">Question {{ currentQuestionIndex + 1 }} of {{ store.currentTest.questions?.length }}</p>
+        <div class="flex justify-between my-2" style="min-height: 70px">
+          <p class="text-sm text-gray-400 mt-2">Question {{ currentQuestionIndex + 1 }} of {{ store.currentTest.questions?.length }}</p>
+          <!-- Navigation Buttons -->
+          <div class="mt-6 flex justify-between">
+            <!--                <button v-if="currentQuestionIndex > 0" @click="currentQuestionIndex&#45;&#45;" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition duration-300 ease-in-out">-->
+            <!--                  <i class="fas fa-arrow-left"></i> Previous-->
+            <!--                </button>-->
+            <button v-if="selectedAnswer !== null" @click="submitAnswer" class="ml-auto px-6 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition duration-300 ease-in-out">
+              {{ currentQuestionIndex === store.currentTest.questions.length - 1 ? 'Submit Test' : 'Next' }} <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </div>
       </div>
 
       <!-- Current Question -->
@@ -414,12 +414,12 @@ onUnmounted(() => {
 
         <!-- Navigation Buttons -->
         <div class="mt-6 flex justify-between">
-          <button v-if="currentQuestionIndex > 0" @click="currentQuestionIndex--" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition duration-300 ease-in-out">
-            <i class="fas fa-arrow-left"></i> Previous
-          </button>
-          <button v-if="selectedAnswer !== null" @click="submitAnswer" class="ml-auto px-6 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition duration-300 ease-in-out">
-            {{ currentQuestionIndex === store.currentTest.questions.length - 1 ? 'Submit Test' : 'Next' }} <i class="fas fa-arrow-right"></i>
-          </button>
+<!--          <button v-if="currentQuestionIndex > 0" @click="currentQuestionIndex&#45;&#45;" class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 transition duration-300 ease-in-out">-->
+<!--            <i class="fas fa-arrow-left"></i> Previous-->
+<!--          </button>-->
+<!--          <button v-if="selectedAnswer !== null" @click="submitAnswer" class="ml-auto px-6 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition duration-300 ease-in-out">-->
+<!--            {{ currentQuestionIndex === store.currentTest.questions.length - 1 ? 'Submit Test' : 'Next' }} <i class="fas fa-arrow-right"></i>-->
+<!--          </button>-->
         </div>
       </div>
     </div>

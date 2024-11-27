@@ -156,13 +156,13 @@ onMounted(() => {
             @click="viewResume(resume.id)"
             class="bg-gray-800 p-6 rounded-lg cursor-pointer transition-colors"
         >
-          <div class="flex items-start justify-between mb-4">
-            <div>
+          <div class="w-full flex items-start justify-between mb-4">
+            <div class="w-full">
               <div class="flex justify-between items-center">
                 <h3 class="text-xl font-semibold">{{ resume.title }}</h3>
                 <router-link
                     to="/all-resumes/resume/{{ resume.id }}"
-                    class="text-primary-600"
+                    class="text-primary-600 hover:underline text-align-right"
                 >
                   View Resume
                 </router-link>
