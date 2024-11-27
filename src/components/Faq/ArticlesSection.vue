@@ -35,8 +35,20 @@ const arrayArticles = reactive([
   {
     id: 6,
     title: 'How to add a new test to an existing vacancy',
-    description: '',
+    description: 'Як додати новий тест до наявної вакансії',
     link: 'https://www.loom.com/share/2efcdcd49e774607a71e3d942cb9324b?sid=30f88d82-e21c-49cf-b357-b8466efff3df'
+  },
+  {
+    id: 7,
+    title: 'Як додати нову вакансію та додати до неї тести',
+    description: 'Дізнайиеся як вибрати тестове завдання для кандидатів',
+    link: 'https://www.loom.com/share/8d5af865867f4292b6a49daf29285606?sid=8a4f5bb1-98d0-4ff7-98b3-10f787605af7'
+  },
+  {
+    id: 8,
+    title: 'Перевірка теста та спілкування з кандидатом',
+    description: 'Як перевірити тест, який відправив кандидат, та спілкуватися з ним',
+    link: 'https://www.loom.com/share/facdcfe659dd49fbaef86f9cbfc222b4?sid=eb2df441-c91e-4a54-8a99-2a21b8b0a88c'
   }
 ])
 
@@ -56,6 +68,7 @@ onMounted(() => {
     >
       <li>
         <a :href="article.link" target="_blank">{{ article.title }}</a>
+        <p class="text-black text-sm">{{article.description}}</p>
       </li>
     </ul>
   </section>

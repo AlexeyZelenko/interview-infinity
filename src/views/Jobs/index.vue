@@ -578,5 +578,12 @@ onMounted(async () => {
         </div>
       </div>
     </div>
+
+    <!-- Company Info Modal -->
+    <CompanyInfoModal
+        v-if="showCompanyInfo"
+        :company="showCompanyInfo"
+        @close="showCompanyInfo = null"
+    />
   </div>
 </template>

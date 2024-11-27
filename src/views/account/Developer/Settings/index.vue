@@ -24,7 +24,7 @@ interface User {
   };
   codewarsUsername: string;
   technologies: string[];
-  show?: string;
+  show?: boolean;
 }
 
 interface TestResult {
@@ -48,7 +48,7 @@ const user = ref<User>({
   contacts: {},
   codewarsUsername: '',
   technologies: [],
-  show: 'yes'
+  show: true
 });
 
 const codewarsData = ref<any>(null); // Хранение данных Codewars
@@ -162,6 +162,7 @@ const onSubmit = async () => {
       return;
     }
 
+    console.log("User data to save/update", user.value);
     const uid = currentUser.value.uid;
     const userRef = doc(db, "users", uid);
     await setDoc(userRef, {
@@ -232,8 +233,8 @@ const checkCodewarsConnection = async (username: string) => {
 
         <label for="show" class="block mb-2">Show in developer list</label>
         <select v-model="user.show" id="show" class="w-full p-2 mb-4 bg-gray-700 rounded">
-          <option value="true">Yes</option>
-          <option value="false">No</option>
+          <option :value="true">Yes</option>
+          <option :value="false">No</option>
         </select>
 
         <label from="about" class="block mb-2">About</label>
