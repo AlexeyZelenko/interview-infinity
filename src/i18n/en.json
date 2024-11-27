@@ -298,6 +298,7 @@
     "next": "Next",
     "jobDetails": "Job Details",
     "popularSkills": "Popular skills:",
-    "results": "jobs found"
+    "results": "jobs found",
+    "loading": "Loading jobs..."
   }
 }

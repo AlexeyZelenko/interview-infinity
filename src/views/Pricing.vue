@@ -18,9 +18,10 @@ const plans = [
     period: 'month',
     features: [
       'Basic profile access',
-      '3 job postings',
+      '10 job postings',
       'Limited test access',
-      '30-day trial'
+      '60-day trial',
+      'Support'
     ],
     buttonText: 'Start Free Trial'
   },
@@ -31,9 +32,9 @@ const plans = [
     period: 'month',
     features: [
       'Full profile access',
-      '10 job postings',
+      '20 job postings',
       'Basic test access',
-      'Email support'
+      'Support'
     ],
     popular: false
   },
