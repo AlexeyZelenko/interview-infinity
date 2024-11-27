@@ -258,21 +258,21 @@ onMounted(async () => {
 <template>
   <div class="max-w-7xl mx-auto">
     <div class="flex flex-wrap justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold my-4">Jobs</h1>
+      <h1 class="text-3xl font-bold my-4">{{ $t('jobList.title') }}</h1>
       <div class="flex gap-4">
         <input
             v-model="filters.search"
             type="text"
-            placeholder="Search jobs..."
+            :placeholder="$t('jobList.searchPlaceholder')"
             class="px-4 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
         />
         <select
             v-model="filters.sortBy"
             class="px-4 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
         >
-          <option value="recent">Most Recent</option>
-          <option value="salary">Highest Salary</option>
-          <option value="relevance">Most Relevant</option>
+          <option value="recent">{{ $t('jobList.sortBy.recent') }}</option>
+          <option value="salary">{{ $t('jobList.sortBy.salary') }}</option>
+          <option value="relevance">{{ $t('jobList.sortBy.relevance') }}</option>
         </select>
       </div>
     </div>
@@ -282,22 +282,22 @@ onMounted(async () => {
       <div class="space-y-6">
         <div class="bg-gray-800 rounded-lg p-4">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">Filters</h2>
+            <h2 class="text-lg font-semibold">{{ $t('jobList.filters.title') }}</h2>
             <button
                 @click="clearFilters"
                 class="text-sm text-primary-400 hover:text-primary-300"
             >
-              Clear all
+              {{ $t('jobList.clearFilters') }}
             </button>
           </div>
 
           <!-- Location -->
           <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Location</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('jobList.filters.location') }}</label>
             <input
                 v-model="filters.location"
                 type="text"
-                placeholder="City or Remote"
+                :placeholder="$t('jobList.filters.location')"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             />
           </div>
@@ -309,17 +309,17 @@ onMounted(async () => {
                 type="checkbox"
                 class="rounded border-gray-600 text-primary-600 focus:ring-primary-500"
             />
-            <label class="ml-2">Remote Only</label>
+            <label class="ml-2">{{ $t('jobList.filters.remote') }}</label>
           </div>
 
           <!-- Job Type -->
           <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Job Type</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('jobList.filters.jobType') }}</label>
             <select
                 v-model="filters.type"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             >
-              <option value="">All Types</option>
+              <option value="">{{ $t('jobList.filters.jobType') }}</option>
               <option v-for="type in jobTypes" :key="type" :value="type">
                 {{ type }}
               </option>
@@ -328,12 +328,12 @@ onMounted(async () => {
 
           <!-- Experience -->
           <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Experience</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('jobList.filters.experience') }}</label>
             <select
                 v-model="filters.experience"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             >
-              <option value="">All Levels</option>
+              <option value="">{{ $t('jobList.filters.experience') }}</option>
               <option v-for="level in experienceLevels" :key="level" :value="level">
                 {{ level }}
               </option>
@@ -342,12 +342,12 @@ onMounted(async () => {
 
           <!-- Salary Range -->
           <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">Salary Range</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('jobList.filters.salary') }}</label>
             <select
                 v-model="filters.salary"
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
             >
-              <option value="">All Ranges</option>
+              <option value="">{{ $t('jobList.filters.salary') }}</option>
               <option v-for="range in salaryRanges" :key="range" :value="range">
                 {{ range }}
               </option>
@@ -356,13 +356,13 @@ onMounted(async () => {
 
           <!-- Skills -->
           <div>
-            <label class="block text-sm font-medium mb-2">Skills</label>
+            <label class="block text-sm font-medium mb-2">{{ $t('jobList.filters.skills') }}</label>
             <div class="space-y-2">
               <div class="flex gap-2">
                 <input
                     v-model="newSkill"
                     type="text"
-                    placeholder="Add a skill"
+                    :placeholder="$t('jobList.filters.skills')"
                     class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
                     @keyup.enter="toggleSkill(newSkill)"
                 />
@@ -391,7 +391,7 @@ onMounted(async () => {
               </div>
 
               <div class="mt-2">
-                <p class="text-sm text-gray-400 mb-1">Popular skills:</p>
+                <p class="text-sm text-gray-400 mb-1">{{ $t('jobList.popularSkills') }}</p>
                 <div class="flex flex-wrap gap-1">
                   <button
                       v-for="skill in popularSkills"
@@ -415,13 +415,14 @@ onMounted(async () => {
         <!-- Sort and Results Count -->
         <div class="bg-gray-800 rounded-lg p-4 flex justify-between items-center">
           <p class="text-gray-300">
-            {{ filteredJobs.length }} jobs found
+            {{ filteredJobs.length }} {{ $t('jobList.results') }}
           </p>
         </div>
 
+        <!-- Loading, Error, and No Jobs Found -->
         <div v-if="loading" class="text-center py-8">
           <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p>Loading jobs...</p>
+          <p>{{ $t('jobList.loading') }}</p>
         </div>
 
         <div v-else-if="error" class="bg-red-500/10 text-red-400 p-4 rounded-lg">
@@ -429,12 +430,12 @@ onMounted(async () => {
         </div>
 
         <div v-else-if="filteredJobs.length === 0" class="bg-gray-800 rounded-lg p-6 text-center">
-          <p class="text-gray-300 mb-4">No jobs found matching your criteria.</p>
+          <p class="text-gray-300 mb-4">{{ $t('jobList.noJobsFound') }}</p>
           <button
               @click="clearFilters"
               class="text-primary-400 hover:text-primary-300"
           >
-            Clear all filters
+            {{ $t('jobList.clearFilters') }}
           </button>
         </div>
 
@@ -452,11 +453,11 @@ onMounted(async () => {
                   <span
                       v-if="job.status === 'closed'"
                       class="text-sm ml-1 text-red-400 px-3 py-1 rounded-full bg-red-500/10"
-                  >{{job.status}}</span>
+                  >{{ job.status }}</span>
                   <span
                       v-else
                       class="text-sm ml-1 text-green-400 px-3 py-1 rounded-full bg-green-500/10"
-                  >{{job.status}}</span>
+                  >{{ job.status }}</span>
                 </h2>
                 <div class="flex items-center gap-2">
                   <button
@@ -464,7 +465,7 @@ onMounted(async () => {
                       class="text-xl text-gray-300 hover:text-white"
                   >
                     {{ job.company }}
-                    <span class="text-sm ml-1 text-blue-400">View details</span>
+                    <span class="text-sm ml-1 text-blue-400">{{ $t('jobList.viewDetails') }}</span>
                   </button>
                 </div>
                 <!-- Company preview -->
@@ -492,7 +493,7 @@ onMounted(async () => {
                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
                 {{ job.location }}
-                <span v-if="job.remote" class="ml-1">(Remote)</span>
+                <span v-if="job.remote" class="ml-1">{{ $t('jobList.remote') }}</span>
               </span>
               <span class="flex items-center">
                 <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -516,7 +517,7 @@ onMounted(async () => {
 
             <!-- Required Tests Section -->
             <div v-if="job.tests?.length" class="mt-4 border-t border-gray-700 pt-4">
-              <h3 class="text-sm font-medium mb-2">Tests:</h3>
+              <h3 class="text-sm font-medium mb-2">{{ $t('jobList.tests') }}:</h3>
               <div class="flex flex-col flex-wrap gap-2">
                 <span
                     v-for="test in job.tests"
@@ -525,7 +526,7 @@ onMounted(async () => {
                     :class="{ 'text-red-400': test.isRequired }"
                 >
                   {{ test.title }}
-                  <span v-if="test.isRequired" class="ml-1">* Required</span>
+                  <span v-if="test.isRequired" class="ml-1">{{ $t('jobList.required') }}</span>
                 </span>
               </div>
             </div>
@@ -538,7 +539,7 @@ onMounted(async () => {
                   v-if="applicationsStore.hasApplied(job.id)"
                   class="bg-green-500/10 text-green-400 px-2 py-1 rounded-full text-sm"
               >
-                Applied
+                {{ $t('jobList.applied') }}
               </span>
             </div>
           </div>
@@ -552,19 +553,14 @@ onMounted(async () => {
                 :disabled="currentPage === 1"
                 class="px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
             >
-              Previous
+              {{ $t('jobList.previous') }}
             </button>
 
             <div v-for="page in pageNumbers" :key="page" class="flex items-center">
               <button
                   v-if="typeof page === 'number'"
                   @click="currentPage = page"
-                  :class="[
-                  'px-3 py-1 rounded-md',
-                  currentPage === page
-                    ? 'bg-primary-600 text-white'
-                    : 'bg-gray-700 hover:bg-gray-600'
-                ]"
+                  :class="[ 'px-3 py-1 rounded-md', currentPage === page ? 'bg-primary-600 text-white' : 'bg-gray-700 hover:bg-gray-600' ]"
               >
                 {{ page }}
               </button>
@@ -576,18 +572,11 @@ onMounted(async () => {
                 :disabled="currentPage === totalPages"
                 class="px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
             >
-              Next
+              {{ $t('jobList.next') }}
             </button>
           </nav>
         </div>
       </div>
     </div>
-
-    <!-- Company Info Modal -->
-    <CompanyInfoModal
-        v-if="showCompanyInfo"
-        :company="showCompanyInfo"
-        @close="showCompanyInfo = null"
-    />
   </div>
 </template>

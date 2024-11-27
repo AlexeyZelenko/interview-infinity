@@ -6,7 +6,7 @@ import FeatureBlocks from '@/components/FeatureBlocks.vue';
   <div class="text-center">
     <h1 class="text-4xl font-bold mb-8">{{ $t('home.title') }}</h1>
   </div>
-  <div class="text-center mt-12">
+  <div class="text-center mt-12 p-2">
     <p class="text-gray-300 mb-12 max-w-2xl mx-auto">
       {{ $t('home.description') }}
     </p>
@@ -18,7 +18,6 @@ import FeatureBlocks from '@/components/FeatureBlocks.vue';
         <FeatureBlocks type="company" />
       </div>
     </div>
-
     <div class="bg-gray-800 p-6 rounded-lg mt-12 max-w-3xl mx-auto">
       <FeatureBlocks type="general" />
     </div>

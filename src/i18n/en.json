@@ -65,7 +65,8 @@
     "cancel": "Cancel",
     "loading": "Loading...",
     "errorLoading": "Error loading data. Please try again.",
-    "typeMessage": "Type a message"
+    "typeMessage": "Type a message",
+    "send": "Send"
   },
   "tests": {
     "skillTests": "Skill Tests",
@@ -264,5 +265,39 @@
     "updatingTest": "Updating Test...",
     "updateTest": "Update Test",
     "correct": "Correct"
+  },
+  "jobList": {
+    "title": "Jobs",
+    "searchPlaceholder": "Search jobs...",
+    "sortBy": {
+      "recent": "Most Recent",
+      "salary": "Highest Salary",
+      "relevance": "Most Relevant"
+    },
+    "filters": {
+      "title": "Filters",
+      "location": "Location",
+      "remote": "Remote Only",
+      "jobType": "Job Type",
+      "experience": "Experience",
+      "salary": "Salary Range",
+      "skills": "Skills"
+    },
+    "clearFilters": "Clear all",
+    "noJobsFound": "No jobs found matching your criteria.",
+    "createFirstJob": "Create Your First Job",
+    "apply": "Apply",
+    "applied": "Applied",
+    "viewDetails": "View details",
+    "location": "Location",
+    "remote": "Remote",
+    "type": "Type",
+    "tests": "Tests",
+    "required": "Required",
+    "previous": "Previous",
+    "next": "Next",
+    "jobDetails": "Job Details",
+    "popularSkills": "Popular skills:",
+    "results": "jobs found"
   }
 }

@@ -104,7 +104,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="fixed bottom-4 right-4 bg-gray-800 rounded-lg shadow-lg p-4">
+  <div class="fixed bottom-4 left-4 bg-gray-800 rounded-lg shadow-lg p-4">
     <!-- Optional webcam toggle -->
     <div class="mb-4">
       <label class="flex items-center space-x-2">

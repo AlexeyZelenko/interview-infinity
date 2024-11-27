@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-blue-300 fixed bottom-4 right-4 w-60 shadow-lg">
+  <div class="fixed bottom-4 left-4 bg-gray-800 rounded-lg shadow-lg p-4">
     <!-- Заголовок чата -->
     <div
         class="text-white px-4 py-2 rounded-t-lg flex justify-between items-center cursor-pointer"
@@ -12,7 +12,7 @@
         >
           {{ unreadCount }}
         </div>
-        <h4 class="font-semibold">Chat</h4>
+        <h4 class="font-semibold">{{ $t('chats.chat') }}</h4>
       </div>
       <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -89,14 +89,14 @@
               v-model="newMessage"
               type="text"
               rows="2"
-              placeholder="Type a message"
+              :placeholder="$t('chats.typeMessage')"
               class="flex-1 px-3 py-1 text-gray-600 rounded-lg focus:ring-primary focus:border-primary"
           ></textarea>
           <button
               @click.prevent.stop="sendMessage"
               class="px-2 py-2 bg-blue-400 text-white rounded-lg hover:bg-blue-600"
           >
-            Send
+            {{ $t('chats.send') }}
           </button>
         </div>
       </div>
