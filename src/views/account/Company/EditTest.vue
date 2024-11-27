@@ -209,7 +209,7 @@ const handleSubmit = async () => {
           </div>
 
           <!-- isVideoRecord -->
-          <div class="flex flex-col gap-2">
+          <div style="display: none" class="flex flex-col gap-2">
             <label for="video-record" class="text-sm font-semibold">Video Recording Requirement</label>
             <div class="flex items-center gap-2">
               <input

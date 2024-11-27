@@ -70,7 +70,7 @@
       </div>
 
       <!-- Video Recording Option -->
-      <div class="flex items-center gap-2">
+      <div style="display: none" class="flex items-center gap-2">
         <input
             type="checkbox"
             v-model="formData.isVideoRecord"
