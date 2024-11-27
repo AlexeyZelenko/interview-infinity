@@ -17,8 +17,20 @@ import {
     TestAnswer,
     TestAttemptDetails
 } from '../types/tests';
+import moment from "moment-timezone";
+import { useTelegramStore } from "@/stores/telegram.ts";
 
+const telegramStore = useTelegramStore();
 const authStore= useAuthStore();
+
+interface TelegramMessage {
+    sender: string;
+    text: string;
+    timestamp?: string | number | Date | null;
+    role: string;
+    read?: boolean;
+    targetUserId: number;
+}
 
 export const useTestStore = defineStore('tests', {
     state: () => ({
@@ -142,6 +154,26 @@ export const useTestStore = defineStore('tests', {
 
                 if(authStore.user) {
                     await addDoc(collection(db, 'testSubmissions'), submissionData);
+
+
+
+                    const getUkraineTimestamp = () => {
+                        return moment().tz('Europe/Kiev').format('YYYY-MM-DD HH:mm:ss');
+                    };
+
+                    const messageTelegram: TelegramMessage = {
+                        sender: authStore.user.uid || 'guest',
+                        text: 'Request for test creation',
+                        timestamp: getUkraineTimestamp() || null,
+                        role: "user",
+                        read: false,
+                        targetUserId: 876117897, // ID администратора
+                    };
+                    const messagesRef = submission.id || 'guest';
+
+                    // Уведомление бота
+                    await telegramStore.notifyNewMessageToTelegramBot(messagesRef, messageTelegram);
+
                 } else {
                     this.testResults.push(submissionData);
                 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ref, Ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useJobsStore } from '../../stores/jobs';
+import { useJobsStore } from '@/stores/jobs';
 
 const router = useRouter();
 const jobsStore = useJobsStore();
@@ -79,39 +79,46 @@ const handleSubmit = async () => {
 
 <template>
   <div class="max-w-3xl">
-    <h2 class="text-2xl font-bold mb-6">Post New Job</h2>
+    <h2 class="text-2xl font-bold mb-6">{{ $t("jobPost.title") }}</h2>
+
+    <div class="justify-center bg-orange-300 border-b-gray-500 border-r-amber-600 my-4 p-2 rounded-lg">
+      <p class="p-4 text-orange-600">{{ $t("jobPost.informationMessage") }}</p>
+      <router-link to="/company/profile" class="text-blue-600 m-2 p-2 hover:text-blue-400">
+        {{ $t("jobPost.fillCompanyInfo") }}
+      </router-link>
+    </div>
 
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <!-- Basic Information -->
       <div class="bg-gray-800 rounded-lg p-6">
-        <h3 class="text-xl font-semibold mb-4">Basic Information</h3>
+        <h3 class="text-xl font-semibold mb-4">{{ $t("jobPost.basicInformation") }}</h3>
 
         <div class="space-y-4">
           <div>
-            <label class="block text-sm font-medium mb-2">Job Title</label>
+            <label class="block text-sm font-medium mb-2">{{ $t("jobPost.jobTitle") }}</label>
             <input
                 v-model="job.title"
                 type="text"
                 required
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                placeholder="e.g., Senior Frontend Developer"
+                :placeholder="$t('jobPost.exampleJobTitle')"
             />
           </div>
 
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium mb-2">Location</label>
+              <label class="block text-sm font-medium mb-2">{{ $t("jobPost.location") }}</label>
               <input
                   v-model="job.location"
                   type="text"
                   required
                   class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="e.g., New York, NY or Remote"
+                  :placeholder="$t('jobPost.exampleLocation')"
               />
             </div>
 
             <div>
-              <label class="block text-sm font-medium mb-2">Job Type</label>
+              <label class="block text-sm font-medium mb-2">{{ $t("jobPost.jobType") }}</label>
               <select
                   v-model="job.type"
                   class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
@@ -124,7 +131,7 @@ const handleSubmit = async () => {
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-2">Salary Range</label>
+            <label class="block text-sm font-medium mb-2">{{ $t("jobPost.salaryRange") }}</label>
             <div class="grid md:grid-cols-2 gap-4">
               <div>
                 <input
@@ -132,7 +139,7 @@ const handleSubmit = async () => {
                     type="number"
                     min="0"
                     class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Minimum"
+                    :placeholder="$t('jobPost.minimum')"
                 />
               </div>
               <div>
@@ -141,20 +148,20 @@ const handleSubmit = async () => {
                     type="number"
                     min="0"
                     class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Maximum"
+                    :placeholder="$t('jobPost.maximum')"
                 />
               </div>
             </div>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-2">Job Description</label>
+            <label class="block text-sm font-medium mb-2">{{ $t("jobPost.jobDescription") }}</label>
             <textarea
                 v-model="job.description"
                 rows="4"
                 required
                 class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Describe the role and responsibilities"
+                :placeholder="$t('jobPost.descriptionPlaceholder')"
             ></textarea>
           </div>
         </div>
@@ -162,7 +169,7 @@ const handleSubmit = async () => {
 
       <!-- Requirements -->
       <div class="bg-gray-800 rounded-lg p-6">
-        <h3 class="text-xl font-semibold mb-4">Requirements</h3>
+        <h3 class="text-xl font-semibold mb-4">{{ $t("jobPost.requirements") }}</h3>
 
         <div class="space-y-4">
           <div class="flex gap-2">
@@ -170,7 +177,7 @@ const handleSubmit = async () => {
                 v-model="newRequirement"
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Add a requirement"
+                :placeholder="$t('jobPost.addRequirement')"
                 @keyup.enter="() => { addItem(job.requirements, newRequirement); newRequirement = ''; }"
             />
             <button
@@ -178,7 +185,7 @@ const handleSubmit = async () => {
                 @click="() => { addItem(job.requirements, newRequirement); newRequirement = ''; }"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
-              Add
+              {{ $t('jobPost.add') }}
             </button>
           </div>
 
@@ -194,7 +201,7 @@ const handleSubmit = async () => {
                   @click="removeItem(job.requirements, index)"
                   class="text-red-400 hover:text-red-300"
               >
-                Remove
+                {{ $t('jobPost.remove') }}
               </button>
             </li>
           </ul>
@@ -203,7 +210,7 @@ const handleSubmit = async () => {
 
       <!-- Responsibilities -->
       <div class="bg-gray-800 rounded-lg p-6">
-        <h3 class="text-xl font-semibold mb-4">Responsibilities</h3>
+        <h3 class="text-xl font-semibold mb-4">{{ $t("jobPost.responsibilities") }}</h3>
 
         <div class="space-y-4">
           <div class="flex gap-2">
@@ -211,15 +218,15 @@ const handleSubmit = async () => {
                 v-model="newResponsibility"
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Add a responsibility"
+                :placeholder="$t('jobPost.addResponsibility')"
                 @keyup.enter="() => { addItem(job.responsibilities, newResponsibility); newResponsibility = ''; }"
             />
             <button
                 type="button"
-                @click="() => { addItem(job.responsibilities, newResponsibility); newResponsibility= ''}"
+                @click="() => { addItem(job.responsibilities, newResponsibility); newResponsibility= ''} "
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
-              Add
+              {{ $t('jobPost.add') }}
             </button>
           </div>
 
@@ -235,7 +242,7 @@ const handleSubmit = async () => {
                   @click="removeItem(job.responsibilities, index)"
                   class="text-red-400 hover:text-red-300"
               >
-                Remove
+                {{ $t('jobPost.remove') }}
               </button>
             </li>
           </ul>
@@ -244,7 +251,7 @@ const handleSubmit = async () => {
 
       <!-- Benefits -->
       <div class="bg-gray-800 rounded-lg p-6">
-        <h3 class="text-xl font-semibold mb-4">Benefits</h3>
+        <h3 class="text-xl font-semibold mb-4">{{ $t("jobPost.benefits") }}</h3>
 
         <div class="space-y-4">
           <div class="flex gap-2">
@@ -252,7 +259,7 @@ const handleSubmit = async () => {
                 v-model="newBenefit"
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Add a benefit"
+                :placeholder="$t('jobPost.addBenefit')"
                 @keyup.enter="() => { addItem(job.benefits, newBenefit); newBenefit = ''; }"
             />
             <button
@@ -260,7 +267,7 @@ const handleSubmit = async () => {
                 @click="() => { addItem(job.benefits, newBenefit); newBenefit = ''; }"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
-              Add
+              {{ $t('jobPost.add') }}
             </button>
           </div>
 
@@ -276,7 +283,7 @@ const handleSubmit = async () => {
                   @click="removeItem(job.benefits, index)"
                   class="text-red-400 hover:text-red-300"
               >
-                Remove
+                {{ $t('jobPost.remove') }}
               </button>
             </li>
           </ul>
@@ -285,7 +292,7 @@ const handleSubmit = async () => {
 
       <!-- Required Skills -->
       <div class="bg-gray-800 rounded-lg p-6">
-        <h3 class="text-xl font-semibold mb-4">Required Skills</h3>
+        <h3 class="text-xl font-semibold mb-4">{{ $t("jobPost.requiredSkills") }}</h3>
 
         <div class="space-y-4">
           <div class="flex gap-2">
@@ -293,7 +300,7 @@ const handleSubmit = async () => {
                 v-model="newSkill"
                 type="text"
                 class="flex-1 px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Add a skill"
+                :placeholder="$t('jobPost.addSkill')"
                 @keyup.enter="() => { addItem(job.skills, newSkill); newSkill = ''; }"
             />
             <button
@@ -301,7 +308,7 @@ const handleSubmit = async () => {
                 @click="() => { addItem(job.skills, newSkill); newSkill = ''; }"
                 class="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
             >
-              Add
+              {{ $t('jobPost.add') }}
             </button>
           </div>
 
@@ -334,14 +341,14 @@ const handleSubmit = async () => {
             @click="router.push('/company/jobs')"
             class="px-6 py-2 bg-gray-700 rounded hover:bg-gray-600"
         >
-          Cancel
+          {{ $t("jobPost.cancel") }}
         </button>
         <button
             type="submit"
             :disabled="loading"
             class="px-6 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 disabled:opacity-50"
         >
-          {{ loading ? 'Creating...' : 'Create Job' }}
+          {{ loading ? $t("jobPost.creating") : $t("jobPost.createJob") }}
         </button>
       </div>
     </form>

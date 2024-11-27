@@ -98,18 +98,18 @@ onMounted(async () => {
 <template>
   <div class="max-w-4xl">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold">Job Listings</h2>
+      <h2 class="text-2xl font-bold">{{ $t('jobListings.title') }}</h2>
       <router-link
           to="/company/jobs/create"
           class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
       >
-        Post New Job
+        {{ $t('jobListings.postNewJob') }}
       </router-link>
     </div>
 
     <div v-if="loading" class="text-center py-8">
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
-      <p>Loading jobs...</p>
+      <p>{{ $t('jobListings.loading') }}</p>
     </div>
 
     <div v-else-if="error" class="bg-red-500/10 text-red-400 p-4 rounded-lg mb-6">
@@ -117,12 +117,12 @@ onMounted(async () => {
     </div>
 
     <div v-else-if="jobsStore.companyJobs.length === 0" class="bg-gray-800 rounded-lg p-6 text-center">
-      <p class="text-gray-300 mb-4">You haven't posted any jobs yet.</p>
+      <p class="text-gray-300 mb-4">{{ $t('jobListings.noJobsPosted') }}</p>
       <router-link
           to="/company/jobs/create"
           class="inline-block bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
       >
-        Post Your First Job
+        {{ $t('jobListings.postFirstJob') }}
       </router-link>
     </div>
 
@@ -149,7 +149,7 @@ onMounted(async () => {
 
         <!-- Attached Tests Section -->
         <div v-if="job.tests?.length" class="mt-4 border-t border-gray-700 pt-4">
-          <h4 class="font-medium mb-2">Required Tests</h4>
+          <h4 class="font-medium mb-2">{{ $t('jobListings.requiredTests') }}</h4>
           <div class="space-y-2">
             <div
                 v-for="test in job.tests"
@@ -160,7 +160,7 @@ onMounted(async () => {
                 <p class="font-medium">{{ test.title }}</p>
                 <p class="text-sm text-gray-400">
                   {{ test.duration }} minutes •
-                  {{ test.isRequired ? 'Required' : 'Optional' }}
+                  {{ test.isRequired ? $t('jobListings.required') : $t('jobListings.optional') }}
                 </p>
               </div>
               <div class="flex gap-2">
@@ -168,34 +168,16 @@ onMounted(async () => {
                     :to="{ path: `/company/tests/${test.testId}/results`, query: { jobId: job.id }}"
                     class="px-3 py-1 bg-gray-600 rounded hover:bg-gray-500"
                 >
-                  View Results
+                  {{ $t('jobListings.viewResults') }}
                 </router-link>
 
                 <button
                     @click="removeTest(test.testId, job.id)"
                     class="px-3 py-1 bg-red-600/20 text-red-400 rounded hover:bg-red-600/30"
                 >
-                  Remove
+                  {{ $t('jobListings.remove') }}
                 </button>
               </div>
-            </div>
-          </div>
-          <div class="flex justify-end">
-            <div class="mt-2 flex justify-end mr-4">
-              <router-link
-                  :to="`/company/create-test-manual?jobId=${job.id}`"
-                  class="text-primary-400 hover:text-primary-300"
-              >
-                Create new test
-              </router-link>
-            </div>
-            <div class="mt-2 mx-2 flex justify-end">
-              <router-link
-                  to="/company/add-test"
-                  class="text-primary-400 hover:text-primary-300"
-              >
-                Add test from list
-              </router-link>
             </div>
           </div>
         </div>
@@ -203,48 +185,48 @@ onMounted(async () => {
         <div class="mt-4 flex justify-between items-center">
           <div class="flex items-center gap-4">
             <span class="text-gray-400">
-              {{ applicationsStore.getJobApplications(job.id).length || 0 }} applicant{{ applicationsStore.getJobApplications(job.id).length !== 1 ? 's' : '' }}
+              {{ applicationsStore.getJobApplications(job.id).length || 0 }} {{$t('jobListings.applicant')}}{{ applicationsStore.getJobApplications(job.id).length !== 1 ? 's' : '' }}
             </span>
             <router-link
                 :to="`/company/jobs/${job.id}/applicants`"
                 class="text-primary-400 hover:text-primary-300"
             >
-              View Applicants
+              {{ $t('jobListings.viewApplicants') }}
             </router-link>
           </div>
-          <div
-              v-if="unreadMessagesMap[job.id] > 0"
-          >
-            <span class="text-sm">Unread messages:</span>
-            <span class="bg-red-400 text-amber-50 py-1 px-2 rounded-2xl text-xs ml-2">{{ unreadMessagesMap[job.id]}}</span>
+
+          <div v-if="unreadMessagesMap[job.id] > 0">
+            <span class="text-sm">{{ $t('jobListings.unreadMessages') }}</span>
+            <span class="bg-red-400 text-amber-50 py-1 px-2 rounded-2xl text-xs ml-2">{{ unreadMessagesMap[job.id] }}</span>
           </div>
+
           <div class="flex gap-2">
             <router-link
                 :to="`/company/jobs/${job.id}/edit`"
                 class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
             >
-              Edit
+              {{ $t('jobListings.edit') }}
             </router-link>
             <button
                 v-if="job.status === 'active'"
                 @click="jobsStore.updateJobStatus(job.id, 'closed')"
                 class="px-3 py-1 bg-gray-700 rounded hover:bg-gray-600"
             >
-              Close
+              {{ $t('jobListings.close') }}
             </button>
             <button
                 v-if="job.status === 'closed'"
                 @click="jobsStore.updateJobStatus(job.id, 'active')"
                 class="px-3 py-1 bg-green-600 rounded hover:bg-green-700"
             >
-              Reopen
+              {{ $t('jobListings.reopen') }}
             </button>
             <button
                 v-if="job.status === 'closed'"
                 @click="jobsStore.deleteJob(job.id)"
                 class="px-3 py-1 bg-red-600 rounded hover:bg-red-700"
             >
-              Delete
+              {{ $t('jobListings.delete') }}
             </button>
           </div>
         </div>

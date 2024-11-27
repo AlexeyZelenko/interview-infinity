@@ -51,7 +51,6 @@ const loadTests = async () => {
 
     if (testsSnapshot.empty) {
       console.log('No tests found');
-      toast.error(`No tests found`);
       return;
     }
 
@@ -95,8 +94,6 @@ const loadTests = async () => {
             : 0
       };
     });
-
-    console.log('Tests:', tests.value);
 
   } catch (err) {
     console.error(err);
@@ -146,24 +143,26 @@ onMounted(loadTests);
 <template>
   <div class="max-w-4xl">
     <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold">Company Tests</h2>
-      <router-link
-          to="/company/create-test-manual"
-          class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
-      >
-        Create New Test
-      </router-link>
-      <router-link
-          to="/company/add-test"
-          class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
-      >
-        Add Test
-      </router-link>
+      <h2 class="text-2xl font-bold">{{ $t('companyTests.title') }}</h2>
+      <div class="flex justify-end">
+        <router-link
+            to="/company/create-test-manual"
+            class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 mx-2"
+        >
+          {{ $t('companyTests.createNewTest') }}
+        </router-link>
+        <router-link
+            to="/company/add-test"
+            class="bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
+        >
+          {{ $t('companyTests.addTest') }}
+        </router-link>
+      </div>
     </div>
 
     <div v-if="loading" class="text-center py-8">
       <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
-      <p>Loading tests...</p>
+      <p>{{ $t('companyTests.loading') }}</p>
     </div>
 
     <div v-else-if="error" class="bg-red-500/10 text-red-400 p-4 rounded-lg">
@@ -171,12 +170,12 @@ onMounted(loadTests);
     </div>
 
     <div v-else-if="tests.length === 0" class="bg-gray-800 rounded-lg p-6 text-center">
-      <p class="text-gray-300 mb-4">You haven't created any tests yet.</p>
+      <p class="text-gray-300 mb-4">{{ $t('companyTests.noTestsCreated') }}</p>
       <router-link
           to="/company/create-test-manual"
           class="inline-block bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700"
       >
-        Create Your First Test
+        {{ $t('companyTests.createYourFirstTest') }}
       </router-link>
     </div>
 
@@ -199,17 +198,11 @@ onMounted(loadTests);
               Linked to job: {{ test.jobTitle }}
             </p>
           </div>
-<!--          <div class="text-right">-->
-<!--            <p class="text-2xl font-bold" :class="test.passRate >= 70 ? 'text-green-400' : 'text-yellow-400'">-->
-<!--              {{ Math.round(test.passRate) }}%-->
-<!--            </p>-->
-<!--            <p class="text-sm text-gray-400">Pass Rate</p>-->
-<!--          </div>-->
         </div>
 
         <!-- Test Results -->
         <div v-if="test.results.length > 0" class="mt-4">
-          <h4 class="font-medium mb-2">Recent Results</h4>
+          <h4 class="font-medium mb-2">{{ $t('companyTests.recentResults') }}</h4>
           <div class="space-y-2">
             <div
                 v-for="result in test.results"
@@ -232,27 +225,21 @@ onMounted(loadTests);
           </div>
         </div>
 
-        <!-- Удаление теста -->
+        <!-- Delete Test -->
         <div class="mt-4 flex justify-between items-center text-sm text-gray-400">
-          <p>{{ test.totalAttempts }} total attempts</p>
+          <p>{{ $t('companyTests.totalAttempts') }}: {{ test.totalAttempts }}</p>
           <div class="flex items-center gap-4">
-<!--            <router-link-->
-<!--                :to="`/company/tests/${test.id}/results?${jobId}`"-->
-<!--                class="text-primary-400 hover:text-primary-300"-->
-<!--            >-->
-<!--              View All Results-->
-<!--            </router-link>-->
             <button
                 @click="deleteTest(test.id, test.jobId)"
                 class="text-red-400 hover:text-red-300"
             >
-              Delete Test
+              {{ $t('companyTests.deleteTest') }}
             </button>
             <router-link
                 :to="`/company/tests/${test.id}/edit`"
                 class="text-primary-400 hover:text-primary-300"
             >
-              Edit Test
+              {{ $t('companyTests.editTest') }}
             </router-link>
           </div>
         </div>
@@ -260,3 +247,4 @@ onMounted(loadTests);
     </div>
   </div>
 </template>
+
