@@ -27,6 +27,13 @@ export default defineConfig({
     headers: {
       'Cross-Origin-Opener-Policy': 'unsafe-none',
       'Cross-Origin-Embedder-Policy': 'unsafe-none'
+    },
+    proxy: {
+      '/api': {
+        target: 'https://dev-hire-bot-254341905127.us-central1.run.app',
+        changeOrigin: true, // важно для CORS
+        rewrite: (path) => path.replace(/^\/api/, '')
+      }
     }
   }
 });
