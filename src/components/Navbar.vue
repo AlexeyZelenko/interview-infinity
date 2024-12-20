@@ -15,6 +15,7 @@ const route = useRoute();
 const isMenuOpen = ref(false);
 
 const menuItems = [
+  { path: '/', label: 'menu.Home' },
   { path: '/jobs', label: 'menu.Jobs' },
   { path: '/all-resumes', label: 'menu.Resumes' },
   { path: '/tests', label: 'menu.Tests' },
@@ -59,7 +60,10 @@ onMounted( () => {
       <div class="flex items-center justify-between h-16">
         <!-- Logo Section -->
         <div class="flex items-center">
-          <router-link to="/" class="text-dark-text font-bold text-xl">DevHire</router-link>
+          <router-link to="/" class="text-dark-text font-bold text-xl">
+            <img class="logo" src="@/assets/image/logo2.png" alt="logo"/>
+<!--            IT-ARENA-->
+          </router-link>
         </div>
 
         <!-- Desktop Menu -->
@@ -212,3 +216,10 @@ onMounted( () => {
     </div>
   </nav>
 </template>
+
+<style scoped>
+.logo {
+  width: 65px;
+  margin-right: 10px;
+}
+</style>

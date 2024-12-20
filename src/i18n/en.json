@@ -1,5 +1,6 @@
 {
   "menu": {
+    "Home": "Home",
     "Jobs": "Positions",
     "Resumes": "Resumes",
     "Tests": "Tests",
@@ -14,7 +15,7 @@
     "Faq": "FAQ"
   },
   "home": {
-      "title": "Find Your Next Tech Opportunity",
+      "title": "An arena for testing true professionals",
       "description": "Whether you’re looking for a job in tech or seeking top talent, our platform is designed to connect developers and companies seamlessly.",
       "forDevelopers": "For Developers",
       "developerDescription": "Showcase your skills, take tests, and find your dream job",
