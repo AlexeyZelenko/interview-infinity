@@ -9,6 +9,8 @@ import {
   stopScreenRecording,
 } from '@/utils/screenRecording';
 import Swal from 'sweetalert2';
+import { logEvent } from "firebase/analytics";
+import { analytics } from '@/firebase/config';
 
 const showInstructions = ref(false);
 function closeInstructions() {
@@ -153,6 +155,11 @@ const submitTest = async () => {
       jobId: store.currentTest.jobId || null,
     });
 
+    logEvent(analytics, 'save_test_results', {
+      testId: store.currentTest.id as string,
+      userId: authStore.user?.uid
+    });
+
     // Show completion modal
     showCompletionModal.value = true;
   } catch (error) {
@@ -238,6 +245,11 @@ const initializeTestDetails = async () => {
       const daysLeft = store.getDaysUntilAvailable(store.currentTest.id);
       throw new Error(`You can take this test again in ${daysLeft} days`);
     }
+
+    logEvent(analytics, 'initialize_test', {
+      testId: store.currentTest.id as string,
+      userId: authStore.user?.uid
+    });
 
     // Initialize answers array with default values
     answers.value = new Array(store.currentTest.questions.length).fill(null).map(() => ({

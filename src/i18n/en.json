@@ -21,7 +21,13 @@
       "joinAsDeveloper": "Join as Developer",
       "forCompanies": "For Companies",
       "companyDescription": "Find top tech talent and streamline your hiring process",
-      "joinAsCompany": "Join as Company"
+      "joinAsCompany": "Join as Company",
+      "englishTitleApp": "Learning words",
+      "englishTitleAppDescription": "Study and testing of foreign words",
+      "joinEnglishWords": "Join English Words",
+      "interviewGPT": "Interview with AI",
+      "interviewGPTDescription": "Take an interview with Artificial Intelligence and find out your level of knowledge! Get feedback and recommendations to improve your skills.",
+      "interviewGPTJoin": "Take an interview with Artificial Intelligence"
     },
   "blocks": {
     "forDevelopers": "For Developers",
