@@ -5,6 +5,7 @@ import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../firebase/config';
 import { Resume } from '@/types/resumes.ts';
 import { MagnifyingGlassIcon, PauseCircleIcon, NoSymbolIcon, UserIcon, BriefcaseIcon, ClipboardDocumentCheckIcon } from '@heroicons/vue/24/outline';
+import SkillsArena from '@/components/d3/SkillsArena.vue';
 
 const router = useRouter();
 const resumes = ref<Resume[]>([]);
@@ -15,8 +16,9 @@ const allSkills = ref([
 const selectedSkills = ref<string[]>([]);
 const selectedStatus = ref<string[]>([]);
 
-//статус резюме - фильтры и в резюме - пока отключен
-const showStatus = ref<boolean>(false)
+// Статус резюме - фильтры и в резюме - пока отключен
+const showStatus = ref<boolean>(false);
+const skillsData = ref<{ name: string, count: number }[]>([]);
 
 // Фильтры для резюме кандидатов
 const filteredResumes = computed(() =>
@@ -29,6 +31,23 @@ const filteredResumes = computed(() =>
       return isActive && matchesSkills && matchesStatus;
     })
 );
+
+// Вычисляем данные для скилов только из отфильтрованных резюме
+const filteredSkillsData = computed(() => {
+  const allSkillsArray = filteredResumes.value.flatMap(resume => resume.skills);
+  const skillCount: { name: string, count: number }[] = [];
+
+  allSkillsArray.forEach(skill => {
+    const existingSkill = skillCount.find(item => item.name === skill);
+    if (existingSkill) {
+      existingSkill.count += 1;
+    } else {
+      skillCount.push({ name: skill, count: 1 });
+    }
+  });
+
+  return skillCount;
+});
 
 const statusOptions = [
   { value: 'searching', label: 'Searching', icon: MagnifyingGlassIcon },
@@ -146,6 +165,9 @@ onMounted(() => {
             </label>
           </div>
         </div>
+
+        <!-- Отправляем только отфильтрованные скилы в компонент SkillsArena -->
+        <SkillsArena v-if="filteredSkillsData.length" :skills="filteredSkillsData" />
       </div>
 
       <!-- Resume List -->
