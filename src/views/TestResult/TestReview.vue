@@ -7,6 +7,8 @@ import TimeDistribution from '@/components/test-review/TimeDistribution.vue';
 import QuestionReview from '@/components/test-review/QuestionReview.vue';
 import {doc, getDoc} from "firebase/firestore";
 import {db} from "@/firebase/config.ts";
+import D3Chart from '@/components/d3/D3Chart.vue';
+import TestResultsPie from '@/components/d3/TestResultsPie.vue';
 
 const router = useRouter();
 const loading = ref(true);
@@ -160,6 +162,18 @@ onMounted(async () => {
         />
       </div>
 
+      <D3Chart
+          :data="testAttempt.answers"
+          :width="800"
+          :height="400"
+      />
+
+      <TestResultsPie
+          :data="testAttempt.answers"
+          :width="400"
+          :height="400"
+      />
+
       <!-- Action Buttons -->
       <div class="mt-8 flex justify-center gap-4">
         <button
@@ -172,3 +186,12 @@ onMounted(async () => {
     </template>
   </div>
 </template>
+
+<style scoped>
+.test-results {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin: 20px;
+}
+</style>
