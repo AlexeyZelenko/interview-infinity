@@ -3,11 +3,28 @@ import { onMounted, ref, computed } from 'vue';
 import { useTestStore } from '@/stores/tests';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '@/firebase/config';
+import TestEditorModal from '@/components/admin/ModalEditTest.vue';
 
-// Replace the existing categories constant with a ref
+// Modal and selected test state
+const isModalOpen = ref(false);
+const selectedTest = ref(null);
+
+const openEditModal = (test) => {
+  selectedTest.value = { ...test };
+  isModalOpen.value = true;
+};
+
+const handleTestUpdate = (updatedTest) => {
+  const index = testStore.tests.findIndex(t => t.id === updatedTest.id);
+  if (index !== -1) {
+    testStore.tests[index] = updatedTest;
+  }
+  isModalOpen.value = false;
+};
+
+// Categories management
 const categories = ref<string[]>([]);
 
-// Add this function to load categories from Firestore
 const loadCategories = async () => {
   try {
     const testsSnapshot = await getDocs(collection(db, 'tests'));
@@ -26,21 +43,23 @@ const loadCategories = async () => {
   }
 };
 
+// Store and state management
 const testStore = useTestStore();
 const error = ref('');
 const loading = ref(true);
 
-// Filters
+// Filters state
 const selectedDifficulty = ref('');
 const searchQuery = ref('');
 const selectedDuration = ref('');
 const selectedCategory = ref('');
 const sortBy = ref('recent');
 
-// Pagination
+// Pagination state
 const currentPage = ref(1);
 const itemsPerPage = ref(6);
 
+// Constants
 const durationRanges = [
   { value: '', label: 'All Durations' },
   { value: '0-15', label: 'Under 15 minutes' },
@@ -56,18 +75,16 @@ const sortOptions = [
   { value: 'difficulty', label: 'Difficulty Level' }
 ];
 
+// Computed properties
 const filteredTests = computed(() => {
   return testStore.tests.filter(test => {
-    // Search filter
     const matchesSearch = !searchQuery.value ||
         test.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
         test.description.toLowerCase().includes(searchQuery.value.toLowerCase());
 
-    // Difficulty filter
     const matchesDifficulty = !selectedDifficulty.value ||
         test.difficulty === selectedDifficulty.value;
 
-    // Duration filter
     const matchesDuration = !selectedDuration.value || (() => {
       const duration = test.duration;
       switch (selectedDuration.value) {
@@ -79,7 +96,6 @@ const filteredTests = computed(() => {
       }
     })();
 
-    // Category filter
     const matchesCategory = !selectedCategory.value ||
         test.category === selectedCategory.value;
 
@@ -99,7 +115,6 @@ const filteredTests = computed(() => {
   });
 });
 
-// Paginated tests
 const paginatedTests = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage.value;
   const end = start + itemsPerPage.value;
@@ -143,6 +158,7 @@ const pageNumbers = computed(() => {
   return pages;
 });
 
+// Utility functions
 const clearFilters = () => {
   selectedDifficulty.value = '';
   searchQuery.value = '';
@@ -183,12 +199,13 @@ const getTestHistory = (testId: string) => {
   return testStore.testHistory.filter(attempt => attempt.testId === testId);
 };
 
+// Lifecycle hooks
 onMounted(async () => {
   try {
     await Promise.all([
       testStore.fetchTests(),
       testStore.loadTestHistory(),
-      loadCategories() // Add this line
+      loadCategories()
     ]);
   } catch (err: any) {
     error.value = 'Failed to load tests. Please try again later.';
@@ -381,10 +398,26 @@ onMounted(async () => {
                     :to="`/admin/test/${test.id}/edit`"
                     class="text-primary-400 hover:text-primary-300"
                 >
-                  Edit Test
+                  Edit
                 </router-link>
+                <!-- MainComponent.vue -->
+                <button
+                    @click="openEditModal(test)"
+                    class="text-green-400 hover:text-green-300"
+                >
+                  Edit Modal
+                </button>
                 <p class="text-blue-600">{{test.id}}</p>
               </div>
+
+              <!-- Модальное окно -->
+              <TestEditorModal
+                  v-if="selectedTest"
+                  :is-open="isModalOpen"
+                  :test-data="selectedTest"
+                  @close="isModalOpen = false"
+                  @update:test-data="handleTestUpdate"
+              />
             </div>
           </div>
 
