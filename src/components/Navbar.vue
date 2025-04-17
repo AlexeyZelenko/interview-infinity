@@ -13,16 +13,23 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 const isMenuOpen = ref(false);
+const showAboutDropdown = ref(false);
 
 const menuItems = [
   { path: '/', label: 'menu.Home' },
   { path: '/jobs', label: 'menu.Jobs' },
   { path: '/all-resumes', label: 'menu.Resumes' },
   { path: '/tests', label: 'menu.Tests' },
-  { path: '/community', label: 'menu.Community' },
-  { path: '/faq', label: 'menu.Faq' },
+  // { path: '/community', label: 'menu.Community' },
+  // { path: '/faq', label: 'menu.Faq' },
   // { path: '/pricing', label: 'menu.Pricing' },
   { path: '/developers', label: 'menu.Developers' },
+];
+
+const aboutDropdownItems = [
+  { path: '/faq', label: 'menu.AboutMenu.FAQ' },
+  { path: '/community', label: 'menu.AboutMenu.Community' },
+  { path: '/our-products', label: 'menu.AboutMenu.OurProducts' },
 ];
 
 const isActive = (path: string) => {
@@ -41,9 +48,16 @@ const handleLogout = async () => {
   }
 };
 
-// Функция для переключения состояния мобильного меню
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value;
+};
+
+const toggleAboutDropdown = () => {
+  showAboutDropdown.value = !showAboutDropdown.value;
+};
+
+const closeAboutDropdown = () => {
+  showAboutDropdown.value = false;
 };
 
 onMounted( () => {
@@ -80,6 +94,51 @@ onMounted( () => {
             >
               {{ $t(item.label) }}
             </router-link>
+
+            <!-- About Us Dropdown -->
+            <div class="relative group" @mouseleave="closeAboutDropdown">
+              <button
+                  @mouseenter="toggleAboutDropdown"
+                  class="px-3 py-2 rounded-md transition-colors flex items-center space-x-1 group"
+                  :class="isActive('/faq') || isActive('/community')
+                    ? 'bg-primary-600/10 text-primary-400'
+                    : 'text-dark-text-secondary hover:text-dark-text'"
+              >
+                <span>{{ $t('menu.AboutMenu.title') }}</span>
+                <svg
+                    class="w-4 h-4 transition-transform"
+                    :class="{ 'rotate-180': showAboutDropdown }"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <!-- Dropdown Menu -->
+              <div
+                  class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-dark-card ring-1 ring-black ring-opacity-5 z-50 transition-all duration-150 opacity-0 invisible group-hover:opacity-100 group-hover:visible"
+                  @mouseenter="showAboutDropdown = true"
+                  @mouseleave="showAboutDropdown = false"
+              >
+                <div class="py-1">
+                  <router-link
+                      v-for="item in aboutDropdownItems"
+                      :key="item.path"
+                      :to="item.path"
+                      class="block px-4 py-2 text-sm transition-colors"
+                      :class="isActive(item.path)
+                        ? 'bg-primary-600/10 text-primary-400'
+                        : 'text-dark-text-secondary hover:text-dark-text hover:bg-gray-800'"
+                      @click="closeAboutDropdown"
+                  >
+                    {{ $t(item.label) }}
+                  </router-link>
+                </div>
+              </div>
+            </div>
+
             <template v-if="authStore.user">
               <router-link
                   :to="authStore.isAdmin ? '/admin' : '/profile'"
@@ -173,6 +232,25 @@ onMounted( () => {
             {{ $t(item.label) }}
           </router-link>
 
+          <!-- Mobile About Menu -->
+          <div class="space-y-2">
+            <div class="px-3 py-2 text-dark-text-secondary">
+              {{ $t('menu.AboutMenu.title') }}
+            </div>
+            <router-link
+                v-for="item in aboutDropdownItems"
+                :key="item.path"
+                :to="item.path"
+                class="block px-6 py-2 rounded-md transition-colors"
+                :class="isActive(item.path)
+              ? 'bg-primary-600/10 text-primary-400'
+              : 'text-dark-text-secondary hover:text-dark-text'"
+                @click="isMenuOpen = false"
+            >
+              {{ $t(item.label) }}
+            </router-link>
+          </div>
+
           <template v-if="authStore.user">
             <router-link
                 :to="authStore.isAdmin ? '/admin' : '/profile'"
@@ -182,7 +260,7 @@ onMounted( () => {
               : 'text-dark-text-secondary hover:text-dark-text'"
                 @click="isMenuOpen = false"
             >
-              {{ authStore.isAdmin ? 'menu.AdminDashboard' : 'menu.Profile' }}
+              {{ $t(authStore.isAdmin ? 'menu.AdminDashboard' : 'menu.Profile') }}
             </router-link>
             <button
                 @click="() => { handleLogout(); isMenuOpen = false; }"
@@ -204,13 +282,15 @@ onMounted( () => {
             </router-link>
             <router-link
                 to="/register"
-                class="block bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 text-center"
+                class="block bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700"
                 @click="isMenuOpen = false"
             >
               {{ $t('menu.SignUp') }}
             </router-link>
           </template>
-          <LanguageSwitcher />
+          <div class="px-3">
+            <LanguageSwitcher />
+          </div>
         </div>
       </div>
     </div>

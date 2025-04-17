@@ -224,6 +224,15 @@ async function startTest(testId: string) {
   }
 }
 
+const showMobileFilters = ref(false);
+
+const filters = ref({
+  language: selectedLanguage,
+  difficulty: selectedDifficulty,
+  duration: selectedDuration,
+  category: selectedCategory
+});
+
 onMounted(async () => {
   try {
     await Promise.all([
@@ -241,245 +250,264 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto">
-    <div class="flex flex-wrap justify-between items-center mb-8">
-      <h1 class="text-3xl font-bold mb-4">{{ $t('tests.skillTests') }}</h1>
-      <div class="flex gap-2">
-        <input
-            v-model="searchQuery"
-            type="text"
-            placeholder="Search tests..."
-            class="px-2 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
-        />
-        <select
-            v-model="sortBy"
-            class="py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+    <h1 class="text-3xl font-bold mb-6">{{ $t('tests.skillTests') }}</h1>
+
+    <!-- Search and Sort - Stack on mobile -->
+    <div class="flex flex-col gap-4 mb-6">
+      <!-- Mobile Filters Button -->
+      <div class="lg:hidden">
+        <button 
+          @click="showMobileFilters = !showMobileFilters" 
+          class="w-full flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 rounded-lg text-sm"
         >
-          <option
-              v-for="option in sortOptions"
-              :key="option.value"
-              :value="option.value"
-          >
-            {{ $t(option.label) }}
-          </option>
-        </select>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          {{ $t('tests.filters') }}
+        </button>
       </div>
+
+      <input
+        v-model="searchQuery"
+        type="text"
+        :placeholder="$t('tests.searchPlaceholder')"
+        class="w-full px-4 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+      />
+      
+      <select
+        v-model="sortBy"
+        class="w-full px-4 py-2 bg-gray-700 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+      >
+        <option v-for="option in sortOptions" :key="option.value" :value="option.value">
+          {{ $t(option.label) }}
+        </option>
+      </select>
     </div>
 
-    <div class="grid lg:grid-cols-[280px,1fr] gap-6">
-      <!-- Filters Sidebar -->
-      <div class="space-y-6">
-        <div class="bg-gray-800 rounded-lg p-6">
-          <div class="flex justify-between items-center mb-4">
-            <h2 class="text-lg font-semibold">{{ $t('tests.filters') }}</h2>
+    <div class="flex gap-6">
+      <!-- Filters Sidebar - Fixed -->
+      <div class="hidden lg:block w-[280px] flex-shrink-0">
+        <div class="sticky top-4 space-y-6">
+          <div class="bg-gray-800 rounded-lg p-4">
+            <div class="flex justify-between items-center mb-4">
+              <h2 class="text-lg font-semibold">{{ $t('tests.filters') }}</h2>
+              <button
+                  @click="clearFilters"
+                  class="text-sm text-primary-400 hover:text-primary-300"
+              >
+                {{ $t('tests.clearFilters') }}
+              </button>
+            </div>
+
+            <!-- Difficulty Filter -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.difficulty') }}</label>
+              <select
+                  v-model="selectedDifficulty"
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">{{ $t('tests.allDifficulties') }}</option>
+                <option value="beginner">{{ $t('tests.beginner') }}</option>
+                <option value="intermediate">{{ $t('tests.intermediate') }}</option>
+                <option value="advanced">{{ $t('tests.advanced') }}</option>
+              </select>
+            </div>
+
+            <!-- Duration Filter -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.duration') }}</label>
+              <select
+                  v-model="selectedDuration"
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option v-for="range in durationRanges" :key="range.value" :value="range.value">
+                  {{ range.label }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Category Filter -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.category') }}</label>
+              <select
+                  v-model="selectedCategory"
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">{{ $t('tests.allCategories') }}</option>
+                <option v-for="category in categories" :key="category" :value="category">
+                  {{ category }}
+                </option>
+              </select>
+            </div>
+
+            <!-- Language Filter -->
+            <div class="mb-4">
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.language') }}</label>
+              <select
+                  v-model="selectedLanguage"
+                  class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
+              >
+                <option value="">{{ $t('tests.allLanguages') }}</option>
+                <option v-for="lang in languages" :key="lang" :value="lang">
+                  {{ lang }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tests List - Scrollable -->
+      <div class="flex-1 min-w-0">
+        <div class="space-y-6">
+          <!-- Results Count -->
+          <div class="bg-gray-800 rounded-lg p-4">
+            <p class="text-gray-300">
+              {{ filteredTests.length }} {{ $t('tests.results') }}
+            </p>
+          </div>
+
+          <!-- Loading and Error States -->
+          <div v-if="loading" class="text-center py-8">
+            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
+            <p>{{ $t('tests.loading') }}</p>
+          </div>
+
+          <div v-else-if="error" class="bg-red-500/10 text-red-400 p-4 rounded-lg">
+            {{ error }}
+          </div>
+
+          <div v-else-if="filteredTests.length === 0" class="bg-gray-800 rounded-lg p-6 text-center">
+            <p class="text-gray-300 mb-4">{{ $t('tests.noTestsFound') }}</p>
             <button
                 @click="clearFilters"
-                class="text-sm text-primary-400 hover:text-primary-300"
+                class="text-primary-400 hover:text-primary-300"
             >
-              {{ $t('tests.clearAll') }}
+              {{ $t('tests.clearFilters') }}
             </button>
           </div>
 
-          <!-- Language -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">{{ $t('tests.language') }}</label>
-            <select
-              v-model="selectedLanguage"
-              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-          >
-            <option value="">Language</option>
-            <option v-for="language in languages" :key="language" :value="language">
-              {{ language }}
-            </option>
-          </select>
-          </div>
-
-          <!-- Difficulty -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">{{ $t('tests.difficulty') }}</label>
-            <select
-                v-model="selectedDifficulty"
-                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option value="">{{ $t('tests.allDifficulties') }}</option>
-              <option value="beginner">{{ $t('tests.beginner') }}</option>
-              <option value="intermediate">{{ $t('tests.intermediate') }}</option>
-              <option value="advanced">{{ $t('tests.advanced') }}</option>
-            </select>
-          </div>
-
-          <!-- Duration -->
-          <div class="mb-4">
-            <label class="block text-sm font-medium mb-2">{{ $t('tests.duration') }}</label>
-            <select
-                v-model="selectedDuration"
-                class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-            >
-              <option
-                  v-for="range in durationRanges"
-                  :key="range.value"
-                  :value="range.value"
-              >
-                {{ range.label }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Category -->
-          <select
-              v-model="selectedCategory"
-              class="w-full px-3 py-2 bg-gray-700 rounded-md focus:ring-primary-500 focus:border-primary-500"
-          >
-            <option value="">{{ $t('tests.allCategories') }}</option>
-            <option v-for="category in categories" :key="category" :value="category">
-              {{ category }}
-            </option>
-          </select>
-
-          <!-- Filter Stats -->
-          <div class="mt-6 pt-6 border-t border-gray-700">
-            <p class="text-sm text-gray-400">
-              {{ $t('tests.showingTests', { shown: paginatedTests.length, total: filteredTests.length }) }}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Tests Grid -->
-      <div class="space-y-6">
-        <div v-if="loading" class="text-center py-8">
-          <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p>Loading tests...</p>
-        </div>
-
-        <div v-else-if="error" class="bg-red-500/10 text-red-400 p-4 rounded-lg">
-          {{ error }}
-        </div>
-
-        <div v-else-if="filteredTests.length === 0" class="bg-gray-800 rounded-lg p-6 text-center">
-          <p class="text-gray-300 mb-4">{{ $t('tests.noTestsFound') }}</p>
-          <button
-              @click="clearFilters"
-              class="text-primary-400 hover:text-primary-300"
-          >
-            {{ $t('tests.clearFilters') }}
-          </button>
-        </div>
-
-        <div v-else>
           <!-- Tests Grid -->
-          <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
             <div
                 v-for="test in paginatedTests"
                 :key="test.id"
-                class="flex flex-col justify-between bg-gray-800 rounded-lg p-6 hover:bg-gray-750 transition-colors"
+                class="bg-gray-800 rounded-lg p-6 cursor-pointer transition-colors hover:bg-gray-700"
+                @click="startTest(test.id)"
             >
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <h2 class="text-xl font-semibold mb-2">{{ test.title }}</h2>
-                  <p class="text-gray-300 mb-2">{{ test.description }}</p>
-                </div>
-                <span
-                    :class="[getDifficultyColor(test.difficulty), 'px-3 py-1 rounded-full text-sm']"
-                >
-                  {{ test.difficulty.charAt(0).toUpperCase() + test.difficulty.slice(1) }}
-                </span>
-              </div>
-
-              <div class="text-gray-300 space-y-2 mb-4">
-                <p class="flex items-center">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {{ test.duration }} minutes
-                </p>
-                <p class="flex items-center">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  {{ test.questions?.length || 0 }} questions
-                </p>
-                <p v-if="test.attempts" class="flex items-center">
-                  <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                  </svg>
-                  {{ test.attempts }} attempts
-                </p>
-              </div>
-
-              <div v-if="getTestHistory(test.id).length > 0" class="mb-4">
-                <div class="border-t border-gray-700 pt-4">
-                  <h3 class="font-medium mb-2">Your History</h3>
-                  <div class="space-y-1">
-                    <p>
-                      Best Score:
-                      <span :class="[
-                        getBestScore(test.id)! >= 90 ? 'text-green-400' :
-                        getBestScore(test.id)! >= 70 ? 'text-yellow-400' :
-                        'text-red-400'
-                      ]">
-                        {{ getBestScore(test.id) }}%
-                      </span>
-                    </p>
-                    <p class="text-sm text-gray-400">
-                      Last attempt: {{ getLastAttemptDate(test.id)?.toLocaleDateString() }}
-                    </p>
+              <div class="flex justify-between items-start">
+                <div class="mr-4">
+                  <h3 class="text-xl font-semibold mb-2">{{ test.title }}</h3>
+                  <p class="text-gray-300 mb-4">{{ test.description }}</p>
+                  <div class="flex flex-wrap gap-2">
+                    <span :class="getDifficultyColor(test.difficulty)" class="px-3 py-1 rounded-full text-sm">
+                      {{ test.difficulty }}
+                    </span>
+                    <span class="bg-gray-700 px-3 py-1 rounded-full text-sm text-gray-300">
+                      {{ test.duration }} min
+                    </span>
+                    <span v-if="test.category" class="bg-gray-700 px-3 py-1 rounded-full text-sm text-gray-300">
+                      {{ test.category }}
+                    </span>
+                    <span class="bg-gray-700 px-3 py-1 rounded-full text-sm text-gray-300">
+                      {{ test.language }}
+                    </span>
                   </div>
                 </div>
+                <div class="flex flex-col items-end gap-2">
+                  <span class="text-sm text-gray-400">
+                    {{ test.attempts || 0 }} {{ $t('tests.attempts') }}
+                  </span>
+                  <span v-if="getBestScore(test.id)" class="text-sm text-green-400">
+                    Best: {{ getBestScore(test.id) }}%
+                  </span>
+                  <span v-if="getLastAttemptDate(test.id)" class="text-sm text-gray-400">
+                    Last: {{ getLastAttemptDate(test.id)?.toLocaleDateString() }}
+                  </span>
+                </div>
               </div>
-
-              <button
-                  @click.prevent="startTest(test.id)"
-                  :disabled="!testStore.canTakeTest(test.id)"
-                  class="w-full mt-4 bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <span v-if="!authStore.user">Start</span>
-                <span v-else-if="!testStore.canTakeTest(test.id)">
-                  Available in {{ testStore.getDaysUntilAvailable(test.id) }} days
-                </span>
-                <span v-else>Start Test</span>
-              </button>
             </div>
           </div>
 
           <!-- Pagination -->
-          <div class="mt-8 flex justify-center">
-            <nav class="flex items-center space-x-2">
-              <button
-                  @click="currentPage--"
-                  :disabled="currentPage === 1"
-                  class="px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
-              >
-                {{ $t('tests.previous') }}
-              </button>
+          <div v-if="totalPages > 1" class="flex justify-center gap-2 mt-8">
+            <button
+                v-for="page in pageNumbers"
+                :key="page"
+                @click="currentPage = page"
+                class="px-4 py-2 rounded-lg"
+                :class="{
+                  'bg-primary-600 text-white': currentPage === page,
+                  'bg-gray-700 text-gray-300 hover:bg-gray-600': currentPage !== page && page !== '...',
+                  'bg-transparent text-gray-400 cursor-default': page === '...'
+                }"
+                :disabled="page === '...'"
+            >
+              {{ page }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-              <div v-for="page in pageNumbers" :key="page" class="flex items-center">
-                <button
-                    v-if="typeof page === 'number'"
-                    @click="currentPage = page"
-                    :class="[
-                    'px-3 py-1 rounded-md',
-                    currentPage === page
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-gray-700 hover:bg-gray-600'
-                  ]"
-                >
-                  {{ page }}
-                </button>
-                <span v-else class="px-2">{{ page }}</span>
-              </div>
-
-              <button
-                  @click="currentPage++"
-                  :disabled="currentPage === totalPages"
-                  class="px-3 py-1 rounded-md bg-gray-700 hover:bg-gray-600 disabled:opacity-50"
-              >
-                {{ $t('tests.next') }}
+    <!-- Add mobile filters modal -->
+    <div v-if="showMobileFilters" class="fixed inset-0 z-50 lg:hidden">
+      <div class="absolute inset-0 bg-black bg-opacity-50" @click="showMobileFilters = false"></div>
+      <div class="absolute right-0 top-0 h-full w-4/5 max-w-sm bg-gray-900 shadow-xl overflow-y-auto">
+        <div class="p-4">
+          <div class="flex justify-between items-center mb-4">
+            <h2 class="text-lg font-semibold">{{ $t('tests.filters') }}</h2>
+            <button @click="showMobileFilters = false" class="text-gray-400 hover:text-white">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <!-- Add filter content -->
+          <div class="space-y-4">
+            <!-- Language filter -->
+            <div>
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.language') }}</label>
+              <select v-model="selectedLanguage" class="w-full px-3 py-2 bg-gray-700 rounded-md">
+                <option value="">{{ $t('tests.allLanguages') }}</option>
+                <option v-for="lang in languages" :key="lang" :value="lang">{{ lang }}</option>
+              </select>
+            </div>
+            <!-- Difficulty filter -->
+            <div>
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.difficulty') }}</label>
+              <select v-model="selectedDifficulty" class="w-full px-3 py-2 bg-gray-700 rounded-md">
+                <option value="">{{ $t('tests.allDifficulties') }}</option>
+                <option value="beginner">{{ $t('tests.beginner') }}</option>
+                <option value="intermediate">{{ $t('tests.intermediate') }}</option>
+                <option value="advanced">{{ $t('tests.advanced') }}</option>
+              </select>
+            </div>
+            <!-- Duration filter -->
+            <div>
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.duration') }}</label>
+              <select v-model="selectedDuration" class="w-full px-3 py-2 bg-gray-700 rounded-md">
+                <option value="">{{ $t('tests.allDurations') }}</option>
+                <option v-for="range in durationRanges" :key="range.value" :value="range.value">
+                  {{ range.label }}
+                </option>
+              </select>
+            </div>
+            <!-- Category filter -->
+            <div>
+              <label class="block text-sm font-medium mb-2">{{ $t('tests.category') }}</label>
+              <select v-model="selectedCategory" class="w-full px-3 py-2 bg-gray-700 rounded-md">
+                <option value="">{{ $t('tests.allCategories') }}</option>
+                <option v-for="category in categories" :key="category" :value="category">{{ category }}</option>
+              </select>
+            </div>
+            <!-- Clear filters button -->
+            <div class="pt-4">
+              <button @click="clearFilters" class="w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700">
+                {{ $t('tests.clearFilters') }}
               </button>
-            </nav>
+            </div>
           </div>
         </div>
       </div>

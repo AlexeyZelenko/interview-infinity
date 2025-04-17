@@ -12,24 +12,40 @@
     "SignUp": "Sign Up",
     "AdminDashboard": "Admin Dashboard",
     "Profile": "Profile",
-    "Faq": "FAQ"
+    "Faq": "FAQ",
+    "AboutUs": "About Us",
+    "AboutMenu": {
+      "FAQ": "FAQ",
+      "Community": "Community",
+      "OurProducts": "Our Products",
+      "title": "About Us"
+    }
   },
   "home": {
-      "title": "An arena for testing true professionals",
-      "description": "Whether you’re looking for a job in tech or seeking top talent, our platform is designed to connect developers and companies seamlessly.",
-      "forDevelopers": "For Developers",
-      "developerDescription": "Showcase your skills, take tests, and find your dream job",
-      "joinAsDeveloper": "Join as Developer",
-      "forCompanies": "For Companies",
-      "companyDescription": "Find top tech talent and streamline your hiring process",
-      "joinAsCompany": "Join as Company",
-      "englishTitleApp": "Learning words",
-      "englishTitleAppDescription": "Study and testing of foreign words",
-      "joinEnglishWords": "Join English Words",
-      "interviewGPT": "Interview with AI",
-      "interviewGPTDescription": "Take an interview with Artificial Intelligence and find out your level of knowledge! Get feedback and recommendations to improve your skills.",
-      "interviewGPTJoin": "Take an interview with Artificial Intelligence"
+    "title": "Welcome to Interview Infinity",
+    "description": "Your ultimate platform for interview preparation and job search in the tech industry",
+    "exploreFeatures": "Explore Features",
+    "getStarted": "Get Started",
+    "stats": {
+      "developers": "Active Developers",
+      "companies": "Partner Companies",
+      "tests": "Available Tests",
+      "successRate": "Success Rate"
     },
+    "ourProducts": "Our Products",
+    "englishTitleApp": "English Words Learning",
+    "englishTitleAppDescription": "Enhance your English vocabulary with our interactive learning platform",
+    "interviewGPT": "Interview GPT",
+    "interviewGPTDescription": "Practice interviews with AI and improve your interview skills",
+    "joinEnglishWords": "Start Learning",
+    "interviewGPTJoin": "Practice Now",
+    "forDevelopers": "For Developers",
+    "forCompanies": "For Companies",
+    "developerDescription": "Find your dream job and prepare for interviews",
+    "companyDescription": "Find the best tech talent for your team",
+    "joinAsDeveloper": "Join as Developer",
+    "joinAsCompany": "Join as Company"
+  },
   "blocks": {
     "forDevelopers": "For Developers",
     "forCompanies": "For Companies",
@@ -42,12 +58,12 @@
         { "title": "Search and Apply for Jobs", "description": "Browse and apply for tech jobs that match your skills and preferences." },
         { "title": "Create and Manage Resumes", "description": "Easily manage multiple resumes and tailor them for different applications." },
         { "title": "Skill Assessment Tests", "description": "Take tests to prove your skills and increase your chances of landing the right job." },
-        { "title": "Track Application Status", "description": "Stay informed about each application’s status, right from your dashboard." },
+        { "title": "Track Application Status", "description": "Stay informed about each application's status, right from your dashboard." },
         { "title": "Set Job Alerts", "description": "Get alerts for jobs that match your career goals and skill set." },
         { "title": "Chat with employers", "description": "Send messages to employers directly through the app." }
       ],
       "company": [
-        { "title": "Search and Evaluate Candidates", "description": "Find top talent with filters, and review candidates’ test results." },
+        { "title": "Search and Evaluate Candidates", "description": "Find top talent with filters, and review candidates' test results." },
         { "title": "Create Custom Tests", "description": "Create or generate skill tests in multiple languages and technologies using AI, or upload custom test templates." },
         { "title": "Add tests from existing ones to your vacancies", "description": "Use pre-prepared tests and add them to your vacancies for a more accurate assessment of candidates. You can choose from a variety of existing tests that will help you assess the knowledge and skills of applicants." },
         { "title": "Track Applicant Progress", "description": "Monitor candidates' test scores and progress directly within the platform." },
@@ -58,7 +74,7 @@
       "general": [
         { "title": "One Month Free Access", "description": "Enjoy a full month of free access without the need for credit card information." },
         { "title": "Anti-Fraud Measures", "description": "Candidates can retake a test only after a week to prevent gaming the system." },
-        { "title": "Site in Development", "description": "We’re constantly improving." }
+        { "title": "Site in Development", "description": "We're constantly improving." }
       ]
     }
   },
@@ -77,7 +93,7 @@
   },
   "tests": {
     "skillTests": "Skill Tests",
-    "searchTests": "Search tests...",
+    "searchPlaceholder": "Search tests...",
     "filters": "Filters",
     "clearAll": "Clear all",
     "language": "Language",
@@ -85,6 +101,7 @@
     "duration": "Duration",
     "category": "Category",
     "allCategories": "All Categories",
+    "allLanguages": "All Languages",
     "noTestsFound": "No tests found matching your criteria.",
     "clearFilters": "Clear all filters",
     "showingTests": "Showing {shown} of {total} tests",
@@ -96,6 +113,8 @@
     "intermediate": "Intermediate",
     "advanced": "Advanced",
     "allDifficulties": "All Difficulties",
+    "results": "results",
+    "attempts": "attempts",
     "sortOptions": {
       "recent": "Most Recent",
       "popular": "Most Popular",
@@ -157,29 +176,37 @@
   "faq": {
     "title": "User Guide",
     "sections": {
-      "introduction": "Welcome to our platform.<br><br> Here you can find useful articles, tutorials, and videos to help you get started.",
+      "introduction": "Welcome to our platform! Here you can find useful articles, tutorials, and videos to help you get started.",
+      "overview": {
+        "title": "Overview"
+      },
       "articles": {
-        "title": "Useful Articles",
+        "title": "Articles",
         "description": "Read our detailed articles to understand how to get the most out of our platform."
       },
-      "video": {
+      "videos": {
         "title": "Video Tutorials",
         "description": "Watch helpful tutorials to guide you through the platform's features."
       },
       "faq": {
-        "title": "Frequently Asked Questions",
+        "title": "FAQ",
         "description": "Find answers to the most common questions."
+      },
+      "support": {
+        "title": "Need More Help?",
+        "description": "Our support team is always here to help you with any questions or issues.",
+        "contact": "Contact Support"
       },
       "functionsOverview": {
         "title": "Platform Features Overview",
-        "description": "Our platform offers a variety of features to help developers and companies streamline their processes. Whether you are a developer looking for your next job or a company searching for top talent, our platform provides the tools to succeed.",
+        "description": "Our platform offers a variety of features to help developers and companies streamline their processes.",
         "featuresList": [
-          "Create and share tests using AI or custom templates.",
-          "Browse and apply for tech jobs that match your skills.",
-          "Track your application status in real-time.",
-          "Create and manage resumes tailored for different job applications.",
-          "Find top talent by evaluating their skills with custom tests.",
-          "Publish and manage job postings with flexibility in test requirements."
+          "Create and share tests using AI or custom templates",
+          "Browse and apply for tech jobs that match your skills",
+          "Track your application status in real-time",
+          "Create and manage resumes tailored for different job applications",
+          "Find top talent by evaluating their skills with custom tests",
+          "Publish and manage job postings with flexibility in test requirements"
         ]
       }
     }
@@ -307,5 +334,64 @@
     "popularSkills": "Popular skills:",
     "results": "jobs found",
     "loading": "Loading jobs..."
+  },
+  "ourProducts": {
+    "title": "Our Products",
+    "openApp": "Open App",
+    "englishWordsLearning": "English Words Learning",
+    "englishWordsLearningDescription": "Learn English words effectively with spaced repetition and AI-powered exercises.",
+    "aiInterview": "AI Interview",
+    "aiInterviewDescription": "Practice your interview skills with AI-powered mock interviews and get instant feedback.",
+    "myDictionary": "My Dictionary",
+    "myDictionaryDescription": "Create and manage your personal dictionary with custom word lists and study materials.",
+    "itCheatSheets": "IT Cheat Sheets",
+    "itCheatSheetsDescription": "Quick reference guides for programming languages, frameworks, and development tools.",
+    "fitnessAI": "Fitness AI",
+    "fitnessAIDescription": "Get personalized workout plans and nutrition advice powered by artificial intelligence.",
+    "recipeSearch": "Recipe Search",
+    "recipeSearchDescription": "Find and discover delicious recipes from around the world. Search by ingredients, cuisine type, or dietary preferences.",
+    "englishWordsLearningLaravel": "English Words Learning (Laravel)",
+    "englishWordsLearningLaravelDescription": "Enhanced version of English Words Learning built with Laravel, offering additional features and improved performance."
+  },
+  "demo": {
+    "title": "See Our Platform in Action",
+    "tryItNow": "Try it Now",
+    "features": {
+      "tests": {
+        "title": "Test Creation",
+        "description": "Create custom tests and assessments with our intuitive test builder. Add questions, set time limits, and define scoring criteria with ease."
+      },
+      "jobs": {
+        "title": "Job Search",
+        "description": "Find your dream job or discover top talent. Our intelligent matching system connects the right candidates with the perfect opportunities."
+      },
+      "interviews": {
+        "title": "AI Interviews",
+        "description": "Practice interviews with our AI-powered system. Get instant feedback, improve your responses, and build confidence for real interviews."
+      }
+    }
+  },
+  "testimonials": {
+    "title": "What Our Users Say",
+    "alex": "The platform has been instrumental in helping me prepare for technical interviews. The AI-powered practice sessions are incredibly realistic!",
+    "sarah": "As an HR manager, this platform has streamlined our hiring process significantly. The test creation tools and candidate assessment features are exceptional.",
+    "michael": "The combination of job search and skill assessment in one platform is brilliant. It's helped me showcase my abilities to potential employers effectively."
+  },
+  "errors": {
+    "auth": {
+      "registrationFailed": "Registration Failed",
+      "emailAlreadyInUse": "This email is already registered. Please try logging in or use a different email address.",
+      "invalidEmail": "Invalid email address",
+      "weakPassword": "Password is too weak. It should be at least 6 characters long",
+      "userNotFound": "User not found",
+      "wrongPassword": "Incorrect password",
+      "tooManyRequests": "Too many failed attempts. Please try again later",
+      "networkError": "Network error. Please check your internet connection",
+      "defaultError": "An error occurred. Please try again",
+      "loginFailed": "Login Failed",
+      "invalidCredentials": "Invalid credentials. Please check your email and password.",
+      "accountLocked": "Account temporarily locked due to too many failed attempts.",
+      "sessionExpired": "Your session has expired. Please log in again."
+    }
   }
 }

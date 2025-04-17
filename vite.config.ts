@@ -31,7 +31,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'https://dev-hire-bot-254341905127.us-central1.run.app',
-        changeOrigin: true, // важно для CORS
+        changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, '')
       }
     }

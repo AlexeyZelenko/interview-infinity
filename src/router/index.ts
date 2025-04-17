@@ -85,6 +85,14 @@ const routes = [
         name: 'FAQ',
         component: () => import('../views/FAQ/index.vue')
     },
+    {
+        path: '/our-products',
+        name: 'our-products',
+        component: () => import('@/views/OurProducts.vue'),
+        meta: {
+            title: 'Our Products'
+        }
+    },
     // Admin Routes
     {
         path: '/admin',

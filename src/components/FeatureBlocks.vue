@@ -55,32 +55,68 @@ onMounted(() => {
 
 <template>
   <div class="h-full flex flex-col">
-    <h2 class="text-2xl font-semibold mb-6">{{ type === 'developer' ? $t('blocks.forDevelopers') : type === 'company' ? $t('blocks.forCompanies') : $t('blocks.generalInformation') }}</h2>
+    <h2 class="text-2xl font-semibold mb-6 text-gray-100">
+      {{ type === 'developer' ? $t('blocks.forDevelopers') : type === 'company' ? $t('blocks.forCompanies') : $t('blocks.generalInformation') }}
+    </h2>
     <div class="space-y-4">
       <div
           v-for="(feature, index) in features[type]"
           :key="feature.title"
-          class="feature-block flex flex-col gap-4 p-6 rounded-md transition duration-500 transform"
-          :style="{ opacity: observedBlocks.includes(`${index}`) ? 1 : 0, transform: observedBlocks.includes(`${index}`) ? 'translateY(0)' : 'translateY(50px)' }"
-          :class="{
-            'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500': index % 2 === 0,
-            'bg-gradient-to-r from-green-500 to-blue-500': index % 2 !== 0
+          class="feature-block group"
+          :style="{ 
+            opacity: observedBlocks.includes(`${index}`) ? 1 : 0, 
+            transform: observedBlocks.includes(`${index}`) ? 'translateY(0)' : 'translateY(50px)'
           }"
           :data-key="index"
       >
-        <div class="flex flex-nowrap items-center justify-between">
-          <div class="text-4xl">{{ feature.icon }}</div>
-          <h3 v-if="feature.title" class="text-lg font-semibold">{{ $t(feature.title) }}</h3>
+        <div 
+          class="relative p-6 rounded-lg transition-all duration-300 bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 hover:border-gray-600 hover:bg-gray-800/80"
+        >
+          <!-- Subtle gradient overlay -->
+          <div class="absolute inset-0 rounded-lg bg-gradient-to-br opacity-10 transition-opacity duration-300 group-hover:opacity-20"
+               :class="index % 2 === 0 ? 'from-gray-400 to-gray-600' : 'from-gray-500 to-gray-700'">
+          </div>
+          
+          <!-- Content -->
+          <div class="relative z-10">
+            <div class="flex flex-nowrap items-center gap-4 mb-3">
+              <div class="text-3xl opacity-80 transition-transform duration-300 group-hover:scale-110 group-hover:opacity-100">
+                {{ feature.icon }}
+              </div>
+              <h3 v-if="feature.title" class="text-lg font-medium text-gray-100">
+                {{ $t(feature.title) }}
+              </h3>
+            </div>
+            <p class="text-gray-400 leading-relaxed group-hover:text-gray-300 transition-colors duration-300">
+              {{ $t(feature.description) }}
+            </p>
+          </div>
         </div>
-        <p class="text-gray-300">{{ $t(feature.description) }}</p>
       </div>
     </div>
+    
     <router-link
         v-if="type === 'developer' || type === 'company'"
         :to="`/register?type=${type}`"
-        class="inline-block bg-primary-600 text-white px-6 py-2 mt-6 rounded-md hover:bg-primary-700"
+        class="inline-block mt-6 px-6 py-3 rounded-lg text-gray-100 bg-gray-700 hover:bg-gray-600 transition-all duration-300 border border-gray-600 hover:border-gray-500"
     >
       {{ type === 'developer' ? $t('blocks.joinAsDeveloper') : $t('blocks.joinAsCompany') }}
     </router-link>
   </div>
 </template>
+
+<style scoped>
+.feature-block {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Optimize performance */
+.feature-block {
+  will-change: transform, opacity;
+}
+
+/* Smooth animation for hover effects */
+.feature-block:hover {
+  transform: translateY(-2px);
+}
+</style>

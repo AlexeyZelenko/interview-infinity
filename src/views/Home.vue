@@ -1,8 +1,42 @@
 <script setup lang="ts">
 import FeatureBlocks from '@/components/FeatureBlocks.vue';
+import TestimonialsSection from '@/components/TestimonialsSection.vue';
+import PlatformDemo from '@/components/PlatformDemo.vue';
 import { logEvent } from "firebase/analytics";
 import { analytics } from '@/firebase/config';
-import {onMounted} from "vue";
+import { onMounted, ref, onUnmounted, computed } from "vue";
+import { useWindowScroll, useWindowSize } from '@vueuse/core';
+
+const { y } = useWindowScroll();
+const { height } = useWindowSize();
+const parallaxOffset = ref(0);
+const showScrollTop = computed(() => y.value > height.value * 0.5);
+
+// Статистика платформы (можно заменить на реальные данные из API)
+const stats = ref({
+  developers: '5,000+',
+  companies: '200+',
+  tests: '1,000+',
+  successRate: '95%'
+});
+
+// Функция для обновления параллакс-эффекта
+const updateParallax = () => {
+  parallaxOffset.value = y.value * 0.5;
+};
+
+// Плавный скролл к секции
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};
+
+// Скролл наверх
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
 
 onMounted(() => {
   logEvent(analytics, 'page_view', {
@@ -10,70 +44,175 @@ onMounted(() => {
     page_location: window.location.href,
     page_path: window.location.pathname
   });
+
+  window.addEventListener('scroll', updateParallax);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', updateParallax);
 });
 </script>
 
 <template>
-  <div class="text-center">
-    <h1 class="text-4xl font-bold mb-8">{{ $t('home.title') }}</h1>
-  </div>
-  <div class="text-center mt-12 p-2">
-    <p class="text-gray-300 mb-12 max-w-2xl mx-auto">
-      {{ $t('home.description') }}
-    </p>
-    <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <FeatureBlocks type="developer" />
-      </div>
-      <div class="bg-gray-800 p-6 rounded-lg">
-        <FeatureBlocks type="company" />
+  <!-- Hero Section with Parallax -->
+  <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <!-- Animated Background -->
+    <div class="absolute inset-0 bg-gradient-radial from-gray-900 to-gray-950">
+      <div class="absolute inset-0 opacity-30">
+        <div class="particles"></div>
       </div>
     </div>
+    
+    <!-- Content -->
+    <div class="relative z-10 text-center max-w-4xl mx-auto px-4">
+      <h1 class="text-5xl md:text-6xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-gray-100 to-gray-300">
+        {{ $t('home.title') }}
+      </h1>
+      <p class="text-lg md:text-xl text-gray-300 mb-12 max-w-2xl mx-auto leading-relaxed">
+        {{ $t('home.description') }}
+      </p>
+      
+      <!-- CTA Buttons -->
+      <div class="flex flex-wrap justify-center gap-4">
+        <button 
+          @click="scrollToSection('features')"
+          class="px-8 py-3 bg-gray-800 hover:bg-gray-700 rounded-lg transition-all duration-300 border border-gray-700 hover:border-gray-600"
+        >
+          {{ $t('home.exploreFeatures') }}
+        </button>
+        <router-link 
+          to="/register" 
+          class="px-8 py-3 bg-gray-700/50 hover:bg-gray-600/50 rounded-lg transition-all duration-300 border border-gray-600 hover:border-gray-500"
+        >
+          {{ $t('home.getStarted') }}
+        </router-link>
+      </div>
 
-<!--    Блок с предупреждениями-->
-    <div style="display: none" class="bg-gray-800 p-6 rounded-lg mt-12 max-w-3xl mx-auto">
-      <FeatureBlocks type="general" />
+      <!-- Platform Statistics -->
+      <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div 
+          v-for="(value, key) in stats" 
+          :key="key"
+          class="group"
+        >
+          <div class="text-2xl md:text-3xl font-bold text-gray-100 mb-2">{{ value }}</div>
+          <div class="text-sm text-gray-400 group-hover:text-gray-300 transition-colors duration-300">
+            {{ $t(`home.stats.${key}`) }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Scroll Indicator -->
+      <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <svg 
+          class="w-6 h-6 text-gray-400"
+          fill="none" 
+          stroke="currentColor" 
+          viewBox="0 0 24 24"
+        >
+          <path 
+            stroke-linecap="round" 
+            stroke-linejoin="round" 
+            stroke-width="2" 
+            d="M19 14l-7 7m0 0l-7-7m7 7V3"
+          />
+        </svg>
+      </div>
     </div>
+  </section>
 
-
-    <div style="display: none" class="text-center mt-10">
+  <!-- Features Section -->
+  <section id="features" class="py-24 bg-gray-900/50 backdrop-blur-sm">
+    <div class="max-w-7xl mx-auto px-4">
       <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        <div class="bg-gray-800 p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold mb-4">{{ $t('home.forDevelopers') }}</h2>
-          <p class="mb-4">{{ $t('home.developerDescription') }}</p>
-          <router-link to="/register?type=developer" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700">
-            {{ $t('home.joinAsDeveloper') }}
-          </router-link>
+        <div class="group bg-gray-800/50 hover:bg-gray-800 p-8 rounded-2xl transition-all duration-300 backdrop-blur-sm border border-gray-800">
+          <FeatureBlocks type="developer" />
         </div>
-
-        <div class="bg-gray-800 p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold mb-4">{{ $t('home.forCompanies') }}</h2>
-          <p class="mb-4">{{ $t('home.companyDescription') }}</p>
-          <router-link to="/register?type=company" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700">
-            {{ $t('home.joinAsCompany') }}
-          </router-link>
+        <div class="group bg-gray-800/50 hover:bg-gray-800 p-8 rounded-2xl transition-all duration-300 backdrop-blur-sm border border-gray-800">
+          <FeatureBlocks type="company" />
         </div>
       </div>
     </div>
+  </section>
 
-    <div class="text-center mt-10">
-      <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-        <div class="bg-gray-800 flex flex-col justify-between p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold mb-4">{{ $t('home.englishTitleApp') }}</h2>
-          <p class="mb-4">{{ $t('home.englishTitleAppDescription') }}</p>
-          <a href="https://batleground-oz.web.app/" target="_blank" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700">
-            {{ $t('home.joinEnglishWords') }}
-          </a>
-        </div>
+  <!-- Platform Demo Section -->
+  <PlatformDemo />
 
-        <div class="bg-gray-800 flex flex-col justify-between p-6 rounded-lg">
-          <h2 class="text-2xl font-semibold mb-4">{{ $t('home.interviewGPT') }}</h2>
-          <p class="mb-4">{{ $t('home.interviewGPTDescription') }}</p>
-          <a href="https://playful-fairy-b32c38.netlify.app/" target="_blank" class="inline-block bg-primary-600 text-white px-6 py-2 rounded-md hover:bg-primary-700">
-            {{ $t('home.interviewGPTJoin') }}
-          </a>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- Testimonials Section -->
+  <TestimonialsSection />
+
+  <!-- Scroll to Top Button -->
+  <button
+    v-show="showScrollTop"
+    @click="scrollToTop"
+    class="fixed bottom-8 right-8 p-3 bg-gray-800 hover:bg-gray-700 rounded-full shadow-lg transition-all duration-300 opacity-90 hover:opacity-100 z-50"
+  >
+    <svg 
+      class="w-6 h-6 text-gray-300"
+      fill="none" 
+      stroke="currentColor" 
+      viewBox="0 0 24 24"
+    >
+      <path 
+        stroke-linecap="round" 
+        stroke-linejoin="round" 
+        stroke-width="2" 
+        d="M5 10l7-7m0 0l7 7m-7-7v18"
+      />
+    </svg>
+  </button>
 </template>
+
+<style scoped>
+.bg-gradient-radial {
+  background: radial-gradient(circle at center, var(--tw-gradient-from) 0%, var(--tw-gradient-to) 100%);
+}
+
+/* Анимация частиц */
+.particles {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    transparent 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    transparent 100%
+  );
+  background-size: 200% 200%;
+  animation: moveParticles 20s linear infinite;
+}
+
+@keyframes moveParticles {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: 200% 200%;
+  }
+}
+
+/* Плавные переходы */
+* {
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Оптимизация производительности */
+.parallax {
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Scroll Progress Indicator */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(to bottom, var(--tw-gradient-from), var(--tw-gradient-to));
+  transform-origin: top;
+  z-index: 50;
+}
+</style>

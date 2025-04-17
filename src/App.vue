@@ -11,7 +11,7 @@ const authStore = useAuthStore();
   <div class="min-h-screen bg-dark-bg text-dark-text">
     <template v-if="!authStore.loading">
       <Navbar />
-      <main class="container mx-auto px-4 py-8">
+      <main class="container mx-auto px-4">
         <RouterView />
       </main>
       <Chat />
