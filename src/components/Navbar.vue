@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import {ref, computed, onMounted} from 'vue';
 import { useAuthStore } from '../stores/auth';
+import { useThemeStore } from '../stores/theme';
 import { useRouter, useRoute } from 'vue-router';
 import { useChatStore } from '@/stores/chats';
 import LanguageSwitcher from './LanguageSwitcher.vue';
+
+const themeStore = useThemeStore();
 
 const useAuth = useAuthStore();
 const currentUserId = computed(() => useAuth.user?.uid ?? '');
@@ -130,7 +133,7 @@ onMounted( () => {
                       class="block px-4 py-2 text-sm transition-colors"
                       :class="isActive(item.path)
                         ? 'bg-primary-600/10 text-primary-400'
-                        : 'text-dark-text-secondary hover:text-dark-text hover:bg-gray-800'"
+                        : 'text-dark-text-secondary hover:text-dark-text hover:bg-dark-hover'"
                       @click="closeAboutDropdown"
                   >
                     {{ $t(item.label) }}
@@ -180,6 +183,19 @@ onMounted( () => {
               </router-link>
             </template>
             <LanguageSwitcher />
+            <!-- Theme Toggle -->
+            <button
+                @click="themeStore.toggle()"
+                class="p-2 rounded-md text-dark-text-secondary hover:text-dark-text transition-colors"
+                :title="themeStore.isDark ? $t('menu.lightMode') : $t('menu.darkMode')"
+            >
+              <svg v-if="themeStore.isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
           </div>
         </div>
 
@@ -288,8 +304,19 @@ onMounted( () => {
               {{ $t('menu.SignUp') }}
             </router-link>
           </template>
-          <div class="px-3">
+          <div class="px-3 flex items-center space-x-3">
             <LanguageSwitcher />
+            <button
+                @click="themeStore.toggle()"
+                class="p-2 rounded-md text-dark-text-secondary hover:text-dark-text transition-colors"
+            >
+              <svg v-if="themeStore.isDark" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+              <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+              </svg>
+            </button>
           </div>
         </div>
       </div>

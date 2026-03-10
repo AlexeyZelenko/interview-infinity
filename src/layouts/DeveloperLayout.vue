@@ -9,6 +9,7 @@
     <div class="lg:grid lg:grid-cols-[280px,1fr]">
       <Sidebar />
       <main class="p-6">
+        <OnboardingGuide />
         <router-view />
       </main>
     </div>
@@ -19,6 +20,7 @@
 import { ref } from 'vue';
 import MobileMenu from './Developer/MobileMenu.vue';
 import Sidebar from './Developer/Sidebar.vue';
+import OnboardingGuide from '../components/OnboardingGuide.vue';
 
 const isMobileMenuOpen = ref(false);
 

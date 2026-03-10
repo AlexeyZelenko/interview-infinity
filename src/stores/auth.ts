@@ -4,6 +4,8 @@ import {
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut,
+    GoogleAuthProvider,
+    signInWithPopup,
 } from 'firebase/auth';
 import { doc, setDoc, getDoc, updateDoc } from 'firebase/firestore';
 import { User, Subscription } from '@/types/auth';
@@ -62,6 +64,50 @@ export const useAuthStore = defineStore('auth', {
                 this.error = null;
                 const { user: firebaseUser } = await signInWithEmailAndPassword(auth, email, password);
                 await this.loadUser(firebaseUser.uid);
+            } catch (error: any) {
+                this.error = error.message;
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async loginWithGoogle() {
+            try {
+                this.loading = true;
+                this.error = null;
+                const provider = new GoogleAuthProvider();
+                const { user: firebaseUser } = await signInWithPopup(auth, provider);
+
+                const docRef = doc(db, 'users', firebaseUser.uid);
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    await this.loadUser(firebaseUser.uid);
+                } else {
+                    const endDate = new Date();
+                    endDate.setMonth(endDate.getMonth() + 1);
+
+                    const subscription: Subscription = {
+                        plan: 'free',
+                        status: 'active',
+                        startDate: new Date().toISOString(),
+                        endDate: endDate.toISOString()
+                    };
+
+                    const userData: User = {
+                        uid: firebaseUser.uid,
+                        email: firebaseUser.email || '',
+                        displayName: firebaseUser.displayName || undefined,
+                        userType: firebaseUser.email === 'infinitydevelopinfinity@gmail.com' ? 'admin' : 'developer',
+                        createdAt: new Date().toISOString(),
+                        subscription,
+                        show: false
+                    };
+
+                    await setDoc(docRef, userData);
+                    this.user = userData;
+                }
             } catch (error: any) {
                 this.error = error.message;
                 throw error;

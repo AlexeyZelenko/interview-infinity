@@ -2,7 +2,25 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Light theme (default) */
 :root {
+    --color-bg: #f9fafb;
+    --color-card: #ffffff;
+    --color-text: #111827;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-hover: #f3f4f6;
+    color-scheme: light;
+}
+
+/* Dark theme */
+.dark {
+    --color-bg: #111827;
+    --color-card: #1f2937;
+    --color-text: #f9fafb;
+    --color-text-secondary: #9ca3af;
+    --color-border: #374151;
+    --color-hover: #374151;
     color-scheme: dark;
 }
 

@@ -1,7 +1,25 @@
 <template>
   <div class="fixed bottom-4 left-4 z-50">
-    <!-- Chat Window -->
-    <div class="bg-gray-800 rounded-lg shadow-xl w-[350px] overflow-hidden">
+    <!-- Chat Icon Button (collapsed state) -->
+    <button
+        v-if="!chatOpened"
+        @click="toggleChat"
+        class="relative bg-gray-700 hover:bg-gray-600 text-white rounded-full w-14 h-14 flex items-center justify-center shadow-lg transition-colors duration-200"
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+      </svg>
+      <div class="w-3 h-3 bg-green-400 rounded-full absolute top-0 right-0"></div>
+      <div
+          v-if="unreadCount > 0"
+          class="absolute -top-1 -left-1 bg-primary-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
+      >
+        {{ unreadCount }}
+      </div>
+    </button>
+
+    <!-- Chat Window (expanded state) -->
+    <div v-if="chatOpened" class="bg-gray-800 rounded-lg shadow-xl w-[350px] overflow-hidden">
       <!-- Chat Header -->
       <div
           class="bg-gray-700 px-4 py-3 flex justify-between items-center cursor-pointer select-none"
@@ -27,26 +45,17 @@
         </div>
         <svg
             xmlns="http://www.w3.org/2000/svg"
-            class="h-5 w-5 text-gray-400 transform transition-transform duration-200"
-            :class="chatOpened ? 'rotate-180' : 'rotate-0'"
+            class="h-5 w-5 text-gray-400"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
         >
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </div>
 
       <!-- Chat Content -->
-      <transition
-          enter-active-class="transition ease-out duration-200"
-          enter-from-class="opacity-0 transform -translate-y-2"
-          enter-to-class="opacity-100 transform translate-y-0"
-          leave-active-class="transition ease-in duration-150"
-          leave-from-class="opacity-100 transform translate-y-0"
-          leave-to-class="opacity-0 transform -translate-y-2"
-      >
-        <div v-if="chatOpened" class="bg-gray-900">
+        <div class="bg-gray-900">
           <!-- Error Message -->
           <div v-if="error" class="bg-red-500/10 text-red-400 p-2 text-sm text-center">
             {{ error }}
@@ -146,7 +155,6 @@
             </div>
           </div>
         </div>
-      </transition>
     </div>
   </div>
 </template>

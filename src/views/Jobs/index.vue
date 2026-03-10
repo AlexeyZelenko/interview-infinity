@@ -135,7 +135,9 @@ const observer = ref<IntersectionObserver | null>(null);
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
 const paginatedJobs = computed(() => {
-  return jobsStore.jobs;
+  const start = 0;
+  const end = currentPage.value * itemsPerPage.value;
+  return filteredJobs.value.slice(start, end);
 });
 
 const totalPages = computed(() =>
@@ -254,12 +256,18 @@ onMounted(async () => {
 
     // Setup intersection observer
     observer.value = new IntersectionObserver(async (entries) => {
-      if (entries[0].isIntersecting && !loadingMore.value && jobsStore.hasMore) {
-        loadingMore.value = true;
-        try {
-          await jobsStore.fetchAllJobs(true);
-        } finally {
-          loadingMore.value = false;
+      if (entries[0].isIntersecting && !loadingMore.value) {
+        const hasMoreClientItems = paginatedJobs.value.length < filteredJobs.value.length;
+        if (hasMoreClientItems) {
+          currentPage.value++;
+        } else if (jobsStore.hasMore) {
+          loadingMore.value = true;
+          try {
+            await jobsStore.fetchAllJobs(true);
+            totalJobs.value = jobsStore.jobs.length;
+          } finally {
+            loadingMore.value = false;
+          }
         }
       }
     }, {
@@ -643,7 +651,7 @@ onUnmounted(() => {
 
           <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
             <div
-                v-for="job in filteredJobs"
+                v-for="job in paginatedJobs"
                 :key="job.id"
                 class="bg-gray-800 rounded-lg p-4 sm:p-6 cursor-pointer transition-colors"
                 @click="goToJobDetails(job)"
@@ -751,12 +759,12 @@ onUnmounted(() => {
           <div
               ref="loadMoreTrigger"
               class="h-10"
-              v-if="jobsStore.hasMore"
+              v-if="jobsStore.hasMore || paginatedJobs.length < filteredJobs.length"
           ></div>
 
           <!-- No more jobs indicator -->
           <div
-              v-if="!jobsStore.hasMore && jobsStore.jobs.length > 0"
+              v-if="!jobsStore.hasMore && paginatedJobs.length >= filteredJobs.length && jobsStore.jobs.length > 0"
               class="text-center py-4 text-gray-400"
           >
             {{ $t('jobList.noMoreJobs', 'No more jobs available') }}

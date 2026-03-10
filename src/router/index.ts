@@ -341,6 +341,12 @@ const routes = [
                 meta: { requiresAuth: true }
             },
         ]
+    },
+    // 404 catch-all route
+    {
+        path: '/:pathMatch(.*)*',
+        name: 'NotFound',
+        component: () => import('../views/NotFound.vue')
     }
 ];
 

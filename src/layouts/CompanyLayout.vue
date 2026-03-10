@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {ref, computed} from 'vue';
 import { useRoute } from 'vue-router';
+import OnboardingGuide from '../components/OnboardingGuide.vue';
 
 
 const route = useRoute();
@@ -167,6 +168,7 @@ const currentMenuItem = computed(() => {
 
       <!-- Main Content -->
       <main class="p-6">
+        <OnboardingGuide />
         <router-view />
       </main>
     </div>

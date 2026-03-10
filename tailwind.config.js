@@ -4,6 +4,7 @@ export default {
     "./index.html",
     "./src/**/*.{vue,js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
@@ -19,13 +20,25 @@ export default {
           800: '#075985',
           900: '#0c4a6e',
         },
+        accent: {
+          50: '#fdf4ff',
+          100: '#fae8ff',
+          200: '#f5d0fe',
+          300: '#f0abfc',
+          400: '#e879f9',
+          500: '#d946ef',
+          600: '#c026d3',
+          700: '#a21caf',
+          800: '#86198f',
+          900: '#701a75',
+        },
         dark: {
-          bg: '#111827',
-          card: '#1f2937',
-          text: '#f9fafb',
-          'text-secondary': '#9ca3af',
-          border: '#374151',
-          hover: '#374151'
+          bg: 'var(--color-bg)',
+          card: 'var(--color-card)',
+          text: 'var(--color-text)',
+          'text-secondary': 'var(--color-text-secondary)',
+          border: 'var(--color-border)',
+          hover: 'var(--color-hover)'
         }
       },
     },

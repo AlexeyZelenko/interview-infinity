@@ -74,6 +74,11 @@ export const useJobsStore = defineStore('jobs', {
         async fetchAllJobs(loadMore = false) {
             try {
                 if (!loadMore) {
+                    // Use cache if available and not expired
+                    if (this.lastFetchTime && this.jobs.length > 0 &&
+                        Date.now() - this.lastFetchTime < this.cacheDuration) {
+                        return;
+                    }
                     // Reset state for initial load
                     this.jobs = [];
                     this.lastVisible = null;
@@ -114,13 +119,21 @@ export const useJobsStore = defineStore('jobs', {
                 // Get all job IDs
                 const jobIds = jobsData.map(job => job.id);
 
-                // Fetch all tests in one query
+                // Fetch all tests (batch in chunks of 30 for Firestore 'in' limit)
                 if (jobIds.length > 0) {
-                    const testsQuery = query(
-                        collection(db, 'jobTests'),
-                        where('jobId', 'in', jobIds)
+                    const chunks = [];
+                    for (let i = 0; i < jobIds.length; i += 30) {
+                        chunks.push(jobIds.slice(i, i + 30));
+                    }
+                    const testsSnapshots = await Promise.all(
+                        chunks.map(chunk =>
+                            getDocs(query(
+                                collection(db, 'jobTests'),
+                                where('jobId', 'in', chunk)
+                            ))
+                        )
                     );
-                    const testsSnapshot = await getDocs(testsQuery);
+                    const testsSnapshot = { docs: testsSnapshots.flatMap(s => s.docs) };
                     
                     // Group tests by jobId
                     const testsByJobId = testsSnapshot.docs.reduce((acc, testDoc) => {

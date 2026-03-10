@@ -5,6 +5,7 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
@@ -31,8 +32,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
-    "types": ["vite/client", "d3", "@types/d3"],
-    "typeRoots": ["./node_modules/@types"]
+    "types": ["vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/**/**.vue"],
   "exclude": ["node_modules", "dist"]

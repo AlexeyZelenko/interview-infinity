@@ -19,19 +19,18 @@
       "Community": "Community",
       "OurProducts": "Our Products",
       "title": "About Us"
-    }
+    },
+    "lightMode": "Switch to light mode",
+    "darkMode": "Switch to dark mode"
   },
   "home": {
     "title": "Welcome to Interview Infinity",
+    "platformBadge": "AI-Powered Interview Platform",
+    "titleLine1": "Ace Your Next",
+    "titleLine2": "Tech Interview",
     "description": "Your ultimate platform for interview preparation and job search in the tech industry",
     "exploreFeatures": "Explore Features",
     "getStarted": "Get Started",
-    "stats": {
-      "developers": "Active Developers",
-      "companies": "Partner Companies",
-      "tests": "Available Tests",
-      "successRate": "Success Rate"
-    },
     "ourProducts": "Our Products",
     "englishTitleApp": "English Words Learning",
     "englishTitleAppDescription": "Enhance your English vocabulary with our interactive learning platform",
@@ -393,5 +392,95 @@
       "accountLocked": "Account temporarily locked due to too many failed attempts.",
       "sessionExpired": "Your session has expired. Please log in again."
     }
+  },
+  "skillsChart": {
+    "title": "Popular Technologies on the Platform",
+    "subtitle": "Explore the most in-demand skills — hover over bubbles to see job and test counts. Drag to interact.",
+    "jobs": "Jobs",
+    "tests": "Tests"
+  },
+  "worldMap": {
+    "title": "Our Global Community",
+    "subtitle": "Developers and companies from around the world trust our platform for interview preparation and hiring.",
+    "users": "users"
+  },
+  "onboarding": {
+    "title": "Getting Started",
+    "skip": "Skip",
+    "goToStep": "Go to step",
+    "stepCompleted": "Completed",
+    "needHelp": "Need help? Check our FAQ",
+    "developer": {
+      "subtitle": "Complete these 3 steps to get the most out of the platform",
+      "step1": {
+        "title": "Create Your Resume",
+        "description": "Build your professional resume to showcase your skills and experience to potential employers.",
+        "tip": "A complete resume increases your chances of getting noticed by companies."
+      },
+      "step2": {
+        "title": "Take a Skill Test",
+        "description": "Choose a test in your area of expertise and prove your skills. Results are visible to employers.",
+        "tip": "Completing tests boosts your profile visibility and credibility."
+      },
+      "step3": {
+        "title": "Apply for a Job",
+        "description": "Browse available positions and submit your application to companies that interest you.",
+        "tip": "You can save jobs to apply later from your dashboard."
+      }
+    },
+    "company": {
+      "subtitle": "Set up your company in 3 simple steps",
+      "step1": {
+        "title": "Complete Company Profile",
+        "description": "Add your company information, logo, and description so candidates can learn about you.",
+        "tip": "Companies with complete profiles receive more applications."
+      },
+      "step2": {
+        "title": "Post a Job",
+        "description": "Create your first job listing with position details, requirements, and salary range.",
+        "tip": "Clear job descriptions attract more qualified candidates."
+      },
+      "step3": {
+        "title": "Add a Test",
+        "description": "Create or select a skill test to screen candidates before they apply.",
+        "tip": "Tests help you find the best-matched candidates efficiently."
+      }
+    }
+  },
+  "footer": {
+    "description": "AI-powered platform for interview preparation, skill assessment, and connecting developers with companies.",
+    "navigation": "Navigation",
+    "about": "About",
+    "contacts": "Contacts",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  },
+  "howItWorks": {
+    "title": "How It Works",
+    "subtitle": "Get started in four simple steps — from registration to your dream job.",
+    "step1": {
+      "title": "Create Account",
+      "description": "Sign up as a developer or a company in just a few clicks."
+    },
+    "step2": {
+      "title": "Choose Your Role",
+      "description": "Select your path — take tests as a developer or create job listings as a company."
+    },
+    "step3": {
+      "title": "Complete Tests",
+      "description": "Prove your skills with AI-generated tests or review candidate results."
+    },
+    "step4": {
+      "title": "Get Results",
+      "description": "Receive job offers or find the perfect candidates based on real skills."
+    }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "goBack": "Go Back",
+    "goHome": "Go to Homepage",
+    "quickLinks": "Or try one of these pages:"
   }
 }

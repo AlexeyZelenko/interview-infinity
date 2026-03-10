@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /developer
+Disallow: /company
+
+Sitemap: https://interview-infinity.web.app/sitemap.xml
