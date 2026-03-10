@@ -17,22 +17,27 @@ const router = useRouter();
 const route = useRoute();
 const isMenuOpen = ref(false);
 const showAboutDropdown = ref(false);
+const showTestsDropdown = ref(false);
 
 const menuItems = [
   { path: '/', label: 'menu.Home' },
   { path: '/jobs', label: 'menu.Jobs' },
   { path: '/all-resumes', label: 'menu.Resumes' },
-  { path: '/tests', label: 'menu.Tests' },
   // { path: '/community', label: 'menu.Community' },
   // { path: '/faq', label: 'menu.Faq' },
   // { path: '/pricing', label: 'menu.Pricing' },
   { path: '/developers', label: 'menu.Developers' },
 ];
 
+const testsDropdownItems = [
+  { path: '/tests', label: 'menu.TestsMenu.takeTests' },
+  { path: '/community', label: 'menu.TestsMenu.createTest' },
+];
+
 const aboutDropdownItems = [
+  { path: '/blog', label: 'menu.AboutMenu.Blog' },
   { path: '/faq', label: 'menu.AboutMenu.FAQ' },
   { path: '/community', label: 'menu.AboutMenu.Community' },
-  { path: '/our-products', label: 'menu.AboutMenu.OurProducts' },
 ];
 
 const isActive = (path: string) => {
@@ -61,6 +66,14 @@ const toggleAboutDropdown = () => {
 
 const closeAboutDropdown = () => {
   showAboutDropdown.value = false;
+};
+
+const toggleTestsDropdown = () => {
+  showTestsDropdown.value = !showTestsDropdown.value;
+};
+
+const closeTestsDropdown = () => {
+  showTestsDropdown.value = false;
 };
 
 onMounted( () => {
@@ -97,6 +110,49 @@ onMounted( () => {
             >
               {{ $t(item.label) }}
             </router-link>
+
+            <!-- Tests Dropdown -->
+            <div class="relative group" @mouseleave="closeTestsDropdown">
+              <button
+                  @mouseenter="toggleTestsDropdown"
+                  class="px-3 py-2 rounded-md transition-colors flex items-center space-x-1 group"
+                  :class="isActive('/tests') || isActive('/community')
+                    ? 'bg-primary-600/10 text-primary-400'
+                    : 'text-dark-text-secondary hover:text-dark-text'"
+              >
+                <span>{{ $t('menu.TestsMenu.title') }}</span>
+                <svg
+                    class="w-4 h-4 transition-transform"
+                    :class="{ 'rotate-180': showTestsDropdown }"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              <div
+                  class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-dark-card ring-1 ring-black ring-opacity-5 z-50 transition-all duration-150 opacity-0 invisible group-hover:opacity-100 group-hover:visible"
+                  @mouseenter="showTestsDropdown = true"
+                  @mouseleave="showTestsDropdown = false"
+              >
+                <div class="py-1">
+                  <router-link
+                      v-for="item in testsDropdownItems"
+                      :key="item.path"
+                      :to="item.path"
+                      class="block px-4 py-2 text-sm transition-colors"
+                      :class="isActive(item.path)
+                        ? 'bg-primary-600/10 text-primary-400'
+                        : 'text-dark-text-secondary hover:text-dark-text hover:bg-dark-hover'"
+                      @click="closeTestsDropdown"
+                  >
+                    {{ $t(item.label) }}
+                  </router-link>
+                </div>
+              </div>
+            </div>
 
             <!-- About Us Dropdown -->
             <div class="relative group" @mouseleave="closeAboutDropdown">
@@ -247,6 +303,25 @@ onMounted( () => {
           >
             {{ $t(item.label) }}
           </router-link>
+
+          <!-- Mobile Tests Menu -->
+          <div class="space-y-2">
+            <div class="px-3 py-2 text-dark-text-secondary">
+              {{ $t('menu.TestsMenu.title') }}
+            </div>
+            <router-link
+                v-for="item in testsDropdownItems"
+                :key="item.path"
+                :to="item.path"
+                class="block px-6 py-2 rounded-md transition-colors"
+                :class="isActive(item.path)
+              ? 'bg-primary-600/10 text-primary-400'
+              : 'text-dark-text-secondary hover:text-dark-text'"
+                @click="isMenuOpen = false"
+            >
+              {{ $t(item.label) }}
+            </router-link>
+          </div>
 
           <!-- Mobile About Menu -->
           <div class="space-y-2">

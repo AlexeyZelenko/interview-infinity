@@ -14,10 +14,15 @@
     "Profile": "Profile",
     "Faq": "FAQ",
     "AboutUs": "About Us",
+    "TestsMenu": {
+      "title": "Tests",
+      "takeTests": "Take Tests",
+      "createTest": "Create Test"
+    },
     "AboutMenu": {
       "FAQ": "FAQ",
       "Community": "Community",
-      "OurProducts": "Our Products",
+      "Blog": "Blog",
       "title": "About Us"
     },
     "lightMode": "Switch to light mode",
@@ -31,7 +36,6 @@
     "description": "Your ultimate platform for interview preparation and job search in the tech industry",
     "exploreFeatures": "Explore Features",
     "getStarted": "Get Started",
-    "ourProducts": "Our Products",
     "englishTitleApp": "English Words Learning",
     "englishTitleAppDescription": "Enhance your English vocabulary with our interactive learning platform",
     "interviewGPT": "Interview GPT",
@@ -79,6 +83,11 @@
   },
   "chats": {
     "chat": "Chat",
+    "support": "Support",
+    "supportStatus": "We'll respond as soon as possible",
+    "autoReply": "Thank you! We received your message and will respond shortly.",
+    "statusOnline": "Online",
+    "statusOffline": "Offline, we'll reply by email",
     "unreadMessages": "Unread Messages",
     "sendMessage": "Send",
     "edit": "Edit",
@@ -169,7 +178,8 @@
         "Explanation for the answer",
         "Optional code snippets"
       ],
-      "submitTest": "Submit Test"
+      "submitTest": "Submit Test",
+      "loginToContribute": "Login to Contribute"
     }
   },
   "faq": {
@@ -207,6 +217,59 @@
           "Find top talent by evaluating their skills with custom tests",
           "Publish and manage job postings with flexibility in test requirements"
         ]
+      }
+    },
+    "categories": {
+      "general": "General",
+      "developers": "For Developers",
+      "companies": "For Companies"
+    },
+    "articles": {
+      "general": {
+        "whatIs": {
+          "question": "What is Interview Infinity?",
+          "answer": "Interview Infinity is an AI-powered platform that connects developers and companies through skill-based assessments and job matching.\n\nFor developers, it provides tools to build professional resumes, take skill tests to prove expertise, and apply for tech jobs that match your abilities. Your test results are visible to employers, helping you stand out.\n\nFor companies, the platform offers custom test creation (manual or AI-generated), candidate evaluation tools, job posting management, and detailed analytics on applicant performance.\n\nKey benefits include:\n- One month of free access with no credit card required\n- AI-powered test generation for any technology\n- Anti-fraud measures to ensure test integrity\n- Real-time application tracking\n- Built-in messaging between candidates and employers\n\nWhether you are looking for your next tech role or searching for top talent, Interview Infinity streamlines the entire process from assessment to hiring."
+        },
+        "security": {
+          "question": "How is my data protected?",
+          "answer": "We take data security and privacy seriously. Here is how we protect your information:\n\nAuthentication: We use Firebase Authentication, which provides industry-standard security including encrypted passwords, secure session management, and optional Google Sign-In.\n\nData Storage: All user data is stored in Google Cloud Firestore with strict security rules. Only authenticated users can access their own data, and company data is protected with role-based access controls.\n\nTest Integrity: Our anti-fraud system prevents test manipulation by enforcing a cooldown period between retakes. Video recording during tests (optional, subscription feature) adds an extra layer of verification.\n\nPrivacy: We do not sell or share your personal data with third parties. Your resume and test results are only visible to companies you apply to or based on your visibility settings.\n\nCommunication: All messages between candidates and employers are encrypted and stored securely within the platform."
+        }
+      },
+      "developers": {
+        "createResume": {
+          "question": "How do I create and submit my resume?",
+          "answer": "Creating a resume on Interview Infinity is straightforward:\n\n1. Log in to your developer account and navigate to the Resumes section from your dashboard sidebar.\n2. Click \"Create Resume\" to start a new resume.\n3. Fill in your professional information including:\n   - Personal details (name, contact, location)\n   - Work experience with descriptions\n   - Education history\n   - Technical skills and proficiency levels\n   - Projects and portfolio links\n4. Save your resume. You can create multiple resumes tailored for different job types.\n5. When applying to jobs, select which resume to attach to your application.\n\nTips:\n- Keep your skills section up to date with technologies you actively use.\n- Add links to your GitHub, portfolio, or LinkedIn profile.\n- Tailor each resume to the specific type of role you are targeting.\n- Complete test assessments to strengthen your resume with verified skill scores."
+        },
+        "testing": {
+          "question": "How does the interview testing work?",
+          "answer": "The testing system on Interview Infinity works as follows:\n\n1. Browse Tests: Go to the Tests page to see all available skill assessments. Filter by technology, difficulty level, duration, or category.\n\n2. Start a Test: Click \"Start Test\" on any assessment. Some tests may be required for specific job applications.\n\n3. During the Test:\n   - Answer multiple-choice questions within the time limit\n   - Some questions include code snippets for analysis\n   - You can navigate between questions before submitting\n   - Some company tests may require video recording\n\n4. Results: After completing a test, you receive your score immediately. Results include:\n   - Overall percentage score\n   - Correct/incorrect breakdown\n   - Explanations for each answer\n\n5. Retake Policy: To ensure fairness, you can retake a test only after a one-week cooldown period.\n\nYour test results become part of your developer profile and are visible to companies when you apply for jobs, helping demonstrate your verified skills."
+        },
+        "applyJobs": {
+          "question": "How can I apply for jobs?",
+          "answer": "Applying for jobs on Interview Infinity is simple:\n\n1. Browse Jobs: Visit the Jobs page to see all available positions. Use filters for location, job type, salary range, skills, and remote options.\n\n2. Review Details: Click on any job to see the full description, requirements, responsibilities, benefits, and required tests.\n\n3. Complete Required Tests: Some jobs require you to pass specific skill tests before applying. Complete these tests first if needed.\n\n4. Apply: Click the \"Apply\" button and select which resume to attach. Add any optional cover message.\n\n5. Track Applications: Monitor all your applications from the \"My Applications\" section in your dashboard. You will see status updates as employers review your application.\n\n6. Save for Later: Use the bookmark feature to save interesting jobs and apply when you are ready.\n\nTips:\n- Complete relevant skill tests before applying to boost your profile.\n- Keep your resume up to date.\n- Check your dashboard regularly for messages from employers."
+        },
+        "trackProgress": {
+          "question": "How do I track my progress?",
+          "answer": "Interview Infinity provides several ways to track your progress:\n\nTest Results: View all your completed tests and scores in the \"Test Results\" section of your developer dashboard. See your performance over time and identify areas for improvement.\n\nApplications: The \"My Applications\" section shows every job you have applied to, with real-time status updates (submitted, under review, interview, accepted, rejected).\n\nSaved Jobs: Keep track of interesting positions in your \"Saved Jobs\" list for easy access later.\n\nResumes: Manage multiple resumes from the \"Resumes\" section. See which resume is attached to which application.\n\nMessages: Stay connected with employers through the built-in chat system. You will see unread message notifications in your dashboard.\n\nSubscription: Check your subscription status and remaining trial days from the \"Subscription\" section."
+        }
+      },
+      "companies": {
+        "createTests": {
+          "question": "How to create and manage tests?",
+          "answer": "Interview Infinity offers multiple ways to create tests for evaluating candidates:\n\nAI-Generated Tests:\n1. Go to your Company Dashboard and select \"Create Test with AI.\"\n2. Specify the technology focus (e.g., JavaScript, Python, React).\n3. Set the number of questions (up to 20), difficulty level, and duration.\n4. Optionally add a description to customize the generated questions.\n5. Review and edit the generated questions before publishing.\n\nManual Test Creation:\n1. Select \"Create Test Manually\" from your dashboard.\n2. Add questions one by one with 4 multiple-choice options.\n3. Mark the correct answer and add an explanation for each question.\n4. Set the category, difficulty, and time limit.\n\nAdding Existing Tests:\n1. Browse the platform test library via \"Add Test from Existing.\"\n2. Select tests that match your requirements.\n3. Attach them to your job listings.\n\nManaging Tests:\n- Edit questions, difficulty, or duration at any time.\n- View test analytics and candidate results.\n- Link tests to specific job postings to require them before application."
+        },
+        "evaluation": {
+          "question": "How does the candidate evaluation system work?",
+          "answer": "The candidate evaluation system provides comprehensive insights into each applicant:\n\nAutomatic Scoring: When a candidate completes a test, the system automatically calculates their score based on correct answers. Results are available immediately in your dashboard.\n\nTest Results Dashboard: For each test, you can see:\n- List of all candidates who took the test\n- Individual scores and completion times\n- Comparison across candidates\n- Date and time of each attempt\n\nJob Application Review: When candidates apply to your jobs:\n- View their attached resume and profile\n- See all their test scores relevant to the position\n- Check if they completed required tests\n- Review their overall skill assessment\n\nVideo Verification (Premium): With a subscription, you can enable video recording during tests. This allows you to verify that the candidate completed the test independently.\n\nCommunication: Use the built-in messaging system to contact promising candidates directly, ask follow-up questions, or schedule interviews."
+        },
+        "reviewResults": {
+          "question": "How to review test results?",
+          "answer": "Reviewing test results is straightforward from your Company Dashboard:\n\n1. Navigate to \"Company Tests\" to see all your tests.\n2. Click \"View All Results\" on any test to see all submissions.\n3. For each candidate, you can view:\n   - Overall score (percentage)\n   - Individual question responses\n   - Time taken to complete\n   - Whether video recording was captured (if enabled)\n\nDetailed Review:\n- Click on a specific candidate to see their full test breakdown.\n- Review each question, the candidate's answer, the correct answer, and the explanation.\n- Use this data to make informed hiring decisions.\n\nFrom Job Listings:\n- Go to \"Job Listings\" and click \"View Applicants\" on any job.\n- See all applicants with their test scores side by side.\n- Filter and sort candidates by score, date, or status.\n\nTips:\n- Set minimum score thresholds to quickly filter qualified candidates.\n- Compare results across multiple tests for a holistic evaluation.\n- Use the messaging feature to discuss results with your team."
+        },
+        "bestPractices": {
+          "question": "Best practices for technical testing",
+          "answer": "Follow these recommendations to get the most out of technical testing on our platform:\n\nTest Design:\n- Keep tests focused on one technology or skill area.\n- Mix difficulty levels: include easy, medium, and hard questions.\n- Set a reasonable time limit (15-45 minutes works best).\n- Write clear, unambiguous questions.\n- Provide meaningful explanations for correct answers.\n\nQuestion Quality:\n- Include practical, real-world scenarios rather than theoretical trivia.\n- Add code snippets where relevant to test practical knowledge.\n- Avoid trick questions that test attention to detail rather than skill.\n- Review and update questions periodically.\n\nCandidate Experience:\n- Clearly communicate test requirements in your job posting.\n- Specify the expected duration and difficulty level.\n- Allow candidates adequate time to prepare.\n\nEvaluation:\n- Do not rely solely on test scores. Use them alongside resume review and interviews.\n- Consider the difficulty level when comparing scores.\n- Look for consistent performance across multiple assessments.\n- Use video recording for high-stakes positions to ensure integrity.\n\nContinuous Improvement:\n- Review test analytics to identify questions that are too easy or too hard.\n- Update your tests based on changing technology trends.\n- Gather feedback from candidates about the testing experience."
+        }
       }
     }
   },
@@ -334,24 +397,6 @@
     "results": "jobs found",
     "loading": "Loading jobs..."
   },
-  "ourProducts": {
-    "title": "Our Products",
-    "openApp": "Open App",
-    "englishWordsLearning": "English Words Learning",
-    "englishWordsLearningDescription": "Learn English words effectively with spaced repetition and AI-powered exercises.",
-    "aiInterview": "AI Interview",
-    "aiInterviewDescription": "Practice your interview skills with AI-powered mock interviews and get instant feedback.",
-    "myDictionary": "My Dictionary",
-    "myDictionaryDescription": "Create and manage your personal dictionary with custom word lists and study materials.",
-    "itCheatSheets": "IT Cheat Sheets",
-    "itCheatSheetsDescription": "Quick reference guides for programming languages, frameworks, and development tools.",
-    "fitnessAI": "Fitness AI",
-    "fitnessAIDescription": "Get personalized workout plans and nutrition advice powered by artificial intelligence.",
-    "recipeSearch": "Recipe Search",
-    "recipeSearchDescription": "Find and discover delicious recipes from around the world. Search by ingredients, cuisine type, or dietary preferences.",
-    "englishWordsLearningLaravel": "English Words Learning (Laravel)",
-    "englishWordsLearningLaravelDescription": "Enhanced version of English Words Learning built with Laravel, offering additional features and improved performance."
-  },
   "demo": {
     "title": "See Our Platform in Action",
     "tryItNow": "Try it Now",
@@ -474,6 +519,60 @@
     "step4": {
       "title": "Get Results",
       "description": "Receive job offers or find the perfect candidates based on real skills."
+    }
+  },
+  "blog": {
+    "title": "Blog",
+    "subtitle": "Tips, guides, and insights for your tech career and hiring process.",
+    "allCategories": "All",
+    "noArticles": "No articles found in this category.",
+    "minRead": "min read",
+    "backToBlog": "Back to Blog",
+    "articleNotFound": "Article not found",
+    "categories": {
+      "interviews": "Interviews",
+      "career": "Career",
+      "technology": "Technology"
+    },
+    "authors": {
+      "team": "Interview Infinity Team"
+    },
+    "articles": {
+      "techInterview": {
+        "title": "How to Prepare for a Tech Interview in 2026",
+        "description": "A comprehensive guide covering coding challenges, system design, and behavioral questions to help you ace your next technical interview.",
+        "content": "Preparing for a technical interview can feel overwhelming, but with the right strategy you can walk in with confidence.\n\n1. Master the Fundamentals\nReview data structures (arrays, trees, graphs, hash maps) and algorithms (sorting, searching, dynamic programming). Practice solving problems on our platform to build muscle memory.\n\n2. System Design\nFor mid-level and senior roles, expect system design questions. Practice designing scalable systems: load balancers, databases, caching layers, and microservices architecture.\n\n3. Behavioral Questions\nUse the STAR method (Situation, Task, Action, Result) to structure your answers. Prepare 5-6 stories from your experience that demonstrate leadership, problem-solving, and teamwork.\n\n4. Mock Interviews\nPractice with peers or use AI-powered interview tools. The more you simulate real conditions, the more comfortable you will be on the actual day.\n\n5. Research the Company\nUnderstand the company's tech stack, recent projects, and culture. Tailor your answers to show alignment with their values and goals."
+      },
+      "topSkills": {
+        "title": "Top 10 In-Demand Tech Skills for 2026",
+        "description": "Discover which programming languages, frameworks, and tools employers are looking for this year.",
+        "content": "The tech industry evolves rapidly. Here are the most sought-after skills by employers in 2026:\n\n1. TypeScript - Now the standard for frontend and full-stack development.\n\n2. Python - Continues to dominate in AI/ML, data science, and backend development.\n\n3. Rust - Growing adoption for systems programming and performance-critical applications.\n\n4. Cloud Architecture (AWS/GCP/Azure) - Cloud-native skills are essential for modern infrastructure.\n\n5. AI/ML Engineering - Practical experience with LLMs, fine-tuning, and AI integration.\n\n6. Kubernetes & DevOps - Container orchestration remains critical for scalable deployments.\n\n7. React/Vue.js - Frontend frameworks continue to lead the web development landscape.\n\n8. GraphQL - Increasingly preferred over REST for flexible API design.\n\n9. Cybersecurity - With growing threats, security expertise is in high demand.\n\n10. System Design - Understanding distributed systems is key for senior engineering roles.\n\nInvest in these skills to stay competitive in the job market."
+      },
+      "aiHiring": {
+        "title": "How AI is Transforming the Hiring Process",
+        "description": "Explore how artificial intelligence is changing recruitment, from resume screening to automated skill assessments.",
+        "content": "Artificial intelligence is reshaping how companies find and evaluate talent.\n\nAutomated Resume Screening\nAI tools can analyze thousands of resumes in seconds, identifying candidates who match specific criteria. This reduces bias and speeds up the initial screening process.\n\nSkill-Based Assessments\nPlatforms like Interview Infinity use AI to generate customized tests that evaluate real-world skills rather than relying solely on resume keywords.\n\nPredictive Analytics\nMachine learning models can predict candidate success based on historical data, helping companies make better hiring decisions.\n\nAI-Powered Interviews\nVirtual interview assistants can conduct preliminary interviews, asking standardized questions and evaluating responses for technical accuracy and communication skills.\n\nBias Reduction\nWhen properly implemented, AI can help reduce unconscious bias by focusing on objective skill measurements rather than subjective impressions.\n\nThe Future\nWhile AI enhances efficiency, the human element remains crucial. The best hiring processes combine AI capabilities with human judgment for final decisions."
+      },
+      "perfectResume": {
+        "title": "Building the Perfect Developer Resume",
+        "description": "Learn how to craft a resume that stands out to recruiters and passes automated screening systems.",
+        "content": "Your resume is your first impression. Make it count.\n\nKeep It Concise\nAim for 1-2 pages maximum. Recruiters spend an average of 6 seconds on initial review, so make every line valuable.\n\nLead with Impact\nStart bullet points with action verbs and quantify results: \"Reduced API response time by 40%\" is better than \"Worked on API optimization.\"\n\nTailor for Each Role\nCustomize your resume for each application. Highlight the skills and experiences most relevant to the specific job description.\n\nTechnical Skills Section\nList languages, frameworks, tools, and platforms you are proficient in. Organize them by category for easy scanning.\n\nProjects Matter\nInclude 2-3 notable projects with brief descriptions of the problem, your approach, and the outcome. Link to live demos or repositories when possible.\n\nEducation & Certifications\nList relevant degrees and certifications. For experienced developers, this section can be brief -- your work experience speaks louder.\n\nUse Our Resume Builder\nInterview Infinity's resume builder helps you create professional, ATS-friendly resumes that highlight your strengths effectively."
+      },
+      "interviewSkills": {
+        "title": "Interview Skills That Employers Actually Look For",
+        "description": "Beyond technical knowledge, discover the soft skills and qualities that make candidates stand out during interviews.",
+        "content": "Technical skills get you the interview, but soft skills get you the job. Here are the key qualities employers evaluate during the hiring process.\n\nCommunication\nClear communication is the number one skill employers value. During interviews, this means explaining your thought process, asking clarifying questions, and presenting complex ideas simply. Practice talking through problems out loud -- interviewers care as much about how you think as what you know.\n\nProblem-Solving Approach\nEmployers want to see how you break down complex problems. When facing a challenge, demonstrate your ability to analyze the situation, identify constraints, consider multiple approaches, and choose the best solution. Do not jump straight to coding -- take a moment to plan.\n\nTeamwork and Collaboration\nModern development is a team sport. Share examples of how you have worked with cross-functional teams, resolved conflicts, mentored junior developers, or contributed to code reviews. Show that you are someone others enjoy working with.\n\nAdaptability\nTechnology changes fast. Employers look for candidates who embrace learning new tools and adapting to changing requirements. Talk about times you have picked up a new technology quickly or adjusted your approach based on feedback.\n\nOwnership and Initiative\nCompanies value engineers who take ownership of their work. Share stories about times you identified a problem proactively, proposed a solution, or went beyond your assigned tasks to improve the product.\n\nTime Management\nDemonstrate that you can prioritize effectively, estimate task durations accurately, and deliver on commitments. This is especially important for remote roles.\n\nCultural Fit\nResearch the company culture before your interview. Align your answers with their values while staying authentic. Companies want team members who will thrive in their environment.\n\nPractical Tips\n- Prepare 5-6 STAR stories that demonstrate these skills\n- Practice with mock interviews on Interview Infinity\n- Ask thoughtful questions about the team and processes\n- Follow up with a thank-you note after the interview"
+      },
+      "remoteVsOffice": {
+        "title": "Remote vs Office Interviews: How to Prepare for Each",
+        "description": "A practical guide covering the key differences between remote and in-person interviews, with preparation tips for both formats.",
+        "content": "The interview landscape has changed dramatically. Whether you are interviewing from your home office or visiting a company headquarters, each format has unique challenges. Here is how to prepare for both.\n\nRemote Interviews\n\nTechnical Setup\nTest your internet connection, camera, and microphone before the interview. Use a wired connection if possible. Have a backup plan (phone hotspot, alternative device) in case of technical issues. Close unnecessary applications to avoid notifications.\n\nEnvironment\nChoose a quiet, well-lit space with a clean background. Natural lighting from the front works best. Inform household members about your interview time to minimize interruptions.\n\nScreen Sharing\nPractice sharing your screen for coding challenges. Make sure your IDE is set up with a readable font size. Close any personal tabs or notifications before sharing.\n\nEngagement\nMaintain eye contact by looking at the camera, not the screen. Nod and react visibly since body language is harder to read on video. Speak clearly and at a moderate pace.\n\nCoding Interviews Online\nFamiliarize yourself with common online coding platforms (CoderPad, HackerRank, CodeSignal). Practice typing and explaining simultaneously.\n\nOffice Interviews\n\nLogistics\nPlan your route and arrive 10-15 minutes early. Know the exact building, floor, and who to ask for. Bring printed copies of your resume and a notebook.\n\nFirst Impressions\nDress appropriately for the company culture. A firm handshake, eye contact, and genuine smile go a long way. Be polite to everyone you meet -- from the receptionist to the CEO.\n\nWhiteboard Coding\nPractice writing code on a whiteboard or paper. Write legibly, use proper indentation, and talk through your approach as you write. It is okay to make mistakes -- show how you debug.\n\nOffice Tour\nIf offered a tour, use it to ask questions about team dynamics, collaboration spaces, and work culture. This shows genuine interest.\n\nUniversal Tips for Both Formats\n- Research the company and role thoroughly\n- Prepare questions to ask the interviewer\n- Practice common coding and behavioral questions\n- Get a good night's sleep before the interview\n- Follow up with a personalized thank-you message\n- Use Interview Infinity to practice with skill tests beforehand"
+      },
+      "codingInterview": {
+        "title": "Coding Interview Best Practices: A Developer's Guide",
+        "description": "Master your coding interviews with proven strategies for algorithm problems, system design, and live coding sessions.",
+        "content": "Coding interviews remain the most critical part of the technical hiring process. Here is a comprehensive guide to help you perform your best.\n\nBefore the Interview\n\nKnow the Format\nAsk the recruiter about the interview structure: live coding, take-home assignments, system design, or pair programming. Each requires different preparation.\n\nPractice Consistently\nSolve 2-3 problems daily rather than cramming. Focus on pattern recognition -- most problems fall into categories like two pointers, sliding window, BFS/DFS, dynamic programming, or greedy algorithms.\n\nReview Fundamentals\nEnsure you are comfortable with:\n- Arrays, strings, hash maps, sets\n- Linked lists, stacks, queues\n- Trees (binary, BST, tries)\n- Graphs (BFS, DFS, shortest path)\n- Sorting and searching algorithms\n- Time and space complexity analysis\n\nDuring the Interview\n\nClarify Before Coding\nAlways ask clarifying questions: What are the input constraints? Are there edge cases? Can I assume the input is valid? This shows thoroughness and prevents wasted time.\n\nThink Out Loud\nExplain your thought process as you work. Interviewers want to understand how you approach problems. Start with a brute-force solution, then optimize.\n\nWrite Clean Code\nUse meaningful variable names, proper indentation, and modular functions. Treat interview code like production code -- it reflects your engineering standards.\n\nTest Your Solution\nWalk through your code with examples before saying you are done. Check edge cases: empty input, single element, very large input, negative numbers.\n\nHandle Getting Stuck\nIt is normal to get stuck. Take a deep breath and:\n- Re-read the problem statement\n- Try a simpler version of the problem\n- Think about which data structure might help\n- Ask for a hint -- interviewers expect this\n\nSystem Design Interviews\n\nFor senior roles, you will likely face system design questions. Follow this framework:\n1. Clarify requirements and constraints\n2. Define the high-level architecture\n3. Design key components (API, database, caching)\n4. Discuss trade-offs and scaling\n5. Address potential bottlenecks\n\nAfter the Interview\n\nReflect on what went well and what to improve. Keep a log of questions you encountered and solutions you learned. Each interview -- whether successful or not -- is a learning opportunity.\n\nPractice on Interview Infinity\nUse our platform to take timed skill assessments that simulate real interview conditions. Track your progress and identify areas for improvement."
+      }
     }
   },
   "notFound": {

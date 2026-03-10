@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, nextTick, watch } from "vue";
+import { ref, onMounted, onUnmounted, computed, nextTick } from "vue";
 import {
   getDatabase,
   ref as dbRef,
@@ -10,6 +10,7 @@ import {
   off,
   get,
   set,
+  onDisconnect,
 } from "firebase/database";
 import { getAuth } from "firebase/auth";
 import { useI18n } from "vue-i18n";
@@ -153,11 +154,15 @@ const formatLastSeen = (timestamp: number) => {
   return lastSeen.toLocaleDateString();
 };
 
+let isScrollingToBottom = false;
 const scrollToBottom = async () => {
+  if (isScrollingToBottom) return;
+  isScrollingToBottom = true;
   await nextTick();
   if (messagesContainerRef.value) {
     messagesContainerRef.value.scrollTop = messagesContainerRef.value.scrollHeight;
   }
+  isScrollingToBottom = false;
 };
 
 const loadUserChats = () => {
@@ -261,7 +266,7 @@ const sendMessage = async () => {
       read: false,
     });
     newMessage.value = "";
-    await scrollToBottom();
+    // scrollToBottom will be triggered by onValue listener
   } catch (err) {
     console.error("Error sending message:", err);
     error.value = "Failed to send message. Please try again.";
@@ -410,19 +415,44 @@ const handleNewMessage = async (message: any, userId: string) => {
   }
 };
 
-// Watchers
-watch(activeMessages, () => {
-  scrollToBottom();
-});
+// Admin presence
+const presenceRef = dbRef(db, 'admin/presence');
+
+const setAdminPresence = async (online: boolean) => {
+  try {
+    await set(presenceRef, {
+      online,
+      lastSeen: serverTimestamp(),
+    });
+  } catch (err) {
+    console.error('Error setting admin presence:', err);
+  }
+};
+
+const setupPresence = async () => {
+  await setAdminPresence(true);
+
+  const connectedRef = dbRef(db, '.info/connected');
+  onValue(connectedRef, (snapshot) => {
+    if (snapshot.val() === true) {
+      onDisconnect(presenceRef).set({
+        online: false,
+        lastSeen: serverTimestamp(),
+      });
+      setAdminPresence(true);
+    }
+  });
+};
 
 // Lifecycle hooks
 onMounted(async () => {
   await loadNotificationSettings();
   loadUserChats();
-  
+  await setupPresence();
+
   // Initialize notification sound
   notificationSound.value = new Audio('/notification.mp3');
-  
+
   // Request notification permission if enabled
   if (notificationSettings.value.desktop) {
     await requestNotificationPermission();
@@ -433,6 +463,14 @@ onMounted(async () => {
       chatListOpened.value = true;
     }
   });
+});
+
+onUnmounted(() => {
+  setAdminPresence(false);
+  if (activeChatId.value) {
+    const chatRef = dbRef(db, `admin_chats/${activeChatId.value}/messages`);
+    off(chatRef);
+  }
 });
 </script>
 

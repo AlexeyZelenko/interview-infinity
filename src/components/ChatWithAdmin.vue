@@ -9,7 +9,7 @@
       <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
       </svg>
-      <div class="w-3 h-3 bg-green-400 rounded-full absolute top-0 right-0"></div>
+      <div class="w-3 h-3 rounded-full absolute top-0 right-0" :class="adminOnline ? 'bg-green-400' : 'bg-gray-500'"></div>
       <div
           v-if="unreadCount > 0"
           class="absolute -top-1 -left-1 bg-primary-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full"
@@ -27,14 +27,18 @@
       >
         <div class="flex items-center space-x-3">
           <div class="relative">
-            <div class="w-2 h-2 bg-green-400 rounded-full absolute -right-1 -top-1"></div>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
           </div>
           <div>
-            <h4 class="font-semibold text-white">{{ $t('chats.chat') }}</h4>
-            <p class="text-xs text-gray-400">Online</p>
+            <h4 class="font-semibold text-white">{{ $t('chats.support') }}</h4>
+            <div class="flex items-center gap-1.5">
+              <div class="w-2 h-2 rounded-full" :class="adminOnline ? 'bg-green-400' : 'bg-gray-500'"></div>
+              <p class="text-xs" :class="adminOnline ? 'text-green-400' : 'text-gray-400'">
+                {{ adminOnline ? $t('chats.statusOnline') : $t('chats.statusOffline') }}
+              </p>
+            </div>
           </div>
           <div
               v-if="unreadCount > 0"
@@ -76,7 +80,7 @@
                 v-for="msg in messages"
                 :key="msg.id"
                 class="flex items-start space-x-2 animate-fade-in group"
-                :class="{ 'justify-end': msg.sender === userId }"
+                :class="{ 'justify-end': msg.sender === userId && msg.role !== 'system', 'justify-center': msg.role === 'system' }"
             >
               <!-- Message Bubble -->
               <div
@@ -87,7 +91,8 @@
                     class="px-4 py-2 rounded-lg text-sm"
                     :class="{
                       'bg-primary-600 text-white': msg.sender === userId,
-                      'bg-gray-700 text-gray-100': msg.sender !== userId
+                      'bg-gray-600/50 text-gray-300 italic border border-gray-600': msg.role === 'system',
+                      'bg-gray-700 text-gray-100': msg.sender !== userId && msg.role !== 'system'
                     }"
                 >
                   {{ msg.text }}
@@ -160,24 +165,32 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick, computed } from "vue";
+import { ref, onMounted, onUnmounted, nextTick, computed, watch } from "vue";
 import {
   getDatabase,
   ref as dbRef,
   onValue,
   push,
   remove,
+  get,
+  set,
   serverTimestamp,
   update,
 } from "firebase/database";
 import { useAuthStore } from "@/stores/auth";
 import { useTelegramStore } from "@/stores/telegram.ts";
+import { useChatWidgetStore } from "@/stores/chatWidget";
+import { useI18n } from 'vue-i18n';
 import moment from 'moment-timezone';
 import { storeToRefs } from 'pinia';
+import { sendChatNotificationEmail } from '@/services/emailNotification';
+
+const { t } = useI18n();
 
 // Инициализация stores
 const authStore = useAuthStore();
 const telegramStore = useTelegramStore();
+const chatWidgetStore = useChatWidgetStore();
 const { user } = storeToRefs(authStore);
 
 // Вычисляемое свойство для ID пользователя
@@ -186,22 +199,38 @@ const userId = computed(() => user.value?.uid);
 // Состояние
 const messages = ref<any[]>([]);
 const newMessage = ref("");
-const chatOpened = ref(false);
+const chatOpened = computed(() => chatWidgetStore.isOpen);
 const unreadCount = ref(0);
 const messagesContainer = ref<HTMLElement | null>(null);
 const isLoading = ref(false);
 const error = ref<string | null>(null);
+const isScrolling = ref(false);
 const db = getDatabase();
+
+// Admin presence
+const adminOnline = ref(false);
+let unsubscribePresence: (() => void) | null = null;
+
+const listenAdminPresence = () => {
+  const presenceRef = dbRef(db, 'admin/presence');
+  unsubscribePresence = onValue(presenceRef, (snapshot) => {
+    const data = snapshot.val();
+    adminOnline.value = data?.online === true;
+  });
+};
 
 // Хранение слушателя
 let unsubscribeMessages: (() => void) | null = null;
 
 // Прокрутка к последнему сообщению
 const scrollToBottom = async () => {
+  if (isScrolling.value) return;
+  isScrolling.value = true;
   await nextTick();
   if (messagesContainer.value) {
     messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight;
   }
+  isScrolling.value = false;
 };
 
 // Форматирование даты
@@ -212,6 +241,27 @@ const formatDate = (timestamp: number | undefined) => {
 
 const getUkraineTimestamp = () => {
   return moment().tz('Europe/Kiev').format('YYYY-MM-DD HH:mm:ss');
+};
+
+// Отправка автоматического ответа (один раз на пользователя)
+const sendAutoReply = async () => {
+  if (!userId.value) return;
+
+  const autoReplyFlagRef = dbRef(db, `admin_chats/${userId.value}/autoReplySent`);
+  const snapshot = await get(autoReplyFlagRef);
+
+  if (snapshot.exists()) return;
+
+  const messagesRef = dbRef(db, `admin_chats/${userId.value}/messages`);
+  await push(messagesRef, {
+    sender: 'system',
+    text: t('chats.autoReply'),
+    timestamp: serverTimestamp(),
+    read: true,
+    role: 'system',
+  });
+
+  await set(autoReplyFlagRef, true);
 };
 
 // Отправка сообщения
@@ -252,9 +302,20 @@ const sendMessage = async () => {
     // Уведомление бота
     await telegramStore.notifyNewMessageToTelegramBot(messagesRef, messageTelegram);
 
-    // Очищаем поле ввода и прокручиваем к последнему сообщению
+    // Email notification to admin
+    const siteUrl = window.location.origin;
+    sendChatNotificationEmail({
+      userName: user.value?.displayName || user.value?.email || userId.value || 'Unknown',
+      userEmail: user.value?.email || 'No email',
+      messageText: message.text,
+      chatLink: `${siteUrl}/admin/chats`,
+    });
+
+    // Очищаем поле ввода (scrollToBottom will be triggered by onValue listener)
     newMessage.value = "";
-    await scrollToBottom();
+
+    // Отправляем auto-reply при первом сообщении
+    await sendAutoReply();
   } catch (err) {
     console.error('Error sending message:', err);
     error.value = "Ошибка при отправке сообщения. Пожалуйста, попробуйте снова.";
@@ -294,8 +355,10 @@ const loadMessages = () => {
           (msg) => !msg.read && msg.sender !== userId.value
         ).length;
 
-        // Прокрутка к последнему сообщению при получении новых сообщений
-        await scrollToBottom();
+        // Прокрутка к последнему сообщению только если чат открыт
+        if (chatOpened.value) {
+          await scrollToBottom();
+        }
       } catch (err) {
         console.error('Error processing messages:', err);
         error.value = "Ошибка при загрузке сообщений";
@@ -325,8 +388,8 @@ const deleteMessage = async (messageId: string) => {
 
 // Переключение состояния чата
 const toggleChat = () => {
-  chatOpened.value = !chatOpened.value;
-  if (chatOpened.value) {
+  chatWidgetStore.toggle();
+  if (chatWidgetStore.isOpen) {
     markMessagesAsRead();
     scrollToBottom();
   }
@@ -352,8 +415,30 @@ const markMessagesAsRead = async () => {
   }
 };
 
+// Watch for external chat open (e.g., from FAQ Contact Support button)
+watch(() => chatWidgetStore.isOpen, (isOpen) => {
+  if (isOpen) {
+    markMessagesAsRead();
+    scrollToBottom();
+  }
+});
+
+// Watch for auth state changes -- loadMessages when user logs in
+watch(userId, (newId, oldId) => {
+  if (newId && newId !== oldId) {
+    loadMessages();
+  } else if (!newId && unsubscribeMessages) {
+    // User logged out -- cleanup listener and clear messages
+    unsubscribeMessages();
+    unsubscribeMessages = null;
+    messages.value = [];
+    unreadCount.value = 0;
+  }
+});
+
 // Жизненный цикл компонента
 onMounted(() => {
+  listenAdminPresence();
   if (userId.value) {
     loadMessages();
   }
@@ -362,6 +447,9 @@ onMounted(() => {
 onUnmounted(() => {
   if (unsubscribeMessages) {
     unsubscribeMessages();
+  }
+  if (unsubscribePresence) {
+    unsubscribePresence();
   }
 });
 </script>

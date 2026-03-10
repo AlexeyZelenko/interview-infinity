@@ -48,9 +48,6 @@
       <!-- Articles Section -->
       <ArticlesSection v-if="activeTab === 'articles'" />
 
-      <!-- Video Section -->
-      <VideoSection v-if="activeTab === 'videos'" />
-
       <!-- FAQ Section -->
       <FAQSection v-if="activeTab === 'faq'" />
     </div>
@@ -59,7 +56,7 @@
     <div class="mt-12 text-center bg-gray-800 rounded-xl p-8">
       <h2 class="text-2xl font-bold mb-4">{{ $t('faq.sections.support.title') }}</h2>
       <p class="text-gray-400 mb-6">{{ $t('faq.sections.support.description') }}</p>
-      <button class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors">
+      <button @click="contactSupport" class="bg-primary-600 text-white px-6 py-3 rounded-lg hover:bg-primary-700 transition-colors cursor-pointer">
         {{ $t('faq.sections.support.contact') }}
       </button>
     </div>
@@ -69,16 +66,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import ArticlesSection from '@/components/Faq/ArticlesSection.vue';
-import VideoSection from '@/components/Faq/VideoSection.vue';
 import FAQSection from '@/components/Faq/FAQSection.vue';
+import { useChatWidgetStore } from '@/stores/chatWidget';
+
+const chatWidgetStore = useChatWidgetStore();
+
+const contactSupport = () => {
+  chatWidgetStore.open();
+};
 
 const activeTab = ref('overview');
 
 const tabs = [
   { id: 'overview', icon: 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
   { id: 'articles', icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253' },
-  { id: 'videos', icon: 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' },
-  { id: 'faq', icon: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
+{ id: 'faq', icon: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' }
 ];
 
 const features = [

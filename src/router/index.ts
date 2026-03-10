@@ -85,14 +85,6 @@ const routes = [
         name: 'FAQ',
         component: () => import('../views/FAQ/index.vue')
     },
-    {
-        path: '/our-products',
-        name: 'our-products',
-        component: () => import('@/views/OurProducts.vue'),
-        meta: {
-            title: 'Our Products'
-        }
-    },
     // Admin Routes
     {
         path: '/admin',
@@ -341,6 +333,17 @@ const routes = [
                 meta: { requiresAuth: true }
             },
         ]
+    },
+    // Blog Routes
+    {
+        path: '/blog',
+        name: 'Blog',
+        component: () => import('../views/Blog/BlogList.vue')
+    },
+    {
+        path: '/blog/:slug',
+        name: 'BlogArticle',
+        component: () => import('../views/Blog/BlogArticle.vue')
     },
     // 404 catch-all route
     {

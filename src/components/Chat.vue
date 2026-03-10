@@ -146,11 +146,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, onUnmounted } from "vue";
 import {
   getDatabase,
   ref as dbRef,
   onValue,
+  off,
   set,
   push,
   update,
@@ -171,6 +172,7 @@ const chatOpened = ref(false);
 const unreadCount = ref(0);
 const editingMessageId = ref<string | null>(null);
 const editingMessageText = ref("");
+let unsubscribeMessages: (() => void) | null = null;
 
 // Проверка существования чата
 const ensureChatExists = async () => {
@@ -209,8 +211,11 @@ const ensureChatExists = async () => {
 
 // Загрузка сообщений
 const loadMessages = () => {
+  // Unsubscribe previous listener if exists
+  if (unsubscribeMessages) unsubscribeMessages();
+
   const messagesRef = dbRef(db, `chats/${props.chatId}/messages`);
-  onValue(messagesRef, (snapshot) => {
+  const unsubscribe = onValue(messagesRef, (snapshot) => {
     const data = snapshot.val();
     messages.value = data
         ? Object.entries(data).map(([id, msg]) => ({
@@ -218,8 +223,9 @@ const loadMessages = () => {
           ...msg,
         }))
         : [];
-    calculateUnreadMessages(); // Обновляем счётчик непрочитанных сообщений
+    calculateUnreadMessages();
   });
+  unsubscribeMessages = unsubscribe;
 };
 
 // Подсчёт непрочитанных сообщений
@@ -309,5 +315,13 @@ const toggleChat = async () => {
 onMounted(async() => {
   await ensureChatExists();
   loadMessages();
+});
+
+// Cleanup listener on unmount
+onUnmounted(() => {
+  if (unsubscribeMessages) {
+    unsubscribeMessages();
+    unsubscribeMessages = null;
+  }
 });
 </script>

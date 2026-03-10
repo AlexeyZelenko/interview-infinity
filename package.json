@@ -13,6 +13,7 @@
     "lint": "npx eslint ."
   },
   "dependencies": {
+    "@emailjs/browser": "^4.4.1",
     "@heroicons/vue": "^2.1.5",
     "@monaco-editor/loader": "^1.4.0",
     "@stripe/stripe-js": "^4.9.0",

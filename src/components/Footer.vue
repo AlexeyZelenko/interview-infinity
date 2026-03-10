@@ -13,9 +13,9 @@ const navLinks = [
 ];
 
 const aboutLinks = [
+  { path: '/blog', label: 'menu.AboutMenu.Blog' },
   { path: '/faq', label: 'menu.AboutMenu.FAQ' },
   { path: '/community', label: 'menu.AboutMenu.Community' },
-  { path: '/our-products', label: 'menu.AboutMenu.OurProducts' },
   { path: '/pricing', label: 'menu.Pricing' },
 ];
 </script>
